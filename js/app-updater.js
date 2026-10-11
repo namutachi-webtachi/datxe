@@ -3,15 +3,20 @@
 // ==========================================================================
 
 export function initAppUpdater() {
-  // Kiem tra phien ban ngay khi mo Booking
+  // 1. Kiem tra phien ban ngay khi vua mo app
   checkLatestVersion();
 
-  // Kiem tra lai moi khi khach mo lai App tu che do nen
+  // 2. Kiem tra lai moi khi khach mo lai tu che do nen hoac mo khoa man hinh
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       checkLatestVersion();
     }
   });
+
+  // 3. TU DONG QUET NGAM MOI 15 GIAY (Khach ngoi yen van tu bat nut Cap Nhat!)
+  setInterval(() => {
+    checkLatestVersion();
+  }, 15000); // 15000 mili-giay = 15 giay
 }
 
 async function checkLatestVersion() {
