@@ -1,98 +1,102 @@
-let deferredPrompt = null;
+// ==========================================================================
+// MODULE PWA INSTALL - GIAO DIEN TAI APP "CHUYEN CO MAT DAT"
+// ==========================================================================
 
-// Tao khung giao dien Banner Cai App bang ma nguon sach
+let deferredPrompt;
+const PWA_DISMISSED_KEY = 'thanh_nguyen_pwa_dismissed';
+
 function createInstallBanner() {
+  // Khong hien thi neu khach da bam "Bo qua" truoc do
+  if (sessionStorage.getItem(PWA_DISMISSED_KEY) === 'true') return;
+
   const banner = document.createElement('div');
-  banner.id = 'pwaInstallBanner';
+  banner.id = 'luxuryPwaBanner';
+  
+  // Style cho Banner (Truot tu duoi len, mau den tuyen vien vang)
   banner.style.cssText = `
     position: fixed;
-    bottom: 20px;
+    bottom: 30px;
     left: 50%;
-    transform: translateX(-50%) translateY(150%);
-    width: calc(100% - 32px);
-    max-width: 420px;
+    transform: translate(-50%, 150%);
+    width: 90%;
+    max-width: 400px;
     background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
-    border: 1px solid rgba(223, 183, 108, 0.5);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border: 1px solid rgba(223, 183, 108, 0.4);
+    border-radius: 16px;
+    padding: 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 20px rgba(223, 183, 108, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(223, 183, 108, 0.15);
     z-index: 10000;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   `;
 
   banner.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <img src="./assets/logo.png" style="width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));">
-      <div>
-        <div style="color: #dfb76c; font-size: 13px; font-weight: 800; letter-spacing: 0.5px;">CÀI ĐẶT ỨNG DỤNG</div>
-        <div style="color: #94a3b8; font-size: 11px;">Thêm vào màn hình để đặt xe nhanh 1 chạm</div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="width: 42px; height: 42px; border-radius: 10px; background: #060e18; border: 1px solid rgba(223, 183, 108, 0.3); display: flex; justify-content: center; align-items: center; overflow: hidden;">
+        <img src="./assets/logo.png" style="width: 80%; height: auto; object-fit: contain;">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="color: #dfb76c; font-size: 14px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">CAI DAT UNG DUNG</div>
+        <div style="color: #94a3b8; font-size: 11px;">Them vao man hinh chinh de dat xe</div>
       </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
-      <button id="btnPwaDismiss" style="background: transparent; border: none; color: #64748b; font-size: 11px; padding: 6px; cursor: pointer;">ĐỂ SAU</button>
-      <button id="btnPwaInstall" style="background: linear-gradient(135deg, #f7e0a3 0%, #dfb76c 100%); color: #060e18; border: none; font-size: 11px; font-weight: 800; padding: 8px 12px; border-radius: 6px; cursor: pointer;">CÀI ĐẶT</button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button id="btnPwaClose" style="background: transparent; border: none; color: #64748b; font-size: 20px; cursor: pointer; padding: 0 5px;">&times;</button>
+      <button id="btnPwaInstall" style="background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%); color: #060e18; border: none; font-size: 12px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(223, 183, 108, 0.3);">TAI APP</button>
     </div>
   `;
 
   document.body.appendChild(banner);
 
-  // Xu ly nut Bam Cai Dat
+  // Xu ly tat banner
+  document.getElementById('btnPwaClose').addEventListener('click', () => {
+    banner.style.transform = 'translate(-50%, 150%)';
+    sessionStorage.setItem(PWA_DISMISSED_KEY, 'true');
+  });
+
+  // Xu ly bam Tai App
   document.getElementById('btnPwaInstall').addEventListener('click', async () => {
     if (deferredPrompt) {
+      // Hien thi bang cai dat cua Android/Chrome
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        banner.style.transform = 'translateX(-50%) translateY(150%)';
+        banner.style.transform = 'translate(-50%, 150%)';
       }
       deferredPrompt = null;
     } else {
       // Huong dan danh rieng cho iPhone Safari
-      alert('Tren iPhone: Bam vao bieu tuong Chia se (Share o duoi trinh duyet) -> Chon "Them vao Man hinh chinh" (Add to Home Screen)');
+      alert('TREN IPHONE: Ban hay bam vao bieu tuong Chia se o day man hinh, sau do chon "Them vao MH Chinh" (Add to Home Screen) nhe!');
     }
   });
 
-  // Xu ly nut De Sau
-  document.getElementById('btnPwaDismiss').addEventListener('click', () => {
-    banner.style.transform = 'translateX(-50%) translateY(150%)';
-    sessionStorage.setItem('pwa_banner_dismissed', 'true');
-  });
-
-  return banner;
+  // Hieu ung truot len sau 1 giay tao su bat ngo
+  setTimeout(() => {
+    banner.style.transform = 'translate(-50%, 0)';
+  }, 1000);
 }
 
-// 1. DANG KY SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-
-// 2. BAT SU KIEN CO THE CAI APP TREN ANDROID / CHROME
+// 1. LANG NGHE SU KIEN SAN SANG CAI DAT (ANDROID / CHROME)
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-
-  if (sessionStorage.getItem('pwa_banner_dismissed') === 'true') {
-    return;
+  // Chi hien banner khi trinh duyet da cho phep cai
+  if (!document.getElementById('luxuryPwaBanner')) {
+    createInstallBanner();
   }
-
-  // Tao va hien thi Banner sau 1 giay de tao bat ngo
-  setTimeout(() => {
-    const banner = document.getElementById('pwaInstallBanner') || createInstallBanner();
-    banner.style.transform = 'translateX(-50%) translateY(0)';
-  }, 1000);
 });
 
-// 3. HO TRO IPHONE SAFARI (Hien thi sau 2 giay neu la iOS va chua cai app)
+// 2. KICH HOAT THU CONG CHO IPHONE (Vi Safari khong ho tro beforeinstallprompt)
 const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-if (isIos && !isStandalone && sessionStorage.getItem('pwa_banner_dismissed') !== 'true') {
-  setTimeout(() => {
-    const banner = document.getElementById('pwaInstallBanner') || createInstallBanner();
-    banner.style.transform = 'translateX(-50%) translateY(0)';
-  }, 2000);
+if (isIos && !isStandalone) {
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('luxuryPwaBanner')) {
+      createInstallBanner();
+    }
+  });
 }
