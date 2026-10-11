@@ -1,5 +1,5 @@
 // MOI LAN SUA CODE, ONG CHI CAN SUA SO O DONG NAY LA XONG! (VD: v1.0.6 -> v1.0.7)
-const CACHE_NAME = 'thanh-nguyen-vf5-v1.0.6';
+const CACHE_NAME = 'thanh-nguyen-vf5-v1.0.7';
 
 self.addEventListener('install', (event) => {
   // KHONG dung skipWaiting() tu dong nua, de app cu chay den khi khach bam nut!
