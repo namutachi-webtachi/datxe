@@ -7,11 +7,12 @@
   <link rel="stylesheet" href="./css/scale.css">
   <style>
     /* ==========================================================================
-       MODULE INTRO SANH CHIEU - XANH DEN DEEP LUXURY NAVY & ANH THAT 100%
+       MODULE INTRO - CAN CHINH CHUAN 100% THEO BAN VE MAU
+       Khong emoji - 3 mau: Den Navy #0b1420, Vang Kim #dfb76c, Do VF5 #dc2626
        ========================================================================== */
 
     body {
-      background-color: #070d14;
+      background-color: #060b11;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -29,26 +30,25 @@
       position: relative;
     }
 
-    /* Khung danh thiep: Nen Xanh Den Sang Trong theo dung ban goc cua Chu Tich */
+    /* Khung the danh thiep chuan mau xanh den theo anh mau */
     .card-front-module {
       width: var(--card-w);
       height: var(--card-h);
-      background: radial-gradient(circle at 50% 35%, #0f1f33 0%, #07101b 100%);
+      background-color: #0b1420;
       border-radius: var(--radius-card);
-      border: 1px solid rgba(223, 183, 108, 0.4);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(223, 183, 108, 0.15);
+      border: 1.5px solid rgba(223, 183, 108, 0.45);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(223, 183, 108, 0.15);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: calc(var(--csu) * 4.5) calc(var(--csu) * 4);
+      justify-content: flex-start;
+      padding: calc(var(--csu) * 4.5) calc(var(--csu) * 5) calc(var(--csu) * 3);
       position: relative;
       overflow: hidden;
       will-change: transform, opacity;
-      transition: box-shadow 0.3s ease;
     }
 
-    /* Vet sang kim loai chay luot qua mat the */
+    /* Hieu ung vet anh kim chay vat qua mat the */
     .card-front-module::after {
       content: "";
       position: absolute;
@@ -67,38 +67,43 @@
       100% { left: 150%; }
     }
 
-    /* Cum Header tren the: Logo TN va Chu Thuong Hieu */
-    .brand-header-wrapper {
+    /* KHOI HEADER: LOGO TN VA CHU THANH NGUYEN KHOA CHAT CANH NHAU */
+    .brand-lockup-row {
       width: 100%;
       display: flex;
+      flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: calc(var(--csu) * 3);
+      gap: calc(var(--csu) * 2.5);
+      margin-bottom: calc(var(--csu) * 2);
       z-index: 2;
     }
 
+    /* Logo TN dat ben trai, chieu cao khop voi khoi chu */
     .brand-logo-img {
-      width: calc(var(--csu) * 16);
-      height: auto;
+      height: calc(var(--csu) * 19);
+      width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
     }
 
+    /* Khoi chu THANH NGUYEN dat ben phai Logo */
     .brand-text-img {
-      width: calc(var(--csu) * 70);
+      width: calc(var(--csu) * 66);
       height: auto;
+      max-height: calc(var(--csu) * 21);
       object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
     }
 
-    /* ==========================================================================
-       KHUNG CON XE VF5 THAT & HIỆU ỨNG LAO THẲNG VÀO MẮT NGƯỜI XEM
-       ========================================================================== */
-
+    /* KHOI CON XE VF5: CAN GIUA HOAN TOAN O NUA DUOI, KHONG BI CAT CHIM */
     .car-trigger-container {
       width: 100%;
+      flex: 1;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
       cursor: pointer;
       z-index: 3;
@@ -112,31 +117,16 @@
     }
 
     .vf5-real-img {
-      width: calc(var(--csu) * 48);
+      width: calc(var(--csu) * 44);
+      max-width: 190px;
       height: auto;
-      max-height: calc(var(--csu) * 45);
       object-fit: contain;
       display: block;
-      filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.8));
+      margin: 0 auto;
+      filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.9));
     }
 
-    /* Chu huong dan nhe nhang o duoi */
-    .tap-hint-text {
-      font-size: calc(var(--csu) * 2.2);
-      color: var(--text-muted, #94a3b8);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: calc(var(--csu) * 1);
-      animation: pulseHint 2.5s infinite;
-      z-index: 2;
-    }
-
-    @keyframes pulseHint {
-      0%, 100% { opacity: 0.35; }
-      50% { opacity: 0.95; color: #f7e0a3; }
-    }
-
-    /* ANIMATION CHINH: XE PHONG THANG VE PHIA MAN HINH (DRIVE TOWARDS CAMERA) */
+    /* ANIMATION CHINH: XE PHONG THANG RA MAN HINH */
     .car-launching-forward {
       animation: zoomCarToScreen 0.85s cubic-bezier(0.7, 0, 0.84, 0) forwards;
       pointer-events: none;
@@ -154,10 +144,9 @@
       }
       30% {
         transform: scale(1.15) translateY(-5px);
-        filter: drop-shadow(0 0 25px #f7e0a3) drop-shadow(0 15px 35px rgba(220, 38, 38, 0.5));
+        filter: drop-shadow(0 0 25px #f7e0a3) drop-shadow(0 15px 35px rgba(220, 38, 38, 0.6));
       }
       100% {
-        /* Phong to gap 18 lan va lao thang vao mat nguoi xem */
         transform: scale(18) translateY(120px) translateZ(1000px);
         filter: blur(16px) drop-shadow(0 0 70px #dc2626);
         opacity: 0;
@@ -188,19 +177,16 @@
       <div class="card-perspective-box">
         <div class="card-front-module" id="cardModule">
           
-          <!-- CUM HEADER ANH: LOGO TN VA CHU THUONG HIEU -->
-          <div class="brand-header-wrapper">
+          <!-- KHOI HEADER: LOGO TN + CHU THUONG HIEU KHOA KHE CHUAN ANH 2 -->
+          <div class="brand-lockup-row">
             <img src="./assets/logo.png" alt="TN Logo" class="brand-logo-img">
             <img src="./assets/brand.png" alt="Thanh Nguyen" class="brand-text-img">
           </div>
 
-          <!-- ANH CON XE VF5 THAT (NUT BAM KHOI HANH LAO THANG RA MAN HINH) -->
+          <!-- KHOI CON XE VF5 CAN GIUA TU NHIEN (BAM VAO DE LAO RA MAN HINH) -->
           <div class="car-trigger-container" id="carTrigger" title="Cham vao xe de khoi hanh">
             <img src="./assets/car.png" alt="VinFast VF5" class="vf5-real-img">
           </div>
-
-          <!-- HUONG DAN -->
-          <div class="tap-hint-text">CHAM VAO XE DE KHOI HANH</div>
 
         </div>
       </div>
@@ -212,15 +198,12 @@
     const carTrigger = document.getElementById('carTrigger');
     const cardModule = document.getElementById('cardModule');
 
-    // KHI BAM VAO CON XE VF5
     carTrigger.addEventListener('click', () => {
       carTrigger.classList.add('car-launching-forward');
       cardModule.classList.add('card-fade-out-anim');
 
-      // Ghi nho cache khach da xem
       localStorage.setItem(CACHE_KEY, 'true');
 
-      // Sau 0.8s xe lao het hanh trinh thi nhay sang trang dat xe
       setTimeout(() => {
         window.location.href = './booking.html';
       }, 750);
