@@ -44,3 +44,9 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+// LANG NGHE LENH TU GIAO DIEN DE EP BUOC CAP NHAT NGAY LAP TUC
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
