@@ -39,24 +39,23 @@
 
   </div>
 
-  <!-- KHOI DONG CAC SCRIPT MODULE -->
+ <!-- KHOI DONG CAC SCRIPT MODULE -->
   <script type="module">
-    import { initHeaderEvents } from './js/core-events.js?v=1.0.3';
-    import { autoCropImage } from './js/autocrop.js?v=1.0.3';
+    import { initHeaderEvents } from './js/core-events.js';
+    import { autoCropImage } from './js/autocrop.js';
     import { initSystemMonitor } from './js/system-monitor.js';
 
-   window.addEventListener('DOMContentLoaded', () => {
-      initSystemMonitor(); // Kich hoat giam sat
-      // 1. Tim cai icon Tai App
-      const installIcon = document.getElementById('installIcon');
+    // THEM CHU 'async' VAO DAY LA HET LOI!
+    window.addEventListener('DOMContentLoaded', async () => {
+      initSystemMonitor(); // Kich hoat giam sat mang
       
-      // 2. Thuat toan tu dong got sach vien rac trong suot cua Icon
+      const installIcon = document.getElementById('installIcon');
       if (installIcon) {
+        // Ham nay phai co 'async' o tren thi moi xai 'await' duoc
         await autoCropImage(installIcon);
       }
 
-      // 3. Kich hoat cac chuc nang cua Header (Logo 5 cham + Nut Tai App)
-      initHeaderEvents();
+      initHeaderEvents(); // Kich hoat Logo 5 cham + Nut tai app
     });
   </script>
 </body>
