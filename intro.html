@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Thanh Nguyen - Dich Vu Xe Rieng Chuyen Nghiep</title>
+  <link rel="stylesheet" href="./css/scale.css">
+  <style>
+    /* ==========================================================================
+       MODULE INTRO DOC LAP - CHUYEN CO MAT DAT VF5
+       Thiet ke chuan xac theo ban goc: DICH VU XE RIENG CHUYEN NGHIEP
+       ========================================================================== */
+
+    body {
+      background-color: var(--bg-deep);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .intro-viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Khung bao the danh thiep mat truoc */
+    .card-front-module {
+      width: var(--card-w);
+      height: var(--card-h);
+      background: radial-gradient(circle at 50% 30%, #0d1726 0%, #060b11 100%);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--gold-border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px var(--gold-glow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: calc(var(--csu) * 5) calc(var(--csu) * 4);
+      position: relative;
+      overflow: hidden;
+      will-change: transform, opacity;
+      transition: box-shadow var(--transition-normal);
+    }
+
+    /* Anh kim chay vat qua mat the */
+    .card-front-module::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(247, 224, 163, 0.12), transparent);
+      transform: skewX(-25deg);
+      animation: sweepShine 5s infinite;
+    }
+
+    @keyframes sweepShine {
+      0%, 75% { left: -150%; }
+      100% { left: 150%; }
+    }
+
+    /* Cum Header thuong hieu */
+    .brand-block {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(var(--csu) * 1.2);
+      z-index: 2;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--csu) * 2.5);
+      width: 100%;
+    }
+
+    /* Logo TN Monogram vector */
+    .logo-tn-svg {
+      width: calc(var(--csu) * 12.5);
+      height: calc(var(--csu) * 12.5);
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    }
+
+    /* Chu THANH NGUYEN in nghieng dam anh kim */
+    .brand-name {
+      font-size: calc(var(--csu) * 7.5);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 0.5px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .brand-line {
+      width: 80%;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+    }
+
+    /* SUBTITLE CHUAN THEO BAN MOI: DICH VU XE RIENG CHUYEN NGHIEP */
+    .brand-tagline {
+      font-size: calc(var(--csu) * 2.8);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+    }
+
+    /* Nut bam con xe VF5 vector */
+    .car-trigger-box {
+      width: calc(var(--csu) * 44);
+      height: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 3;
+      transform-origin: center center;
+      will-change: transform, filter, opacity;
+      transition: transform 0.25s var(--ease-spring);
+    }
+
+    .car-trigger-box:active {
+      transform: scale(0.96);
+    }
+
+    .vf5-vector-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+    }
+
+    /* Chu huong dan cham vao xe */
+    .action-instruction {
+      font-size: calc(var(--csu) * 2.3);
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: calc(var(--csu) * 1.5);
+      animation: pulseInstruction 2.5s infinite;
+      z-index: 2;
+    }
+
+    @keyframes pulseInstruction {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.95; color: var(--gold-light); }
+    }
+
+    /* ==========================================================================
+       ANIMATION: XE LAO THANG RA NGOAI MAN HINH (DRIVE TOWARDS CAMERA)
+       ========================================================================== */
+
+    .car-burst-forward {
+      animation: zoomOutToScreen 0.85s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+      pointer-events: none;
+    }
+
+    .card-fade-away {
+      animation: dissolveCard 0.85s var(--ease-smooth) forwards;
+    }
+
+    @keyframes zoomOutToScreen {
+      0% {
+        transform: scale(1) translateZ(0);
+        filter: drop-shadow(0 0 0 rgba(223, 183, 108, 0));
+        opacity: 1;
+      }
+      30% {
+        transform: scale(1.15) translateY(-5px);
+        filter: drop-shadow(0 0 25px var(--gold-light)) drop-shadow(0 15px 35px var(--red-glow));
+      }
+      100% {
+        /* Lao thang ra huong mat nguoi xem va bien mat */
+        transform: scale(16) translateY(120px) translateZ(1000px);
+        filter: blur(16px) drop-shadow(0 0 70px var(--red-vf5));
+        opacity: 0;
+      }
+    }
+
+    @keyframes dissolveCard {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      40% {
+        transform: scale(1.02);
+        opacity: 0.85;
+      }
+      100% {
+        transform: scale(0.9);
+        opacity: 0;
+        filter: blur(10px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <div class="intro-viewport">
+      <div class="card-perspective-box">
+        <div class="card-front-module" id="cardModule">
+          
+          <!-- BRAND HEADER -->
+          <div class="brand-block">
+            <div class="brand-row">
+              <!-- LOGO TN MONOGRAM -->
+              <svg class="logo-tn-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 25H85V38H56V85H44V38H15V25Z" fill="url(#goldGradientTN)" />
+                <path d="M35 32L65 72V32H75V85H65L35 45V85H25V32H35Z" fill="url(#goldGradientTN)" opacity="0.95" />
+                <defs>
+                  <linearGradient id="goldGradientTN" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f7e0a3" />
+                    <stop offset="50%" stop-color="#dfb76c" />
+                    <stop offset="100%" stop-color="#b88d3e" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <!-- TEN THUONG HIEU THANH NGUYEN -->
+              <div class="brand-name">THANH NGUYEN</div>
+            </div>
+
+            <div class="brand-line"></div>
+            <!-- DICH VU XE RIENG CHUYEN NGHIEP -->
+            <div class="brand-tagline">DICH VU XE RIENG CHUYEN NGHIEP</div>
+          </div>
+
+          <!-- BIEU TUONG DAU XE VINFAST VF5 VECTOR NET VANG -->
+          <div class="car-trigger-box" id="carTrigger" title="Cham vao xe de khoi hanh">
+            <svg class="vf5-vector-svg" viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 35 L70 12 L130 12 L150 35 Z" stroke="#dfb76c" stroke-width="2.5" stroke-linejoin="round" />
+              <path d="M48 38 L25 40 L28 48 L48 44 Z" stroke="#dfb76c" stroke-width="2" />
+              <path d="M152 38 L175 40 L172 48 L152 44 Z" stroke="#dfb76c" stroke-width="2" />
+              <path d="M3
