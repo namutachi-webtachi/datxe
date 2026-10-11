@@ -1,52 +1,73 @@
 // ==========================================================================
-// APP-UPDATER.JS - LANG NGHE TONG DAI BROADCAST CHANNEL
+// APP-UPDATER.JS - HE THONG THONG BAO CAP NHAT CHUAN GOOGLE PWA
 // ==========================================================================
 
 export function initAppUpdater() {
-  if (!('BroadcastChannel' in window)) return;
+  if (!('serviceWorker' in navigator)) return;
 
-  // Mo kenh lang nghe cung ten voi Service Worker
-  const updateChannel = new BroadcastChannel('pwa_update_channel');
-  let isUpdateShowing = false;
+  let newWorker;
 
-  updateChannel.onmessage = (event) => {
-    if (event.data.type === 'UPDATE_AVAILABLE' && !isUpdateShowing) {
-      isUpdateShowing = true;
-      console.log('Nhan tin hieu tu SW: Co code moi!');
-      showUpdateButton();
+  // 1. Dang ky va lang nghe su thay doi cua file sw.js
+  navigator.serviceWorker.register('./sw.js').then((reg) => {
+    reg.addEventListener('updatefound', () => {
+      newWorker = reg.installing;
+      
+      newWorker.addEventListener('statechange', () => {
+        // Khi ban moi da tai ve xong va dang nam o trang thai cho (waiting)
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          console.log('[System] Phat hien ban cap nhat moi tren GitHub!');
+          showUpdateButton(newWorker);
+        }
+      });
+    });
+  }).catch((err) => {
+    console.error('[System] Loi dang ky Service Worker:', err);
+  });
+
+  // 2. Lang nghe khi ban code moi chiem quyen thanh cong -> F5 lai man hinh
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
     }
-  };
+  });
 }
 
-function showUpdateButton() {
+// 3. Ham bien hinh nut Tai App thanh nut Cap Nhat mau do
+function showUpdateButton(newWorker) {
   const installBtn = document.getElementById('pwaInstallBtn');
   if (!installBtn) return;
 
-  // 1. Ep hien nut len, doi mau Do VF5 canh bao
+  // Ep hien nut len, doi mau thanh Do VF5 canh bao
   installBtn.style.display = 'flex';
   installBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
   installBtn.style.borderColor = '#ef4444';
   installBtn.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.4)';
   
-  // 2. Doi chu thanh CAP NHAT
   const textSpan = installBtn.querySelector('.install-text');
   if (textSpan) {
     textSpan.innerText = 'CẬP NHẬT';
     textSpan.style.color = '#ffffff';
   }
 
-  // 3. Reset su kien bang cach nhan ban nut
+  const iconImg = installBtn.querySelector('.install-icon-img');
+  if (iconImg) {
+    iconImg.style.display = 'none'; // An icon tai app di de tap trung vao chu
+  }
+
+  // Clone node de xoa toan bo cac su kien click cu cua nut Tai App
   const newBtn = installBtn.cloneNode(true);
   installBtn.parentNode.replaceChild(newBtn, installBtn);
 
-  // 4. Khi khach bam vao: F5 ngay lap tuc de an ban moi nhat tu Cache
+  // Gan su kien click moi: Ra lenh cho Service Worker tiep quan
   newBtn.addEventListener('click', () => {
     if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
     newBtn.querySelector('.install-text').innerText = 'ĐANG TẢI...';
     
-    // Khong can cho doi, vi file moi da nam san trong Cache roi, F5 phat la len luon!
-    setTimeout(() => {
-      window.location.reload(true);
-    }, 150);
+    // Ban tin hieu cho SW moi biet la khach da bam nut, tien hanh giet ban cu!
+    if (newWorker) {
+      newWorker.postMessage('SKIP_WAITING');
+    }
   });
 }
