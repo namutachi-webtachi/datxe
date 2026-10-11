@@ -12,7 +12,6 @@
   --gold-light: #fbe8b5;
   --gold-dark: #a67c2e;
   --red-vf5: #dc2626;
-  --red-light: #ef4444;
 }
 
 body {
@@ -30,7 +29,7 @@ body {
   width: 100%;
   max-width: 440px;
   padding: 16px;
-  perspective: 1200px;
+  perspective: 1000px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -38,7 +37,28 @@ body {
   position: relative;
 }
 
-/* THẺ VIP ĐẲNG CẤP TỶ LỆ 90x54 */
+/* CHUM SANG LOE DEN PHA BAO PHU TOAN MAN HINH */
+.viewport-box::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(251, 232, 181, 0.75) 0%, rgba(220, 38, 38, 0.35) 45%, transparent 75%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 99;
+}
+
+.viewport-box.flashing::before {
+  animation: screenGlowFlash 0.78s ease-out forwards;
+}
+
+@keyframes screenGlowFlash {
+  0% { opacity: 0; }
+  35% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* THE VIP TY LE CHUAN 90x54 */
 .card-master {
   width: 100%;
   aspect-ratio: 90 / 54;
@@ -57,7 +77,7 @@ body {
     0 0 35px rgba(223, 183, 108, 0.18),
     inset 0 0 0 1px rgba(251, 232, 181, 0.15);
   transform-style: preserve-3d;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
   opacity: 0;
   transform: scale(0.97);
   transition: opacity 0.4s ease, transform 0.4s ease;
@@ -68,7 +88,6 @@ body {
   transform: scale(1);
 }
 
-/* VỆT TRÁNG GƯƠNG QUÉT CHÉO */
 .card-master::before {
   content: "";
   position: absolute;
@@ -93,7 +112,7 @@ body {
   100% { left: 160%; }
 }
 
-/* CỤM HEADER LOGO VÀ CHỮ */
+/* CUM HEADER: LOGO VA CHU */
 .header-group {
   width: 100%;
   height: 38%;
@@ -123,7 +142,7 @@ body {
   flex-shrink: 0;
 }
 
-/* KHU VỰC CON XE VF5 */
+/* KHU VUC CON XE VF5 */
 .car-zone {
   width: 100%;
   height: 52%;
@@ -133,7 +152,7 @@ body {
   justify-content: center;
   position: relative;
   cursor: pointer;
-  z-index: 3;
+  z-index: 10;
   transform-origin: center center;
   will-change: transform, filter, opacity;
 }
@@ -147,7 +166,7 @@ body {
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
   transition: filter 0.3s ease;
   position: relative;
-  z-index: 4;
+  z-index: 11;
 }
 
 .under-shadow {
@@ -157,10 +176,9 @@ body {
   height: 6px;
   background: radial-gradient(ellipse at center, rgba(223, 183, 108, 0.45) 0%, transparent 70%);
   pointer-events: none;
-  transition: all 0.2s ease;
 }
 
-/* NÚT BẤM TIẾNG VIỆT CÓ DẤU */
+/* NUT HUONG DAN TIENG VIET */
 .action-badge {
   margin-top: 22px;
   display: inline-flex;
@@ -209,105 +227,50 @@ body {
 }
 
 /* ==========================================================================
-   HƯỚNG 1 ĐỈNH CAO: NHÚN PHUỘC, RỌI ĐÈN PHA VÀ BẮN TỐC ĐỘ ÁNH SÁNG
+   ANIMATION SUA CHUAN: XE THOAT XAC BAY KHOI THE LAO THANG VAO MAT
    ========================================================================== */
 
-/* 1. LOP PHU CHUM SANG DEN PHA ROI THANG VAO MAT (OPTICAL FLARE) */
-.car-zone::before {
-  content: "";
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(251, 232, 181, 0.8) 35%, rgba(220, 38, 38, 0.4) 65%, transparent 80%);
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* 2. LOP PHU VET SANG DUOI XE DO CRIMSON VF5 */
-.car-zone::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 10px;
-  background: linear-gradient(90deg, transparent, var(--red-vf5), #ffffff, var(--red-vf5), transparent);
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* KICH HOAT CHUYEN DONG DIEN ANH 3 GIAI DOAN */
-.car-zone.launching {
-  animation: hypercarLaunch 0.88s cubic-bezier(0.85, 0, 0.15, 1) forwards;
-  pointer-events: none;
-}
-
-.car-zone.launching::before {
-  animation: headlightFlare 0.88s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.car-zone.launching::after {
-  animation: crimsonTrails 0.88s cubic-bezier(0.7, 0, 0.3, 1) forwards;
-}
-
+/* Mo khoa cho xe bay ra ngoai khoi khung the ma khong bi cat cut */
 .card-master.dissolving {
-  animation: cinematicCardBlur 0.88s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  overflow: visible !important;
+  animation: cardFadeOutSlow 0.78s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* NHIP 1 (0-18%): NHUN PHUOC LUI LAI | NHIP 2 (18-45%): BAT DEN PHA | NHIP 3 (45-100%): PHONG XANH */
-@keyframes hypercarLaunch {
+.car-zone.launching {
+  animation: carFlyOutScreen 0.78s cubic-bezier(0.75, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+/* 1. XE NHUN PHUOC -> BAT DEN PHA -> PHONG QUA MAN HINH */
+@keyframes carFlyOutScreen {
   0% {
-    transform: scale(1) translateY(0) translateZ(0);
+    transform: scale(1) translateY(0);
     filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
   }
-  16% {
-    /* Nhun phuoc xe dien lui lai 3px lay da mo-men xoan */
-    transform: scale(0.97) translateY(4px) translateZ(-10px);
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+  18% {
+    /* Nhun nhe phuoc xe lui lai lay da */
+    transform: scale(0.95) translateY(6px);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 12px rgba(223, 183, 108, 0.5));
   }
-  38% {
-    /* Bat den pha, loi sang dai LED canh chim */
-    transform: scale(1.15) translateY(-6px) translateZ(30px);
+  36% {
+    /* Bat den pha va dai LED chu V sang choi loi */
+    transform: scale(1.15) translateY(-6px);
     filter: 
       drop-shadow(0 0 25px #ffffff) 
-      drop-shadow(0 0 50px var(--gold-light))
-      drop-shadow(0 15px 35px var(--red-vf5));
+      drop-shadow(0 0 45px #fbe8b5)
+      drop-shadow(0 10px 30px #dc2626);
   }
   100% {
-    /* Ban thang vao mat nguoi xem xé toac khong gian */
-    transform: scale(28) translateY(160px) translateZ(1400px);
-    filter: blur(24px) drop-shadow(0 0 120px var(--red-vf5));
+    /* Lao thang tran ngap man hinh */
+    transform: scale(7.5) translateY(80px);
+    filter: blur(8px) drop-shadow(0 0 60px #dc2626);
     opacity: 0;
   }
 }
 
-/* CHUM SANG DEN PHA ROI MAN HINH */
-@keyframes headlightFlare {
-  0% { width: 0; height: 0; opacity: 0; }
-  16% { width: 40px; height: 40px; opacity: 0.3; }
-  38% { width: 380px; height: 380px; opacity: 0.95; filter: blur(6px); }
-  100% { width: 1200px; height: 1200px; opacity: 0; filter: blur(30px); }
-}
-
-/* VET DUOI ANH SANG DO THE THAO VF5 */
-@keyframes crimsonTrails {
-  0% { width: 0; opacity: 0; }
-  25% { width: 60%; opacity: 0.5; }
-  45% { width: 140%; height: 30px; opacity: 1; filter: drop-shadow(0 0 25px var(--red-vf5)); }
-  100% { width: 300%; height: 80px; opacity: 0; filter: blur(20px); }
-}
-
-/* THE PHIA SAU MO NHOE CHUYEN CANH */
-@keyframes cinematicCardBlur {
-  0% { transform: scale(1); opacity: 1; filter: blur(0); }
-  25% { transform: scale(0.99); opacity: 0.95; }
-  50% { transform: scale(1.02); opacity: 0.8; filter: blur(6px); }
-  100% { transform: scale(0.85); opacity: 0; filter: blur(20px); }
+/* 2. THE MO DAN VA BIEN MAT */
+@keyframes cardFadeOutSlow {
+  0% { transform: scale(1); opacity: 1; }
+  30% { transform: scale(0.99); opacity: 0.9; }
+  100% { transform: scale(0.9); opacity: 0; }
 }
