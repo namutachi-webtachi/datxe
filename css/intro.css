@@ -6,14 +6,6 @@
   user-select: none;
 }
 
-:root {
-  --bg-deep: #060e18;
-  --gold-primary: #dfb76c;
-  --gold-light: #fbe8b5;
-  --gold-dark: #a67c2e;
-  --red-vf5: #dc2626;
-}
-
 body {
   width: 100vw;
   height: 100dvh;
@@ -29,36 +21,13 @@ body {
   width: 100%;
   max-width: 440px;
   padding: 16px;
-  perspective: 1000px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 
-/* CHUM SANG LOE DEN PHA BAO PHU TOAN MAN HINH */
-.viewport-box::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(251, 232, 181, 0.75) 0%, rgba(220, 38, 38, 0.35) 45%, transparent 75%);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 99;
-}
-
-.viewport-box.flashing::before {
-  animation: screenGlowFlash 0.78s ease-out forwards;
-}
-
-@keyframes screenGlowFlash {
-  0% { opacity: 0; }
-  35% { opacity: 0.9; }
-  100% { opacity: 0; }
-}
-
-/* THE VIP TY LE CHUAN 90x54 */
+/* THE VIP TI LE CHUAN 90x54 */
 .card-master {
   width: 100%;
   aspect-ratio: 90 / 54;
@@ -76,7 +45,6 @@ body {
     0 25px 50px rgba(0, 0, 0, 0.95),
     0 0 35px rgba(223, 183, 108, 0.18),
     inset 0 0 0 1px rgba(251, 232, 181, 0.15);
-  transform-style: preserve-3d;
   will-change: transform, opacity;
   opacity: 0;
   transform: scale(0.97);
@@ -153,8 +121,7 @@ body {
   position: relative;
   cursor: pointer;
   z-index: 10;
-  transform-origin: center center;
-  will-change: transform, filter, opacity;
+  will-change: transform, opacity;
 }
 
 .car-image {
@@ -164,7 +131,6 @@ body {
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
-  transition: filter 0.3s ease;
   position: relative;
   z-index: 11;
 }
@@ -190,7 +156,6 @@ body {
   border-radius: 999px;
   backdrop-filter: blur(8px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
-  animation: badgePulse 2.4s infinite ease-in-out;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -205,12 +170,6 @@ body {
   border-radius: 50%;
   background-color: #dfb76c;
   box-shadow: 0 0 8px #dfb76c;
-  animation: dotBlink 1.2s infinite alternate;
-}
-
-@keyframes dotBlink {
-  from { opacity: 0.4; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1.2); }
 }
 
 .badge-text {
@@ -221,56 +180,40 @@ body {
   text-transform: uppercase;
 }
 
-@keyframes badgePulse {
-  0%, 100% { transform: translateY(0); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6); }
-  50% { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(223, 183, 108, 0.2); }
-}
-
 /* ==========================================================================
-   ANIMATION SUA CHUAN: XE THOAT XAC BAY KHOI THE LAO THANG VAO MAT
+   ANIMATION TOI GIAN & MUT MA: XE PHONG THANG TOI TRUOC
    ========================================================================== */
 
-/* Mo khoa cho xe bay ra ngoai khoi khung the ma khong bi cat cut */
-.card-master.dissolving {
+.card-master.fading {
   overflow: visible !important;
-  animation: cardFadeOutSlow 0.78s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: cleanCardFade 0.5s ease forwards;
 }
 
 .car-zone.launching {
-  animation: carFlyOutScreen 0.78s cubic-bezier(0.75, 0, 0.2, 1) forwards;
+  animation: cleanCarLaunch 0.5s cubic-bezier(0.4, 0, 0.1, 1) forwards;
   pointer-events: none;
 }
 
-/* 1. XE NHUN PHUOC -> BAT DEN PHA -> PHONG QUA MAN HINH */
-@keyframes carFlyOutScreen {
+/* Xe tang toc va phong lon ve phia man hinh trong 0.5s */
+@keyframes cleanCarLaunch {
   0% {
     transform: scale(1) translateY(0);
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
-  }
-  18% {
-    /* Nhun nhe phuoc xe lui lai lay da */
-    transform: scale(0.95) translateY(6px);
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 12px rgba(223, 183, 108, 0.5));
-  }
-  36% {
-    /* Bat den pha va dai LED chu V sang choi loi */
-    transform: scale(1.15) translateY(-6px);
-    filter: 
-      drop-shadow(0 0 25px #ffffff) 
-      drop-shadow(0 0 45px #fbe8b5)
-      drop-shadow(0 10px 30px #dc2626);
+    opacity: 1;
   }
   100% {
-    /* Lao thang tran ngap man hinh */
-    transform: scale(7.5) translateY(80px);
-    filter: blur(8px) drop-shadow(0 0 60px #dc2626);
+    transform: scale(5) translateY(40px);
     opacity: 0;
   }
 }
 
-/* 2. THE MO DAN VA BIEN MAT */
-@keyframes cardFadeOutSlow {
-  0% { transform: scale(1); opacity: 1; }
-  30% { transform: scale(0.99); opacity: 0.9; }
-  100% { transform: scale(0.9); opacity: 0; }
+/* The mo dan va bien mat */
+@keyframes cleanCardFade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
 }
