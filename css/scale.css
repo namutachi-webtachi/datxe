@@ -1,0 +1,166 @@
+/* ==========================================================================
+   SCALE.CSS - HE THONG TY LE & NEN TANG THI GIAC CHUYEN CO MAT DAT
+   Thiet ke boi: namutachi-webtachi
+   Bang mau: Den Obsidian - Vang Champagne - Do Crimson VF5
+   ========================================================================== */
+
+:root {
+  /* 1. BANG MAU CHU DAO (COLOR TOKENS) */
+  --bg-deep: #060b11;
+  --bg-surface: #0a111a;
+  --bg-card: #0d1622;
+  --bg-card-overlay: rgba(13, 22, 34, 0.85);
+
+  /* Tong vang kim loai cao cap */
+  --gold-primary: #dfb76c;
+  --gold-light: #f7e0a3;
+  --gold-dark: #b88d3e;
+  --gold-border: rgba(223, 183, 108, 0.35);
+  --gold-glow: rgba(223, 183, 108, 0.2);
+  --gold-gradient: linear-gradient(135deg, #f7e0a3 0%, #dfb76c 50%, #b88d3e 100%);
+
+  /* Tong do the thao VinFast VF5 */
+  --red-vf5: #dc2626;
+  --red-light: #ef4444;
+  --red-glow: rgba(220, 38, 38, 0.4);
+  --red-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+
+  /* Mau chu va tuong phan */
+  --text-pure: #ffffff;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* 2. HE THONG KHUNG TỶ LE (VIEWPORT LOCK & FLUID MATH) */
+  --shell-max-width: 440px;
+  --app-width: min(100vw, var(--shell-max-width));
+  --app-height: 100dvh;
+
+  /* Ty le chuan cua Card Visit: 90mm x 54mm = 1.6667 */
+  --card-ratio: 1.66667;
+  --card-margin: clamp(16px, 4vw, 24px);
+  --card-w: calc(var(--app-width) - (var(--card-margin) * 2));
+  --card-h: calc(var(--card-w) / var(--card-ratio));
+
+  /* Don vi ty le dong ben trong Card (1csu = 1% chieu rong Card) */
+  --csu: calc(var(--card-w) / 100);
+
+  /* Co chu co gian linh hoat */
+  --font-xs: clamp(10px, 2.5csu, 12px);
+  --font-sm: clamp(12px, 3csu, 14px);
+  --font-base: clamp(14px, 3.5csu, 16px);
+  --font-lg: clamp(16px, 4.2csu, 20px);
+  --font-xl: clamp(20px, 5.5csu, 26px);
+
+  /* Khoang cach dem */
+  --space-xs: clamp(4px, 1.2csu, 6px);
+  --space-sm: clamp(8px, 2.2csu, 12px);
+  --space-md: clamp(12px, 3.5csu, 16px);
+  --space-lg: clamp(16px, 5csu, 24px);
+
+  /* Ban kinh bo goc */
+  --radius-card: calc(var(--card-w) * 0.045);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-full: 9999px;
+
+  /* Hieu ung chuyen dong muot ma (Spring & Cubic-Bezier) */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.2s var(--ease-smooth);
+  --transition-normal: 0.4s var(--ease-smooth);
+  --transition-card: 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   RESET & PHONG THU VIEWPORT CHONG TRAN VIEN
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  position: fixed;
+}
+
+/* Khung vo boc danh rieng cho dien thoai, tu dong can giua tren man hinh may tinh */
+.app-shell {
+  width: 100%;
+  max-width: var(--shell-max-width);
+  height: var(--app-height);
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ==========================================================================
+   KHUNG CHUA DANH THIEP CO GIAN 3D (RESPONSIVE CARD CONTAINER)
+   ========================================================================== */
+
+.card-perspective-box {
+  width: 100%;
+  padding: var(--space-md) var(--card-margin);
+  perspective: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.business-card-scalable {
+  width: var(--card-w);
+  height: var(--card-h);
+  position: relative;
+  transform-style: preserve-3d;
+  border-radius: var(--radius-card);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--gold-border);
+  will-change: transform;
+}
+
+/* ==========================================================================
+   TIEN ICH DINH DANG CHU & HO TRO MAN HINH DI HOM
+   ========================================================================== */
+
+/* Ho tro man hinh sieu nho (iPhone SE hoac man duoi 360px) */
+@media screen and (max-width: 360px) {
+  :root {
+    --card-margin: 10px;
+  }
+}
+
+/* Ho tro man hinh gập / ngang (Aspect Ratio thap) */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+  :root {
+    --card-w: calc(min(60vw, 360px));
+  }
+  .app-shell {
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Khong hien thi thanh cuon xau xi tren Chromium */
+.app-shell::-webkit-scrollbar {
+  display: none;
+}
+.app-shell {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
