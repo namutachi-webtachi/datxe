@@ -54,24 +54,24 @@
       actionBadge.classList.add('ready');
     });
 
-    const carZone = document.getElementById('carZone');
+   const carZone = document.getElementById('carZone');
     const cardBox = document.getElementById('cardBox');
+    const viewportBox = document.querySelector('.viewport-box');
 
     carZone.addEventListener('click', () => {
-      // 1. Rung phan hoi xuc giac tren dien thoai (mo phong dong co dien khoi dong)
       if (navigator.vibrate) {
         navigator.vibrate([30, 40, 80]);
       }
 
-      // 2. Kich hoat hieu ung dien anh: nhun phuoc -> bat pha -> ban toc do anh sang
       carZone.classList.add('launching');
       cardBox.classList.add('dissolving');
+      viewportBox.classList.add('flashing');
+
       localStorage.setItem(CACHE_KEY, 'true');
 
-      // 3. Sau 0.85s xe xe toac khong gian xong thi nhay vao man hinh dat xe
       setTimeout(() => {
         window.location.href = './booking.html';
-      }, 850);
+      }, 760);
     });
   </script>
 </body>
