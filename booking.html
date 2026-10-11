@@ -39,23 +39,23 @@
 
   </div>
 
- <!-- KHOI DONG CAC SCRIPT MODULE -->
+<!-- KHOI DONG CAC SCRIPT MODULE -->
   <script type="module">
     import { initHeaderEvents } from './js/core-events.js';
     import { autoCropImage } from './js/autocrop.js';
     import { initSystemMonitor } from './js/system-monitor.js';
+    import { initAppUpdater } from './js/app-updater.js'; // Gọi File Updater
 
-    // THEM CHU 'async' VAO DAY LA HET LOI!
     window.addEventListener('DOMContentLoaded', async () => {
-      initSystemMonitor(); // Kich hoat giam sat mang
-      
+      initSystemMonitor(); 
+      initAppUpdater(); // Kich hoat tuc thi
+
       const installIcon = document.getElementById('installIcon');
       if (installIcon) {
-        // Ham nay phai co 'async' o tren thi moi xai 'await' duoc
         await autoCropImage(installIcon);
       }
 
-      initHeaderEvents(); // Kich hoat Logo 5 cham + Nut tai app
+      initHeaderEvents(); 
     });
   </script>
 </body>
