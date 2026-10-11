@@ -2,14 +2,51 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Man Hinh Dat Xe</title>
-  <link rel="stylesheet" href="./css/scale.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Thanh Nguyen - Dat Xe</title>
+  
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b1420">
+  
+  <link rel="stylesheet" href="./css/booking.css?v=1.0.2">
 </head>
-<body style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100dvh; text-align:center; padding:20px;">
-  <h1 style="color:var(--gold-primary); font-size:24px; margin-bottom:10px;">CHUYEN CO MAT DAT VF5</h1>
-  <p style="color:var(--text-secondary); margin-bottom:20px;">Xe da tiep dat thanh cong vao he thong dat xe!</p>
-  <button onclick="localStorage.removeItem('thanh_nguyen_intro_seen'); window.location.href='./intro.html';" style="background:transparent; border:1px solid var(--gold-border); color:var(--gold-light); padding:10px 16px; border-radius:6px; cursor:pointer;">
-    Xoa Cache de xem lai Intro
-  </button>
+<body>
+
+  <div class="app-shell">
+    
+    <!-- HEADER MODULE -->
+    <header class="top-nav">
+      <!-- LOGO: Bam 5 lan de xoa cache -->
+      <img src="./assets/logo.png" alt="TN" class="nav-logo" id="secretLogo">
+
+      <!-- NUT TAI APP: Co chua Icon doc lap de Chu tich de thay the -->
+      <!-- Luu y: Ong nem 1 cai anh icon vao assets/download.png de no hien len nhe -->
+      <div class="nav-install-btn" id="pwaInstallBtn">
+        <img src="./assets/download.png" alt="Tai App" class="install-icon-img" id="installIcon">
+        <span class="install-text">TẢI APP</span>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT MODULE (Se code cac chuc nang ban do, dat xe vao day sau) -->
+    <main class="main-content">
+      <h3 style="color: #dfb76c; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">
+        Khu vuc Main Booking
+      </h3>
+      <p style="color: #64748b; font-size: 12px; margin-top: 10px;">
+        San sang tich hop Module Ban do va Tinh gia...
+      </p>
+    </main>
+
+  </div>
+
+  <!-- KHOI DONG CAC SCRIPT MODULE -->
+  <script type="module">
+    import { initHeaderEvents } from './js/core-events.js?v=1.0.2';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Kich hoat cac chuc nang cua Header (Logo + Nut Tai App)
+      initHeaderEvents();
+    });
+  </script>
 </body>
 </html>
