@@ -4,278 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Thanh Nguyen - Dich Vu Xe Rieng Chuyen Nghiep</title>
-  <style>
-    /* ==========================================================================
-       SIEU PHAM INTRO: CHUYEN CO MAT DAT VF5 - LUXURY HYPERCAR EXPERIENCE
-       Thiet ke boi: namutachi-webtachi
-       Bang mau: Den Obsidian #04080e, Vang Champagne #dfb76c, Do VF5 #dc2626
-       ========================================================================== */
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    :root {
-      --bg-void: #04080e;
-      --card-navy: #09131f;
-      --gold-primary: #dfb76c;
-      --gold-light: #fbe8b5;
-      --gold-dark: #a67c2e;
-      --red-vf5: #dc2626;
-      --red-glow: rgba(220, 38, 38, 0.65);
-    }
-
-    body {
-      width: 100vw;
-      height: 100dvh;
-      background: radial-gradient(circle at 50% 50%, #081424 0%, #03060a 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    /* KHUNG SAN KHAU 3D CO GIAN CHONG MOI LOAI MAN HINH */
-    .stage-container {
-      width: 100%;
-      max-width: 460px;
-      padding: 20px;
-      perspective: 1400px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* CHIEU THE VIP TY LE CHUAN 90x54 HOAN MY */
-    .luxury-card {
-      width: 100%;
-      aspect-ratio: 90 / 54;
-      background: linear-gradient(145deg, #0d1b2a 0%, #060e17 100%);
-      border-radius: 16px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5% 5% 4%;
-      border: 1px solid rgba(223, 183, 108, 0.45);
-      box-shadow: 
-        0 25px 60px rgba(0, 0, 0, 0.95),
-        0 0 40px rgba(223, 183, 108, 0.15),
-        inset 0 0 0 1px rgba(251, 232, 181, 0.1);
-      transform-style: preserve-3d;
-      will-change: transform, opacity;
-      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    /* VET SANG KIM LOAI QUET NGANG SANG TRONG */
-    .luxury-card::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -150%;
-      width: 80%;
-      height: 200%;
-      background: linear-gradient(
-        90deg, 
-        transparent, 
-        rgba(251, 232, 181, 0.18), 
-        rgba(223, 183, 108, 0.3), 
-        transparent
-      );
-      transform: rotate(30deg);
-      animation: goldSheen 6s infinite ease-in-out;
-      pointer-events: none;
-    }
-
-    @keyframes goldSheen {
-      0%, 65% { left: -150%; }
-      100% { left: 160%; }
-    }
-
-    /* CUM HEADER: LOGO TN VA CHU THANH NGUYEN KHOA CHAT CAN DOI */
-    .header-lockup {
-      width: 100%;
-      height: 42%;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 3.5%;
-      z-index: 2;
-    }
-
-    .brand-logo-node {
-      height: 82%;
-      width: auto;
-      max-width: 26%;
-      object-fit: contain;
-      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
-      flex-shrink: 0;
-    }
-
-    .brand-text-node {
-      height: 88%;
-      width: auto;
-      max-width: 70%;
-      object-fit: contain;
-      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
-      flex-shrink: 0;
-    }
-
-    /* CUM CON XE VF5 NUA DUOI - TO, RO, KHONG BI CAT CHIM */
-    .car-cockpit-trigger {
-      width: 100%;
-      height: 54%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      cursor: pointer;
-      z-index: 3;
-      transform-origin: center center;
-      will-change: transform, filter, opacity;
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .car-cockpit-trigger:active {
-      transform: scale(0.95);
-    }
-
-    .car-hero-img {
-      height: 100%;
-      width: auto;
-      max-width: 58%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
-      transition: filter 0.3s ease;
-    }
-
-    /* VUNG SANG HUONG NANG DUOI GAM XE */
-    .car-underglow {
-      position: absolute;
-      bottom: 2%;
-      width: 45%;
-      height: 8px;
-      background: radial-gradient(ellipse at center, rgba(223, 183, 108, 0.35) 0%, transparent 75%);
-      pointer-events: none;
-      transition: all 0.3s ease;
-    }
-
-    /* NHAN CHU GOI Y CHAM VAO XE */
-    .touch-invitation {
-      margin-top: 18px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: rgba(223, 183, 108, 0.6);
-      text-transform: uppercase;
-      animation: pulseInvitation 2.2s infinite ease-in-out;
-    }
-
-    @keyframes pulseInvitation {
-      0%, 100% { opacity: 0.35; transform: translateY(0); }
-      50% { opacity: 0.95; color: var(--gold-light); transform: translateY(-2px); }
-    }
-
-    /* ==========================================================================
-       ANIMATION BUNG LUA: XE VINFAST VF5 PHONG THANG VAO MAT NGUOI XEM
-       ========================================================================== */
-
-    .car-warp-drive {
-      animation: rocketToScreen 0.9s cubic-bezier(0.7, 0, 0.82, 0) forwards;
-      pointer-events: none;
-    }
-
-    .card-warp-fade {
-      animation: warpCardDissolve 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes rocketToScreen {
-      0% {
-        transform: scale(1) translateZ(0);
-        filter: drop-shadow(0 0 0 rgba(223, 183, 108, 0));
-        opacity: 1;
-      }
-      25% {
-        /* Nung do khung xe va loa sang den pha */
-        transform: scale(1.18) translateY(-6px);
-        filter: 
-          drop-shadow(0 0 35px var(--gold-light))
-          drop-shadow(0 15px 40px var(--red-glow));
-      }
-      100% {
-        /* Lao vut thang ve phia man hinh, phong to 22 lan dam thung camera */
-        transform: scale(22) translateY(140px) translateZ(1200px);
-        filter: blur(20px) drop-shadow(0 0 100px var(--red-vf5));
-        opacity: 0;
-      }
-    }
-
-    @keyframes warpCardDissolve {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      35% {
-        transform: scale(1.03);
-        opacity: 0.9;
-      }
-      100% {
-        transform: scale(0.88);
-        opacity: 0;
-        filter: blur(14px);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./css/intro.css">
 </head>
 <body>
 
-  <div class="stage-container">
-    <div class="luxury-card" id="cardElement">
+  <div class="viewport-box">
+    <div class="card-master" id="cardBox">
       
-      <!-- CUM HEADER: LOGO TN VA CHU THANH NGUYEN DAT SAT NHAU, TO VA SAC NET -->
-      <div class="header-lockup">
-        <img src="./assets/logo.png" alt="TN Monogram" class="brand-logo-node">
-        <img src="./assets/brand.png" alt="Thanh Nguyen" class="brand-text-node">
+      <div class="header-group">
+        <img src="./assets/logo.png" alt="TN Monogram" class="logo-item" id="imgLogo">
+        <img src="./assets/brand.png" alt="Thanh Nguyen" class="brand-item" id="imgBrand">
       </div>
 
-      <!-- CUM CON XE VF5: TO CHUAN TY LE, CHIEM TRON NUA DUOI -->
-      <div class="car-cockpit-trigger" id="carLauncher" title="Cham vao xe de khoi hanh">
-        <img src="./assets/car.png" alt="VinFast VF5" class="car-hero-img">
-        <div class="car-underglow"></div>
+      <div class="car-zone" id="carZone" title="Cham vao xe de khoi hanh">
+        <img src="./assets/car.png" alt="VinFast VF5" class="car-image" id="imgCar">
+        <div class="under-shadow"></div>
       </div>
 
     </div>
 
-    <!-- DONG CHU GOI Y SANG TRONG O DUOI CHIEU THE -->
-    <div class="touch-invitation">CHAM VAO XE DE KHOI HANH</div>
+    <div class="action-badge" id="actionBadge">
+      <div class="pulsing-dot"></div>
+      <span class="badge-text">CHẠM VÀO XE ĐỂ KHỞI HÀNH</span>
+    </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { autoCropImage } from './js/autocrop.js';
+
     const CACHE_KEY = 'thanh_nguyen_intro_seen';
-    const carLauncher = document.getElementById('carLauncher');
-    const cardElement = document.getElementById('cardElement');
+    if (localStorage.getItem(CACHE_KEY) === 'true') {
+      window.location.replace('./booking.html');
+    }
 
-    // KHI CHAM VAO CON XE VF5
-    carLauncher.addEventListener('click', () => {
-      // Kich hoat ten lua phong xe va tan bien the
-      carLauncher.classList.add('car-warp-drive');
-      cardElement.classList.add('card-warp-fade');
+    window.addEventListener('DOMContentLoaded', async () => {
+      const imgLogo = document.getElementById('imgLogo');
+      const imgBrand = document.getElementById('imgBrand');
+      const imgCar = document.getElementById('imgCar');
+      const cardBox = document.getElementById('cardBox');
+      const actionBadge = document.getElementById('actionBadge');
 
-      // Ghi nho vao cache de lan sau khong phai load lai
+      await Promise.all([
+        autoCropImage(imgLogo),
+        autoCropImage(imgBrand),
+        autoCropImage(imgCar)
+      ]);
+
+      cardBox.classList.add('ready');
+      actionBadge.classList.add('ready');
+    });
+
+    const carZone = document.getElementById('carZone');
+    const cardBox = document.getElementById('cardBox');
+
+    carZone.addEventListener('click', () => {
+      carZone.classList.add('launch-effect');
+      cardBox.classList.add('card-fade-effect');
       localStorage.setItem(CACHE_KEY, 'true');
 
-      // Sau 0.82 giay xe dam thung man hinh thi chuyen vao booking.html
       setTimeout(() => {
         window.location.href = './booking.html';
       }, 820);
