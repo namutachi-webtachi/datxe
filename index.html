@@ -5,63 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Thanh Nguyen - Dich Vu Xe Rieng Chuyen Nghiep</title>
 
-  <!-- 1. KHAI BAO THE CAN CUOC PWA CHO ANDROID & CHROME -->
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0b1420">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Thanh Nguyen">
-
-  <!-- 2. KHAI BAO DAC QUYEN PWA CHO IPHONE SAFARI (CHONG PHEN HOAN TOAN) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Thanh Nguyen">
   <link rel="apple-touch-icon" href="./assets/logo.png">
 
-  <!-- 3. KHOA NEN DEN TUYEN NGAY TU DAU CHONG CHOP MAN HINH TRANG -->
   <style>
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background-color: #060e18;
-      overflow: hidden;
-    }
+    html, body { width: 100%; height: 100%; margin: 0; background-color: #060e18; }
   </style>
 
-  <!-- 4. LOGIC CUONG CHE NAP CACHE & DIEU HUONG CHOP MAT -->
   <script>
-    const APP_VERSION = '1.0.1';
-    const CACHE_KEY = 'thanh_nguyen_intro_seen';
-    const VERSION_KEY = 'thanh_nguyen_app_version';
+    const APP_VERSION = '1.0.1'; // Mỗi lần update tính năng, ông sửa số này thành 1.0.2, 1.0.3...
 
-    // A. CUONG CHE DANG KY VA CAP NHAT SERVICE WORKER NGAY TU CUA NGO
+    // 1. DĂNG KÝ VÀ BẮT SỰ KIỆN UPDATE TỪ SERVICE WORKER
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((registration) => {
-            // Ep buoc kiem tra ban cap nhat moi nhat tu may chu
-            registration.update();
-          })
-          .catch(() => {});
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          // Bắt sự kiện: Cứ hễ có file sw.js mới trên GitHub là kích hoạt ngay
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // Có bản update mới -> Ép trình duyệt tự động F5 ngay lập tức
+                console.log('Phat hien ban cap nhat, tu dong reload!');
+                window.location.reload();
+              }
+            };
+          };
+        });
+      });
+
+      // Lắng nghe sự kiện Service Worker chiếm quyền điều khiển
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
       });
     }
 
-    // B. XU LY THAM SO CUONG CHE RESET (?reset=1) HOAC CAP NHAT PHIEN BAN
-    const urlParams = new URLSearchParams(window.location.search);
+    // 2. LOGIC RẼ NHÁNH VÀ CHỐNG KẸT CACHE URL
+    const VERSION_KEY = 'tn_version';
+    const CACHE_KEY = 'thanh_nguyen_intro_seen';
+    
     const savedVersion = localStorage.getItem(VERSION_KEY);
+    const urlParams = new URLSearchParams(window.location.search);
 
-    if (urlParams.get('reset') === '1' || savedVersion !== APP_VERSION) {
+    // Kích hoạt khi có version mới HOẶC bị ép reset
+    if (savedVersion !== APP_VERSION || urlParams.get('reset') === '1') {
       localStorage.clear();
       localStorage.setItem(VERSION_KEY, APP_VERSION);
-      // Chuyen huong ve Intro ban moi
       window.location.replace('./intro.html?v=' + APP_VERSION);
     } 
-    // C. KHACH QUEN DA XEM INTRO -> VAO THANG BOOKING
+    // Nếu khách quen
     else if (localStorage.getItem(CACHE_KEY) === 'true') {
       window.location.replace('./booking.html?v=' + APP_VERSION);
     } 
-    // D. KHACH MOI LAN DAU QUET MA -> VAO INTRO
+    // Nếu khách lạ
     else {
       window.location.replace('./intro.html?v=' + APP_VERSION);
     }
