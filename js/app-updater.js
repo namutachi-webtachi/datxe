@@ -1,64 +1,52 @@
 // ==========================================================================
-// APP-UPDATER.JS - HE THONG EP CAP NHAT TICH HOP VAO NUT HEADER
+// APP-UPDATER.JS - LANG NGHE TONG DAI BROADCAST CHANNEL
 // ==========================================================================
 
 export function initAppUpdater() {
-  if (!('serviceWorker' in navigator)) return;
+  if (!('BroadcastChannel' in window)) return;
 
-  let newWorker;
+  // Mo kenh lang nghe cung ten voi Service Worker
+  const updateChannel = new BroadcastChannel('pwa_update_channel');
+  let isUpdateShowing = false;
 
-  // Dang ky va lang nghe khi co file code moi tren GitHub
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
-    reg.addEventListener('updatefound', () => {
-      newWorker = reg.installing;
-      
-      newWorker.addEventListener('statechange', () => {
-        // Neu co ban moi tai ve xong va dang nam cho (waiting)
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          
-          console.log('Phat hien ban moi! Dang bien hinh nut Tai App thanh nut Cap Nhat...');
-          
-          const installBtn = document.getElementById('pwaInstallBtn');
-          if (installBtn) {
-            // 1. Ep nut hien thi tro lai (ke ca khi khach da cai app va nut bi an)
-            installBtn.style.display = 'flex';
-            
-            // 2. Doi mau nut sang Do VF5 de gay chu y
-            installBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-            installBtn.style.borderColor = '#ef4444';
-            
-            // 3. Doi chu thanh CAP NHAT
-            const textSpan = installBtn.querySelector('.install-text');
-            if (textSpan) {
-              textSpan.innerText = 'CẬP NHẬT';
-              textSpan.style.color = '#ffffff';
-            }
-
-            // 4. Reset toan bo su kien click cu (bang cach clone node) de ep chay lenh Update
-            const newBtn = installBtn.cloneNode(true);
-            installBtn.parentNode.replaceChild(newBtn, installBtn);
-
-            // 5. Gan lenh moi: Bam vao la F5 update app
-            newBtn.addEventListener('click', () => {
-              if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-              newBtn.querySelector('.install-text').innerText = 'ĐANG TẢI...';
-              
-              if (newWorker) {
-                newWorker.postMessage('SKIP_WAITING');
-              }
-            });
-          }
-        }
-      });
-    });
-  });
-
-  // Lang nghe khi Service Worker moi da len nam quyen -> Tu dong F5 muot ma
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      refreshing = true;
-      window.location.reload();
+  updateChannel.onmessage = (event) => {
+    if (event.data.type === 'UPDATE_AVAILABLE' && !isUpdateShowing) {
+      isUpdateShowing = true;
+      console.log('Nhan tin hieu tu SW: Co code moi!');
+      showUpdateButton();
     }
+  };
+}
+
+function showUpdateButton() {
+  const installBtn = document.getElementById('pwaInstallBtn');
+  if (!installBtn) return;
+
+  // 1. Ep hien nut len, doi mau Do VF5 canh bao
+  installBtn.style.display = 'flex';
+  installBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+  installBtn.style.borderColor = '#ef4444';
+  installBtn.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.4)';
+  
+  // 2. Doi chu thanh CAP NHAT
+  const textSpan = installBtn.querySelector('.install-text');
+  if (textSpan) {
+    textSpan.innerText = 'CẬP NHẬT';
+    textSpan.style.color = '#ffffff';
+  }
+
+  // 3. Reset su kien bang cach nhan ban nut
+  const newBtn = installBtn.cloneNode(true);
+  installBtn.parentNode.replaceChild(newBtn, installBtn);
+
+  // 4. Khi khach bam vao: F5 ngay lap tuc de an ban moi nhat tu Cache
+  newBtn.addEventListener('click', () => {
+    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+    newBtn.querySelector('.install-text').innerText = 'ĐANG TẢI...';
+    
+    // Khong can cho doi, vi file moi da nam san trong Cache roi, F5 phat la len luon!
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 150);
   });
 }
