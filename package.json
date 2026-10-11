@@ -1,0 +1,8 @@
+{
+  "name": "datxe",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "node update.js && git add . && git commit -m \"auto-update-version\" && git push"
+  }
+}
