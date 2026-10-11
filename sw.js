@@ -1,17 +1,16 @@
-// MOI LAN SUA CODE, ONG CHI CAN SUA SO O DONG NAY LA XONG! (VD: v1.0.6 -> v1.0.7)
-const CACHE_NAME = 'thanh-nguyen-vf5-v1.0.7';
+const CACHE_NAME = 'thanh-nguyen-vf5-app-cache';
 
 self.addEventListener('install', (event) => {
-  // KHONG dung skipWaiting() tu dong nua, de app cu chay den khi khach bam nut!
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
@@ -19,11 +18,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Chien thuat Network First
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  if (!event.request.url.startsWith(self.location.origin)) return;
 
+  // TUYET DOI KHONG CACHE FILE version.json
+  if (event.request.url.includes('version.json')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Chien thuat Network First cho moi thu khac
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -39,7 +43,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// LANG NGHE LENH TU NUT "CAP NHAT" DE TIEU DIET BAN CU
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
