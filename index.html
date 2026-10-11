@@ -4,13 +4,28 @@
   <meta charset="UTF-8">
   <title>Dieu Huong He Thong</title>
   <script>
+    // MA PHIEN BAN HE THONG (MOI LAN UPDATE WEB, ONG CHI CAN DOI SO NAY)
+    const APP_VERSION = '1.0.1';
+
+    const savedVersion = localStorage.getItem('thanh_nguyen_app_version');
     const hasSeenIntro = localStorage.getItem('thanh_nguyen_intro_seen');
-    if (hasSeenIntro === 'true') {
-      window.location.replace('./booking.html');
-    } else {
-      window.location.replace('./intro.html');
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 1. CUONG CHE XOA CACHE QUA LINK ?reset=1 HOAC KHI HE THONG NANG CAP PHIEN BAN MOI
+    if (urlParams.get('reset') === '1' || savedVersion !== APP_VERSION) {
+      localStorage.clear();
+      localStorage.setItem('thanh_nguyen_app_version', APP_VERSION);
+      window.location.replace('./intro.html?v=' + APP_VERSION);
+    } 
+    // 2. KHACH CU DA XEM VA DANG O PHIEN BAN CHUAN -> VAO THANG BOOKING
+    else if (hasSeenIntro === 'true') {
+      window.location.replace('./booking.html?v=' + APP_VERSION);
+    } 
+    // 3. KHACH MOI -> VAO INTRO
+    else {
+      window.location.replace('./intro.html?v=' + APP_VERSION);
     }
   </script>
 </head>
-<body style="background:#060b11;"></body>
+<body style="background:#060e18;"></body>
 </html>
