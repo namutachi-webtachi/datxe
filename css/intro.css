@@ -6,6 +6,15 @@
   user-select: none;
 }
 
+:root {
+  --bg-deep: #060e18;
+  --gold-primary: #dfb76c;
+  --gold-light: #fbe8b5;
+  --gold-dark: #a67c2e;
+  --red-vf5: #dc2626;
+  --red-light: #ef4444;
+}
+
 body {
   width: 100vw;
   height: 100dvh;
@@ -26,8 +35,10 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
+/* THẺ VIP ĐẲNG CẤP TỶ LỆ 90x54 */
 .card-master {
   width: 100%;
   aspect-ratio: 90 / 54;
@@ -46,7 +57,7 @@ body {
     0 0 35px rgba(223, 183, 108, 0.18),
     inset 0 0 0 1px rgba(251, 232, 181, 0.15);
   transform-style: preserve-3d;
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
   opacity: 0;
   transform: scale(0.97);
   transition: opacity 0.4s ease, transform 0.4s ease;
@@ -57,6 +68,7 @@ body {
   transform: scale(1);
 }
 
+/* VỆT TRÁNG GƯƠNG QUÉT CHÉO */
 .card-master::before {
   content: "";
   position: absolute;
@@ -81,6 +93,7 @@ body {
   100% { left: 160%; }
 }
 
+/* CỤM HEADER LOGO VÀ CHỮ */
 .header-group {
   width: 100%;
   height: 38%;
@@ -110,6 +123,7 @@ body {
   flex-shrink: 0;
 }
 
+/* KHU VỰC CON XE VF5 */
 .car-zone {
   width: 100%;
   height: 52%;
@@ -122,11 +136,6 @@ body {
   z-index: 3;
   transform-origin: center center;
   will-change: transform, filter, opacity;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.car-zone:active {
-  transform: scale(0.95);
 }
 
 .car-image {
@@ -137,6 +146,8 @@ body {
   display: block;
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
   transition: filter 0.3s ease;
+  position: relative;
+  z-index: 4;
 }
 
 .under-shadow {
@@ -146,8 +157,10 @@ body {
   height: 6px;
   background: radial-gradient(ellipse at center, rgba(223, 183, 108, 0.45) 0%, transparent 70%);
   pointer-events: none;
+  transition: all 0.2s ease;
 }
 
+/* NÚT BẤM TIẾNG VIỆT CÓ DẤU */
 .action-badge {
   margin-top: 22px;
   display: inline-flex;
@@ -195,46 +208,106 @@ body {
   50% { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(223, 183, 108, 0.2); }
 }
 
-.launch-effect {
-  animation: driveOutScreen 0.85s cubic-bezier(0.7, 0, 0.82, 0) forwards;
+/* ==========================================================================
+   HƯỚNG 1 ĐỈNH CAO: NHÚN PHUỘC, RỌI ĐÈN PHA VÀ BẮN TỐC ĐỘ ÁNH SÁNG
+   ========================================================================== */
+
+/* 1. LOP PHU CHUM SANG DEN PHA ROI THANG VAO MAT (OPTICAL FLARE) */
+.car-zone::before {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(251, 232, 181, 0.8) 35%, rgba(220, 38, 38, 0.4) 65%, transparent 80%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 2. LOP PHU VET SANG DUOI XE DO CRIMSON VF5 */
+.car-zone::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 10px;
+  background: linear-gradient(90deg, transparent, var(--red-vf5), #ffffff, var(--red-vf5), transparent);
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* KICH HOAT CHUYEN DONG DIEN ANH 3 GIAI DOAN */
+.car-zone.launching {
+  animation: hypercarLaunch 0.88s cubic-bezier(0.85, 0, 0.15, 1) forwards;
   pointer-events: none;
 }
 
-.card-fade-effect {
-  animation: cardDissolve 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.car-zone.launching::before {
+  animation: headlightFlare 0.88s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes driveOutScreen {
+.car-zone.launching::after {
+  animation: crimsonTrails 0.88s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+.card-master.dissolving {
+  animation: cinematicCardBlur 0.88s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* NHIP 1 (0-18%): NHUN PHUOC LUI LAI | NHIP 2 (18-45%): BAT DEN PHA | NHIP 3 (45-100%): PHONG XANH */
+@keyframes hypercarLaunch {
   0% {
-    transform: scale(1) translateZ(0);
-    filter: drop-shadow(0 0 0 rgba(223, 183, 108, 0));
-    opacity: 1;
+    transform: scale(1) translateY(0) translateZ(0);
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
   }
-  25% {
-    transform: scale(1.18) translateY(-4px);
+  16% {
+    /* Nhun phuoc xe dien lui lai 3px lay da mo-men xoan */
+    transform: scale(0.97) translateY(4px) translateZ(-10px);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+  }
+  38% {
+    /* Bat den pha, loi sang dai LED canh chim */
+    transform: scale(1.15) translateY(-6px) translateZ(30px);
     filter: 
-      drop-shadow(0 0 35px #fbe8b5)
-      drop-shadow(0 15px 40px rgba(220, 38, 38, 0.6));
+      drop-shadow(0 0 25px #ffffff) 
+      drop-shadow(0 0 50px var(--gold-light))
+      drop-shadow(0 15px 35px var(--red-vf5));
   }
   100% {
-    transform: scale(22) translateY(140px) translateZ(1200px);
-    filter: blur(18px) drop-shadow(0 0 100px #dc2626);
+    /* Ban thang vao mat nguoi xem xé toac khong gian */
+    transform: scale(28) translateY(160px) translateZ(1400px);
+    filter: blur(24px) drop-shadow(0 0 120px var(--red-vf5));
     opacity: 0;
   }
 }
 
-@keyframes cardDissolve {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  35% {
-    transform: scale(1.02);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(0.88);
-    opacity: 0;
-    filter: blur(14px);
-  }
+/* CHUM SANG DEN PHA ROI MAN HINH */
+@keyframes headlightFlare {
+  0% { width: 0; height: 0; opacity: 0; }
+  16% { width: 40px; height: 40px; opacity: 0.3; }
+  38% { width: 380px; height: 380px; opacity: 0.95; filter: blur(6px); }
+  100% { width: 1200px; height: 1200px; opacity: 0; filter: blur(30px); }
+}
+
+/* VET DUOI ANH SANG DO THE THAO VF5 */
+@keyframes crimsonTrails {
+  0% { width: 0; opacity: 0; }
+  25% { width: 60%; opacity: 0.5; }
+  45% { width: 140%; height: 30px; opacity: 1; filter: drop-shadow(0 0 25px var(--red-vf5)); }
+  100% { width: 300%; height: 80px; opacity: 0; filter: blur(20px); }
+}
+
+/* THE PHIA SAU MO NHOE CHUYEN CANH */
+@keyframes cinematicCardBlur {
+  0% { transform: scale(1); opacity: 1; filter: blur(0); }
+  25% { transform: scale(0.99); opacity: 0.95; }
+  50% { transform: scale(1.02); opacity: 0.8; filter: blur(6px); }
+  100% { transform: scale(0.85); opacity: 0; filter: blur(20px); }
 }
