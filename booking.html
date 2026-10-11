@@ -41,10 +41,19 @@
 
   <!-- KHOI DONG CAC SCRIPT MODULE -->
   <script type="module">
-    import { initHeaderEvents } from './js/core-events.js?v=1.0.2';
+    import { initHeaderEvents } from './js/core-events.js?v=1.0.3';
+    import { autoCropImage } from './js/autocrop.js?v=1.0.3';
 
-    window.addEventListener('DOMContentLoaded', () => {
-      // Kich hoat cac chuc nang cua Header (Logo + Nut Tai App)
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Tim cai icon Tai App
+      const installIcon = document.getElementById('installIcon');
+      
+      // 2. Thuat toan tu dong got sach vien rac trong suot cua Icon
+      if (installIcon) {
+        await autoCropImage(installIcon);
+      }
+
+      // 3. Kich hoat cac chuc nang cua Header (Logo 5 cham + Nut Tai App)
       initHeaderEvents();
     });
   </script>
