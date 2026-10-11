@@ -2,7 +2,7 @@
 // SERVICE WORKER 2026 - MANG LUOI NETWORK-FIRST VA BYPASS GITHUB CACHE
 // ==========================================================================
 
-const CACHE_NAME = 'thanh-nguyen-vf5-v1791741617';
+const CACHE_NAME = 'thanh-nguyen-vf5-v1791741731';
 
 self.addEventListener('install', (event) => {
   // KHONG dung self.skipWaiting() de cho App hien nut CAP NHAT
