@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dieu Huong He Thong</title>
+  <script>
+    const hasSeenIntro = localStorage.getItem('thanh_nguyen_intro_seen');
+    if (hasSeenIntro === 'true') {
+      window.location.replace('./booking.html');
+    } else {
+      window.location.replace('./intro.html');
+    }
+  </script>
+</head>
+<body style="background:#060b11;"></body>
+</html>
