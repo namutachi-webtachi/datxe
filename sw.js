@@ -1,52 +1,55 @@
-// MOI LAN NANG CAP GIAO DIEN, ONG CHI CAN DOI SO O DAY (VD: v1.0.2 -> v1.0.3)
-const CACHE_NAME = 'thanh-nguyen-vf5-v1.0.2';
+// ==========================================================================
+// SERVICE WORKER 2026: STALE-WHILE-REVALIDATE + ETAG BROADCAST
+// Khong can doi ten Cache, khong can quan ly Version bang tay nua!
+// ==========================================================================
 
-// 1. KHI CÀI ĐẶT: Ep ban moi chiem quyen ngay lap tuc (Khong bat khach cho tat app)
+const CACHE_NAME = 'thanh-nguyen-vf5-dynamic-cache';
+// Kenh phat song doc lap de SW noi chuyen voi Giao dien Web
+const updateChannel = new BroadcastChannel('pwa_update_channel');
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 2. KHI KICH HOAT: Don rac cua tat ca cac phien ban cu
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[Service Worker] Xoa cache giao dien cu:', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+  event.waitUntil(self.clients.claim());
 });
 
-// 3. CHIEN THUAT: NETWORK-FIRST (Uu tien lay tren GitHub truoc, mat mang moi dung Cache)
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  // Chi ap dung cho file cung ten mien (HTML, CSS, JS, IMG)
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Lay tren mang thanh cong -> Luu luon ban moi vao Cache
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // 1. Tim xem trong may da co file nay chua
+      const cachedResponse = await cache.match(event.request);
+      
+      // 2. Lang lang len GitHub tai file moi ve o che do nen
+      const fetchPromise = fetch(event.request).then(async (networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          
+          // Neu trong may DA CO file nay, ta mang ra do ETag voi file tren GitHub
+          if (cachedResponse) {
+            const oldEtag = cachedResponse.headers.get('ETag');
+            const newEtag = networkResponse.headers.get('ETag');
+            
+            // Neu ETag khac nhau -> Code da bi thay doi! Phat tin hieu cho Web!
+            if (oldEtag && newEtag && oldEtag !== newEtag) {
+              console.log('[SW] Phat hien file thay doi:', event.request.url);
+              updateChannel.postMessage({ type: 'UPDATE_AVAILABLE' });
+            }
+          }
+          
+          // Luu de ban moi nhat vao Cache
+          cache.put(event.request, networkResponse.clone());
         }
         return networkResponse;
-      })
-      .catch(() => {
-        // Mat mang -> Loi hang trong Cache ra xai tam
-        return caches.match(event.request);
-      })
+      }).catch(() => cachedResponse);
+
+      // 3. CHIEN THUAT SWR: Tra ngay file trong Cache cho khach dung (neu co), 
+      // con viec tai file tu GitHub cu am tham chay ngam, khong lam khach phai cho.
+      return cachedResponse || fetchPromise;
+    })
   );
-});
-// LANG NGHE LENH TU GIAO DIEN DE EP BUOC CAP NHAT NGAY LAP TUC
-self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
