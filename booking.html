@@ -43,8 +43,10 @@
   <script type="module">
     import { initHeaderEvents } from './js/core-events.js?v=1.0.3';
     import { autoCropImage } from './js/autocrop.js?v=1.0.3';
+    import { initSystemMonitor } from './js/system-monitor.js';
 
-    window.addEventListener('DOMContentLoaded', async () => {
+   window.addEventListener('DOMContentLoaded', () => {
+      initSystemMonitor(); // Kich hoat giam sat
       // 1. Tim cai icon Tai App
       const installIcon = document.getElementById('installIcon');
       
