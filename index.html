@@ -1,53 +1,89 @@
-<script>
-  const APP_VERSION = '1.0.2';
-  const VERSION_KEY = 'thanh_nguyen_app_version';
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Thanh Nguyen - Dich Vu Xe Rieng Chuyen Nghiep</title>
 
-  // 1. DANG KY SERVICE WORKER
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').then((reg) => {
-        
-        // Lang nghe khi co ban cap nhat moi tai ve xong
-        reg.onupdatefound = () => {
-          const installingWorker = reg.installing;
-          installingWorker.onstatechange = () => {
-            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('Phat hien code moi tu GitHub. Dang update...');
-              window.location.reload();
-            }
-          };
-        };
-      });
-    });
-  }
-
-  // 2. THUAT TOAN "TINH GIAC": EP KIEM TRA CAP NHAT MOI KHI KHACH MO LAI APP
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      // Khi app duoc mo len tu che do nen
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((reg) => {
-          // Lenh update() nay ep trinh duyet phai hoi server xem co file sw.js moi khong
-          // No bo qua cache giong nhu y tuong "so ngau nhien" cua Chu tich
-          reg.update();
-        });
-      }
-    }
-  });
-
-  // 3. LOGIC RE NHANH DIEU HUONG
-  const savedVersion = localStorage.getItem(VERSION_KEY);
-  const CACHE_KEY = 'thanh_nguyen_intro_seen';
+  <!-- KHAI BAO THE CAN CUOC PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b1420">
+  <meta name="mobile-web-app-capable" content="yes">
   
-  if (savedVersion !== APP_VERSION) {
-    // Co phien ban moi -> Ghi nhan version moi va vao Intro
-    localStorage.setItem(VERSION_KEY, APP_VERSION);
-    window.location.replace('./intro.html?v=' + APP_VERSION);
-  } 
-  else if (localStorage.getItem(CACHE_KEY) === 'true') {
-    window.location.replace('./booking.html?v=' + APP_VERSION);
-  } 
-  else {
-    window.location.replace('./intro.html?v=' + APP_VERSION);
-  }
-</script>
+  <!-- HO TRO RIENG CHO IPHONE SAFARI -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Thanh Nguyen">
+  <link rel="apple-touch-icon" href="./assets/logo.png">
+
+  <!-- KHOA NEN DEN TUYEN CHONG CHOP MAN HINH -->
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #060e18;
+      overflow: hidden;
+    }
+  </style>
+
+  <!-- BO NAO DIEU HUONG VA QUAN LY CACHE -->
+  <script>
+    const APP_VERSION = '1.0.2';
+    const VERSION_KEY = 'thanh_nguyen_app_version';
+    const CACHE_KEY = 'thanh_nguyen_intro_seen';
+
+    // 1. DANG KY SERVICE WORKER & XU LY AUTO-RELOAD
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          
+          // Lang nghe khi co ban cap nhat moi tai ve xong
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('Phat hien code moi tu GitHub. Dang tu dong reload...');
+                window.location.reload();
+              }
+            };
+          };
+
+          // Thuat toan Tinh Giac: Ep kiem tra update khi khach mo lai App
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              reg.update();
+            }
+          });
+
+        }).catch((error) => {
+          console.error('Loi dang ky Service Worker:', error);
+        });
+      });
+    }
+
+    // 2. LOGIC RE NHANH DIEU HUONG
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Neu khach vao bang link reset hoac he thong co ban update moi
+    if (savedVersion !== APP_VERSION || urlParams.get('reset') === '1') {
+      localStorage.clear();
+      localStorage.setItem(VERSION_KEY, APP_VERSION);
+      // Xoa tham so reset khoi URL de tranh lap
+      window.history.replaceState({}, document.title, window.location.pathname);
+      window.location.replace('./intro.html?v=' + APP_VERSION);
+    } 
+    // Khach quen da xem Intro -> Vao thang Booking
+    else if (localStorage.getItem(CACHE_KEY) === 'true') {
+      window.location.replace('./booking.html?v=' + APP_VERSION);
+    } 
+    // Khach moi vao lan dau -> Hien Intro
+    else {
+      window.location.replace('./intro.html?v=' + APP_VERSION);
+    }
+  </script>
+</head>
+<body></body>
+</html>
