@@ -4,7 +4,7 @@
 // ==========================================================================
 
 export const APP_CONFIG = {
-  VERSION: 'alpha-1',
+  VERSION: 'alpha-2',
   LAST_UPDATED: '12/10/2026',
   ENVIRONMENT: 'production'
 };
