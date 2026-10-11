@@ -65,15 +65,16 @@ body {
 
 /* Nut Tai App - Giau di neu da cai dat */
 .nav-install-btn {
-  display: flex; /* Se bi doi thanh 'none' bang JS neu da cai app */
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px; /* Tang khoang cach giua icon va chu */
   background: linear-gradient(135deg, rgba(223, 183, 108, 0.15) 0%, rgba(166, 124, 46, 0.05) 100%);
   border: 1px solid rgba(223, 183, 108, 0.4);
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 10px 18px; /* Cho nut to va dai hon */
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Them do bong cho nut */
 }
 
 .nav-install-btn:active {
@@ -83,16 +84,17 @@ body {
 
 /* Icon rieng de Chu tich de dang thay the anh */
 .install-icon-img {
-  width: 18px;
-  height: 18px;
+  width: 32px;  /* TANG KICH THUOC TU 18px LEN 32px */
+  height: 32px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
 .install-text {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 15px; /* Tang size chu de can doi voi icon 32px */
+  font-weight: 800;
   color: #dfb76c;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 /* ==========================================================================
