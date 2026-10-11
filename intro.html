@@ -54,24 +54,27 @@
       actionBadge.classList.add('ready');
     });
 
-   const carZone = document.getElementById('carZone');
+    const carZone = document.getElementById('carZone');
     const cardBox = document.getElementById('cardBox');
-    const viewportBox = document.querySelector('.viewport-box');
+    const actionBadge = document.getElementById('actionBadge');
 
     carZone.addEventListener('click', () => {
       if (navigator.vibrate) {
-        navigator.vibrate([30, 40, 80]);
+        navigator.vibrate(30);
       }
 
-      carZone.classList.add('launching');
-      cardBox.classList.add('dissolving');
-      viewportBox.classList.add('flashing');
+      // 1. Nut huong dan bien mat ngay lap tuc trong 0.12s
+      actionBadge.classList.add('hiding');
 
+      // 2. Xe va The tan bien cung luc trong 0.38s
+      carZone.classList.add('launching');
+      cardBox.classList.add('fading');
       localStorage.setItem(CACHE_KEY, 'true');
 
+      // 3. Chuyen trang chuan xac ngay tai moc 0.35s de triet tieu do tre
       setTimeout(() => {
         window.location.href = './booking.html';
-      }, 760);
+      }, 350);
     });
   </script>
 </body>
