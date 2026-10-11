@@ -1,7 +1,11 @@
-const CACHE_NAME = 'thanh-nguyen-vf5-app-cache';
+// ==========================================================================
+// SERVICE WORKER 2026 - MANG LUOI NETWORK-FIRST VA BYPASS GITHUB CACHE
+// ==========================================================================
+
+const CACHE_NAME = 'thanh-nguyen-vf5-v1.0.8';
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  // KHONG dung self.skipWaiting() de cho App hien nut CAP NHAT
 });
 
 self.addEventListener('activate', (event) => {
@@ -20,16 +24,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
-  // TUYET DOI KHONG CACHE FILE version.json
+  // 1. TUYET DOI KHONG CACHE FILE version.json
   if (event.request.url.includes('version.json')) {
-    event.respondWith(fetch(event.request));
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
     return;
   }
 
-  // Chien thuat Network First cho moi thu khac
+  // 2. Chien thuat Network First + Ép GitHub tra file moi ({ cache: 'no-cache' })
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-cache' })
       .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -43,6 +48,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// LANG NGHE LENH TU GIAO DIEN KHI KHACH BAM NUT CAP NHAT
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
