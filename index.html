@@ -2,30 +2,70 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Dieu Huong He Thong</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Thanh Nguyen - Dich Vu Xe Rieng Chuyen Nghiep</title>
+
+  <!-- 1. KHAI BAO THE CAN CUOC PWA CHO ANDROID & CHROME -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b1420">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Thanh Nguyen">
+
+  <!-- 2. KHAI BAO DAC QUYEN PWA CHO IPHONE SAFARI (CHONG PHEN HOAN TOAN) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Thanh Nguyen">
+  <link rel="apple-touch-icon" href="./assets/logo.png">
+
+  <!-- 3. KHOA NEN DEN TUYEN NGAY TU DAU CHONG CHOP MAN HINH TRANG -->
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #060e18;
+      overflow: hidden;
+    }
+  </style>
+
+  <!-- 4. LOGIC CUONG CHE NAP CACHE & DIEU HUONG CHOP MAT -->
   <script>
-    // MA PHIEN BAN HE THONG (MOI LAN UPDATE WEB, ONG CHI CAN DOI SO NAY)
     const APP_VERSION = '1.0.1';
+    const CACHE_KEY = 'thanh_nguyen_intro_seen';
+    const VERSION_KEY = 'thanh_nguyen_app_version';
 
-    const savedVersion = localStorage.getItem('thanh_nguyen_app_version');
-    const hasSeenIntro = localStorage.getItem('thanh_nguyen_intro_seen');
+    // A. CUONG CHE DANG KY VA CAP NHAT SERVICE WORKER NGAY TU CUA NGO
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((registration) => {
+            // Ep buoc kiem tra ban cap nhat moi nhat tu may chu
+            registration.update();
+          })
+          .catch(() => {});
+      });
+    }
+
+    // B. XU LY THAM SO CUONG CHE RESET (?reset=1) HOAC CAP NHAT PHIEN BAN
     const urlParams = new URLSearchParams(window.location.search);
+    const savedVersion = localStorage.getItem(VERSION_KEY);
 
-    // 1. CUONG CHE XOA CACHE QUA LINK ?reset=1 HOAC KHI HE THONG NANG CAP PHIEN BAN MOI
     if (urlParams.get('reset') === '1' || savedVersion !== APP_VERSION) {
       localStorage.clear();
-      localStorage.setItem('thanh_nguyen_app_version', APP_VERSION);
+      localStorage.setItem(VERSION_KEY, APP_VERSION);
+      // Chuyen huong ve Intro ban moi
       window.location.replace('./intro.html?v=' + APP_VERSION);
     } 
-    // 2. KHACH CU DA XEM VA DANG O PHIEN BAN CHUAN -> VAO THANG BOOKING
-    else if (hasSeenIntro === 'true') {
+    // C. KHACH QUEN DA XEM INTRO -> VAO THANG BOOKING
+    else if (localStorage.getItem(CACHE_KEY) === 'true') {
       window.location.replace('./booking.html?v=' + APP_VERSION);
     } 
-    // 3. KHACH MOI -> VAO INTRO
+    // D. KHACH MOI LAN DAU QUET MA -> VAO INTRO
     else {
       window.location.replace('./intro.html?v=' + APP_VERSION);
     }
   </script>
 </head>
-<body style="background:#060e18;"></body>
+<body></body>
 </html>
