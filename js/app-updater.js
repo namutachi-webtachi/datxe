@@ -77,36 +77,58 @@ function trackWorkerState(worker) {
   });
 }
 
-// KICH HOAT NUT CAP NHAT DO VF5 VA XU LY CLICK BE GAY CACHE
+// KICH HOAT NUT CAP NHAT TINH TE - SANG CHANG - NHO GON
 function triggerUpdateUI(waitingWorker, newVersion = null) {
   const installBtn = document.getElementById('pwaInstallBtn');
-  // Chong hien thi 2 lan neu ca SW lan Version.json cung goi
   if (!installBtn || installBtn.dataset.updating === 'true') return;
   installBtn.dataset.updating = 'true'; 
 
-  installBtn.style.display = 'flex';
-  installBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-  installBtn.style.borderColor = '#ef4444';
-  installBtn.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.5)';
+  // 1. Dinh dang lai thanh mot chiec the "Pill" nho gon, kinh mo the thao
+  installBtn.style.cssText = `
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(220, 38, 38, 0.12); /* Nen do trong suot 12% */
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    padding: 6px 12px;
+    border-radius: 99px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+  `;
 
-  const textSpan = installBtn.querySelector('.install-text');
-  if (textSpan) {
-    textSpan.innerText = 'CẬP NHẬT';
-    textSpan.style.color = '#ffffff';
+  // 2. Tao hieu ung dau cham do nhap nhay + Chu nho gon
+  installBtn.innerHTML = `
+    <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #ef4444; box-shadow: 0 0 8px #ef4444; animation: updateBlink 1s infinite alternate;"></div>
+    <span style="font-size: 11px; font-weight: 700; color: #f8fafc; letter-spacing: 0.5px; margin-top: 1px;">CẬP NHẬT</span>
+  `;
+
+  // 3. Bom Keyframe CSS nhap nhay vao thang HTML (Neu chua co)
+  if (!document.getElementById('updateKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'updateKeyframes';
+    style.innerHTML = `@keyframes updateBlink { from { opacity: 0.4; transform: scale(0.8); } to { opacity: 1; transform: scale(1.3); } }`;
+    document.head.appendChild(style);
   }
 
-  const iconImg = installBtn.querySelector('.install-icon-img');
-  if (iconImg) iconImg.style.display = 'none';
-
+  // 4. Clone de xoa sach su kien cu
   const newBtn = installBtn.cloneNode(true);
   installBtn.parentNode.replaceChild(newBtn, installBtn);
 
-  // KHI KHACH BAM NUT: DIET CACHE & CHUYEN TRANG TIMESTAMP
+  // 5. Hieu ung khi khach bam vao: Doi sang mau Vang Kim bao hieu dang xu ly
   newBtn.addEventListener('click', async () => {
-    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-    newBtn.querySelector('.install-text').innerText = 'ĐANG TẢI...';
+    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+    
+    // Doi style sang Dang tai (Mau Vang)
+    newBtn.style.background = 'rgba(223, 183, 108, 0.15)';
+    newBtn.style.borderColor = 'rgba(223, 183, 108, 0.4)';
+    newBtn.innerHTML = `
+      <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #dfb76c; box-shadow: 0 0 8px #dfb76c;"></div>
+      <span style="font-size: 11px; font-weight: 700; color: #dfb76c; letter-spacing: 0.5px; margin-top: 1px;">ĐANG TẢI...</span>
+    `;
 
-    // A. Quet sach toan bo CacheStorage cu
+    // A. Quet sach toan bo CacheStorage cu trong may
     if ('caches' in window) {
       try {
         const keys = await caches.keys();
@@ -124,9 +146,9 @@ function triggerUpdateUI(waitingWorker, newVersion = null) {
       waitingWorker.postMessage('SKIP_WAITING');
     }
 
-    // D. CHUYEN TRANG EP BUOC VOI TIMESTAMP DE TRINH DUYET KHONG DUNG URL CU
+    // D. Chuyen trang sau 0.3 giay
     setTimeout(() => {
       window.location.href = window.location.pathname + '?_up=' + Date.now();
-    }, 400);
+    }, 300);
   });
 }
