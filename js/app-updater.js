@@ -77,17 +77,16 @@ function trackWorkerState(worker) {
   });
 }
 
-// KICH HOAT NUT CAP NHAT ĐỒNG BỘ VỚI ICON TẢI APP
+// KICH HOAT NUT CAP NHAT ĐỒNG BỘ 1:1 VỚI NÚT TẢI APP
 function triggerUpdateUI(waitingWorker, newVersion = null) {
   const installBtn = document.getElementById('pwaInstallBtn');
   if (!installBtn || installBtn.dataset.updating === 'true') return;
   installBtn.dataset.updating = 'true'; 
 
-  // 1. Giu nguyen form nut, chi doi nen sang tone Do Canh Bao (Trong suot sang sang)
+  // 1. Giu nguyen form nut, chi doi nen sang tone Do Canh Bao
   installBtn.style.display = 'flex';
   installBtn.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(153, 27, 27, 0.05) 100%)';
   installBtn.style.borderColor = 'rgba(220, 38, 38, 0.5)';
-  installBtn.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.3)';
 
   // 2. Doi chu thanh CAP NHAT (Mau do VF5)
   const textSpan = installBtn.querySelector('.install-text');
@@ -96,20 +95,25 @@ function triggerUpdateUI(waitingWorker, newVersion = null) {
     textSpan.style.color = '#ef4444';
   }
 
-  // 3. PHEP THUAT CSS: Bien Icon Vang thanh Icon Do + Hieu ung dap nhip tim
+  // 3. PHEP THUAT CSS: Bieu tuong Do ruc nhung GIU NGUYEN KICH THUOC 100%
   const iconImg = installBtn.querySelector('.install-icon-img');
   if (iconImg) {
     iconImg.style.display = 'block';
-    // Xoay quang pho mau tu Vang (-45 do) ve Do, tang bao hoa mau cuc dai
-    iconImg.style.filter = 'hue-rotate(-45deg) saturate(300%) drop-shadow(0 2px 6px rgba(220, 38, 38, 0.8))';
-    iconImg.style.animation = 'iconHeartbeat 1.2s infinite alternate';
+    // Ep cung kich thuoc 32px giong het nut Tai App de khong bi teo top
+    iconImg.style.width = '32px';
+    iconImg.style.height = '32px';
+    // Chuyen mau thanh do va tao hieu ung phat sang
+    iconImg.style.animation = 'iconGlow 1.2s infinite alternate';
   }
 
-  // 4. Bom Keyframe CSS nhip tim vao HTML neu chua co
+  // 4. Bom Keyframe CSS chi phat sang (Khong dung transform de tranh loi teo top)
   if (!document.getElementById('iconKeyframes')) {
     const style = document.createElement('style');
     style.id = 'iconKeyframes';
-    style.innerHTML = `@keyframes iconHeartbeat { from { transform: scale(0.95); filter: hue-rotate(-45deg) saturate(300%) drop-shadow(0 0 2px rgba(220, 38, 38, 0.5)); } to { transform: scale(1.1); filter: hue-rotate(-45deg) saturate(300%) drop-shadow(0 0 10px rgba(220, 38, 38, 0.9)); } }`;
+    style.innerHTML = `@keyframes iconGlow { 
+      from { filter: hue-rotate(-45deg) saturate(300%) brightness(1.2) drop-shadow(0 0 2px rgba(220, 38, 38, 0.4)); } 
+      to { filter: hue-rotate(-45deg) saturate(300%) brightness(1.2) drop-shadow(0 0 14px rgba(220, 38, 38, 1)); } 
+    }`;
     document.head.appendChild(style);
   }
 
@@ -121,7 +125,7 @@ function triggerUpdateUI(waitingWorker, newVersion = null) {
   newBtn.addEventListener('click', async () => {
     if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
     
-    // Doi style sang Dang tai (Mau Vang)
+    // Doi ve trang thai mau Vang Dang Tai
     newBtn.style.background = 'rgba(223, 183, 108, 0.15)';
     newBtn.style.borderColor = 'rgba(223, 183, 108, 0.4)';
     const newText = newBtn.querySelector('.install-text');
