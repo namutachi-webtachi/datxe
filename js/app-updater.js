@@ -77,58 +77,64 @@ function trackWorkerState(worker) {
   });
 }
 
-// KICH HOAT NUT CAP NHAT TINH TE - SANG CHANG - NHO GON
+// KICH HOAT NUT CAP NHAT ĐỒNG BỘ VỚI ICON TẢI APP
 function triggerUpdateUI(waitingWorker, newVersion = null) {
   const installBtn = document.getElementById('pwaInstallBtn');
   if (!installBtn || installBtn.dataset.updating === 'true') return;
   installBtn.dataset.updating = 'true'; 
 
-  // 1. Dinh dang lai thanh mot chiec the "Pill" nho gon, kinh mo the thao
-  installBtn.style.cssText = `
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(220, 38, 38, 0.12); /* Nen do trong suot 12% */
-    border: 1px solid rgba(220, 38, 38, 0.4);
-    padding: 6px 12px;
-    border-radius: 99px;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s ease;
-  `;
+  // 1. Giu nguyen form nut, chi doi nen sang tone Do Canh Bao (Trong suot sang sang)
+  installBtn.style.display = 'flex';
+  installBtn.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(153, 27, 27, 0.05) 100%)';
+  installBtn.style.borderColor = 'rgba(220, 38, 38, 0.5)';
+  installBtn.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.3)';
 
-  // 2. Tao hieu ung dau cham do nhap nhay + Chu nho gon
-  installBtn.innerHTML = `
-    <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #ef4444; box-shadow: 0 0 8px #ef4444; animation: updateBlink 1s infinite alternate;"></div>
-    <span style="font-size: 11px; font-weight: 700; color: #f8fafc; letter-spacing: 0.5px; margin-top: 1px;">CẬP NHẬT</span>
-  `;
+  // 2. Doi chu thanh CAP NHAT (Mau do VF5)
+  const textSpan = installBtn.querySelector('.install-text');
+  if (textSpan) {
+    textSpan.innerText = 'CẬP NHẬT';
+    textSpan.style.color = '#ef4444';
+  }
 
-  // 3. Bom Keyframe CSS nhap nhay vao thang HTML (Neu chua co)
-  if (!document.getElementById('updateKeyframes')) {
+  // 3. PHEP THUAT CSS: Bien Icon Vang thanh Icon Do + Hieu ung dap nhip tim
+  const iconImg = installBtn.querySelector('.install-icon-img');
+  if (iconImg) {
+    iconImg.style.display = 'block';
+    // Xoay quang pho mau tu Vang (-45 do) ve Do, tang bao hoa mau cuc dai
+    iconImg.style.filter = 'hue-rotate(-45deg) saturate(300%) drop-shadow(0 2px 6px rgba(220, 38, 38, 0.8))';
+    iconImg.style.animation = 'iconHeartbeat 1.2s infinite alternate';
+  }
+
+  // 4. Bom Keyframe CSS nhip tim vao HTML neu chua co
+  if (!document.getElementById('iconKeyframes')) {
     const style = document.createElement('style');
-    style.id = 'updateKeyframes';
-    style.innerHTML = `@keyframes updateBlink { from { opacity: 0.4; transform: scale(0.8); } to { opacity: 1; transform: scale(1.3); } }`;
+    style.id = 'iconKeyframes';
+    style.innerHTML = `@keyframes iconHeartbeat { from { transform: scale(0.95); filter: hue-rotate(-45deg) saturate(300%) drop-shadow(0 0 2px rgba(220, 38, 38, 0.5)); } to { transform: scale(1.1); filter: hue-rotate(-45deg) saturate(300%) drop-shadow(0 0 10px rgba(220, 38, 38, 0.9)); } }`;
     document.head.appendChild(style);
   }
 
-  // 4. Clone de xoa sach su kien cu
+  // 5. Clone node de xoa toan bo listener cu
   const newBtn = installBtn.cloneNode(true);
   installBtn.parentNode.replaceChild(newBtn, installBtn);
 
-  // 5. Hieu ung khi khach bam vao: Doi sang mau Vang Kim bao hieu dang xu ly
+  // 6. Su kien khi bam CẬP NHẬT
   newBtn.addEventListener('click', async () => {
-    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
     
     // Doi style sang Dang tai (Mau Vang)
     newBtn.style.background = 'rgba(223, 183, 108, 0.15)';
     newBtn.style.borderColor = 'rgba(223, 183, 108, 0.4)';
-    newBtn.innerHTML = `
-      <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #dfb76c; box-shadow: 0 0 8px #dfb76c;"></div>
-      <span style="font-size: 11px; font-weight: 700; color: #dfb76c; letter-spacing: 0.5px; margin-top: 1px;">ĐANG TẢI...</span>
-    `;
+    const newText = newBtn.querySelector('.install-text');
+    if (newText) {
+      newText.innerText = 'ĐANG TẢI...';
+      newText.style.color = '#dfb76c';
+    }
+    const newIcon = newBtn.querySelector('.install-icon-img');
+    if (newIcon) {
+      newIcon.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))';
+      newIcon.style.animation = 'none';
+    }
 
-    // A. Quet sach toan bo CacheStorage cu trong may
     if ('caches' in window) {
       try {
         const keys = await caches.keys();
@@ -136,17 +142,14 @@ function triggerUpdateUI(waitingWorker, newVersion = null) {
       } catch (e) {}
     }
 
-    // B. Luu version moi nhat (neu do version.json goi)
     if (newVersion) {
       localStorage.setItem('thanh_nguyen_app_version', newVersion);
     }
 
-    // C. Giet Service Worker cu de ban moi len thay
     if (waitingWorker) {
       waitingWorker.postMessage('SKIP_WAITING');
     }
 
-    // D. Chuyen trang sau 0.3 giay
     setTimeout(() => {
       window.location.href = window.location.pathname + '?_up=' + Date.now();
     }, 300);
