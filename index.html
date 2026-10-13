@@ -48,13 +48,23 @@
 
       // 3. DIEU HUONG CHUAN XAC
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('reset') === '1') {
+      
+      // 1. NEU YEU CAU VAO THANG TRANG GUIDE
+      if (urlParams.get('guide') === '1') {
+        window.location.replace('./guide.html');
+      }
+      // 2. NEU RESET
+      else if (urlParams.get('reset') === '1') {
         localStorage.clear();
         window.history.replaceState({}, document.title, window.location.pathname);
         window.location.replace('./intro.html');
-      } else if (localStorage.getItem('thanh_nguyen_intro_seen') === 'true') {
+      } 
+      // 3. KHACH QUEN
+      else if (localStorage.getItem(CACHE_KEY) === 'true') {
         window.location.replace('./booking.html');
-      } else {
+      } 
+      // 4. KHACH MOI
+      else {
         window.location.replace('./intro.html');
       }
     }
