@@ -1,15 +1,12 @@
 // ==========================================================================
-// GEO-SEARCH.JS - THUẬT TOÁN TÌM KIẾM ĐỊA CHỈ VIỆT NAM LINH HOẠT & CHUẨN XÁC
+// GEO-SEARCH.JS - DỊCH ĐỊA CHỈ TIẾNG VIỆT RA TỌA ĐỘ GPS (PHOTON / OSM)
 // ==========================================================================
-
-// Khoanh vung dia ly pham vi Viet Nam (MinLon, MinLat, MaxLon, MaxLat)
-const VIETNAM_BBOX = '102.0,8.0,109.9,23.5';
 
 export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoordsFn) {
   const inputEl = document.getElementById(inputId);
   if (!inputEl) return;
 
-  // Tao danh sach goi y noi ben duoi o nhap
+  // Khởi tạo khung dropdown gợi ý
   let dropdown = inputEl.parentNode.querySelector('.geo-autocomplete-dropdown');
   if (!dropdown) {
     dropdown = document.createElement('div');
@@ -29,93 +26,78 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
       return;
     }
 
-    // Debounce 300ms giam tai request khi nguoi dung dang go
+    // Chờ 300ms sau khi ngừng gõ mới gửi request
     debounceTimer = setTimeout(async () => {
       try {
-        // Mac dinh toa do trung tam Mien Bac neu khong truyen ham lay GPS
-        let lat = 20.4288;
-        let lon = 106.1685;
+        let lat = '20.4288';
+        let lon = '106.1685';
 
         if (typeof getCurrentCoordsFn === 'function') {
           try {
             const coords = getCurrentCoordsFn();
             if (coords && coords.lat && coords.lon) {
-              lat = coords.lat;
-              lon = coords.lon;
+              lat = parseFloat(coords.lat).toFixed(5);
+              lon = parseFloat(coords.lon).toFixed(5);
             }
           } catch (e) {}
         }
 
-        // Goi API Photon voi BBOX Viet Nam de khoanh dung pham vi dia ly Viet Nam
-        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&bbox=${VIETNAM_BBOX}&limit=8&lang=vi`;
+        // DÙNG countrycode=vn THAY VI bbox ĐỂ TRÁNH LỖI HTTP 400 BAD REQUEST
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&countrycode=vn&limit=5&lang=vi`;
+        
         const res = await fetch(url);
-        const data = await res.json();
+        if (!res.ok) {
+          dropdown.style.display = 'none';
+          return;
+        }
 
+        const data = await res.json();
         dropdown.innerHTML = '';
 
         if (data && data.features && data.features.length > 0) {
-          // Chi kiem tra don gian toa do nam trong khung Viet Nam, khong loc chu gat gao
-          const validFeatures = data.features.filter((feature) => {
-            const coords = feature.geometry ? feature.geometry.coordinates : null;
-            if (!coords || coords.length < 2) return false;
+          dropdown.style.display = 'block';
 
-            const fLon = coords[0];
-            const fLat = coords[1];
+          data.features.forEach((feature) => {
+            const props = feature.properties || {};
+            const coords = feature.geometry.coordinates; // [lon, lat]
 
-            // Kiem tra toa do GPS thuoc pham vi Viet Nam
-            return fLat >= 8.0 && fLat <= 24.0 && fLon >= 102.0 && fLon <= 110.0;
-          }).slice(0, 5);
+            const mainTitle = props.name || props.street || props.housenumber || query;
 
-          if (validFeatures.length > 0) {
-            dropdown.style.display = 'block';
+            const rawParts = [
+              props.housenumber ? `Số ${props.housenumber}` : null,
+              props.street && props.street !== props.name ? props.street : null,
+              props.district || props.suburb || props.locality,
+              props.city || props.county || props.state
+            ].filter(Boolean);
 
-            validFeatures.forEach((feature) => {
-              const props = feature.properties || {};
-              const coords = feature.geometry.coordinates; // [lon, lat]
-
-              // Ten dia diem / con duong / so nha
-              const mainTitle = props.name || props.street || props.housenumber || query;
-
-              // Cac cap hanh chinh
-              const rawParts = [
-                props.housenumber ? `Số ${props.housenumber}` : null,
-                props.street && props.street !== props.name ? props.street : null,
-                props.district || props.suburb || props.locality,
-                props.city || props.county || props.state
-              ].filter(Boolean);
-
-              // Loai bo phan trung lap voi ten chinh
-              const cleanParts = rawParts.filter((part, index, self) => {
-                return part !== mainTitle && self.indexOf(part) === index;
-              });
-
-              const subLabel = cleanParts.join(', ');
-              const displayFull = cleanParts.length > 0 ? `${mainTitle}, ${subLabel}` : mainTitle;
-
-              const itemEl = document.createElement('div');
-              itemEl.className = 'geo-autocomplete-item';
-              itemEl.innerHTML = `
-                <div style="font-weight: 700; color: #dfb76c; font-size: 13px;">${mainTitle}</div>
-                <div style="font-size: 11px; color: #94a3b8; margin-top: 2px; line-height: 1.3;">${subLabel || displayFull}</div>
-              `;
-
-              itemEl.addEventListener('click', () => {
-                inputEl.value = displayFull;
-                dropdown.style.display = 'none';
-                dropdown.innerHTML = '';
-
-                onSelectCallback({
-                  lat: coords[1],
-                  lon: coords[0],
-                  name: displayFull
-                });
-              });
-
-              dropdown.appendChild(itemEl);
+            const cleanParts = rawParts.filter((part, index, self) => {
+              return part !== mainTitle && self.indexOf(part) === index;
             });
-          } else {
-            dropdown.style.display = 'none';
-          }
+
+            const subLabel = cleanParts.join(', ');
+            const displayFull = cleanParts.length > 0 ? `${mainTitle}, ${subLabel}` : mainTitle;
+
+            const itemEl = document.createElement('div');
+            itemEl.className = 'geo-autocomplete-item';
+            itemEl.innerHTML = `
+              <div style="font-weight: 700; color: #dfb76c; font-size: 13px;">${mainTitle}</div>
+              <div style="font-size: 11px; color: #94a3b8; margin-top: 2px; line-height: 1.3;">${subLabel || displayFull}</div>
+            `;
+
+            itemEl.addEventListener('click', () => {
+              inputEl.value = displayFull;
+              dropdown.style.display = 'none';
+              dropdown.innerHTML = '';
+
+              onSelectCallback({
+                lat: coords[1],
+                lon: coords[0],
+                name: displayFull
+              });
+            });
+
+            dropdown.appendChild(itemEl);
+          });
         } else {
           dropdown.style.display = 'none';
         }
@@ -125,7 +107,7 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
     }, 300);
   });
 
-  // Dong dropdown khi bam ra ngoai
+  // Đóng dropdown khi click ra ngoài
   document.addEventListener('click', (e) => {
     if (!inputEl.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.style.display = 'none';
