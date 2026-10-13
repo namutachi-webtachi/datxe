@@ -135,29 +135,16 @@ body {
   border: 1.5px solid rgba(223, 183, 108, 0.35);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
   background-color: #060e18;
-  /* Ep GPU render nguyen khoi ban do de chong giat lag */
-  transform: translateZ(0);
-  will-change: transform;
+  z-index: 1; /* Chot z-index de khong bi chim */
 }
 
 #map {
   width: 100%;
   height: 100%;
-  background: transparent;
+  background-color: #060e18;
+  z-index: 1;
 }
 
-/* EP GPU DIEN THOAI XU LY TILE BAN DO MUOT MA, CHONG DEN MAN HINH */
-.leaflet-container,
-.leaflet-tile-pane,
-.leaflet-tile,
-.leaflet-layer {
-  transform: translate3d(0,0,0);
-  will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* NUT GPS */
 .btn-gps-locate {
   position: absolute;
   bottom: 10px;
@@ -181,7 +168,6 @@ body {
   width: 14px;
   height: 14px;
 }
-
 /* FORM VA GOI Y DIA CHI */
 .booking-fields-form {
   display: flex;
