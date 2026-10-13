@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0b1420">
   
-  <link rel="stylesheet" href="./css/booking.css?v=1.0.2">
+  <link rel="stylesheet" href="./css/booking.css?v=1.0.4">
 </head>
 <body>
 
@@ -16,18 +16,17 @@
     
     <!-- HEADER MODULE -->
     <header class="top-nav">
-      <!-- LOGO: Bam 5 lan de xoa cache -->
+      <!-- LOGO: Nhan 5 lan de xoa cache -->
       <img src="./assets/logo.png" alt="TN" class="nav-logo" id="secretLogo">
 
-      <!-- NUT TAI APP: Co chua Icon doc lap de Chu tich de thay the -->
-      <!-- Luu y: Ong nem 1 cai anh icon vao assets/download.png de no hien len nhe -->
+      <!-- NUT TAI APP SANG TRONG -->
       <div class="nav-install-btn" id="pwaInstallBtn">
         <img src="./assets/download.png" alt="Tai App" class="install-icon-img" id="installIcon">
         <span class="install-text">TẢI APP</span>
       </div>
     </header>
 
-    <!-- MAIN CONTENT MODULE (Se code cac chuc nang ban do, dat xe vao day sau) -->
+    <!-- MAIN CONTENT MODULE -->
     <main class="main-content">
       <h3 style="color: #dfb76c; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">
         Khu vuc Main Booking
@@ -39,23 +38,26 @@
 
   </div>
 
-<!-- KHOI DONG CAC SCRIPT MODULE -->
+  <!-- KHOI DONG CAC SCRIPT MODULE -->
   <script type="module">
     import { initHeaderEvents } from './js/core-events.js';
     import { autoCropImage } from './js/autocrop.js';
     import { initSystemMonitor } from './js/system-monitor.js';
-    import { initAppUpdater } from './js/app-updater.js'; // Gọi File Updater
+    import { initAppUpdater } from './js/app-updater.js';
 
     window.addEventListener('DOMContentLoaded', async () => {
-      initSystemMonitor(); 
-      initAppUpdater(); // Kich hoat tuc thi
+      // 1. Kich hoat su kien click ngay lap tuc de nut luon luon nhan lenh
+      initHeaderEvents();
+      initSystemMonitor();
+      initAppUpdater();
 
+      // 2. Vi phau got vien anh chay phu o phia sau
       const installIcon = document.getElementById('installIcon');
       if (installIcon) {
-        await autoCropImage(installIcon);
+        try {
+          await autoCropImage(installIcon);
+        } catch (e) {}
       }
-
-      initHeaderEvents(); 
     });
   </script>
 </body>
