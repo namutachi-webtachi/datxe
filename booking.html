@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.0.9">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.0">
 </head>
 <body>
 
@@ -50,19 +50,19 @@
         </button>
       </section>
 
-      <!-- FORM NHAP -->
+      <!-- FORM NHAP TU DO -->
       <form id="bookingForm" class="booking-fields-form">
         
         <!-- DIEM DON -->
         <div class="field-group">
           <label for="pickupAddress">ĐIỂM ĐÓN</label>
-          <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Nhập địa chỉ đón (Ví dụ: Vườn Cau Vị Khê...)">
+          <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Đang xác định vị trí của bạn...">
         </div>
 
         <!-- DIEM DEN -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
-          <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (Ví dụ: Ngõ Trại Cá, Bệnh viện...)">
+          <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (Ví dụ: Bệnh viện, Ga tàu, Ngõ Trại Cá...)">
         </div>
 
         <!-- LOAI CHUYEN -->
@@ -215,14 +215,15 @@
     }
 
     // ==========================================================================
-    // 4. BAN DO ESRI WORLD DARK GRAY (NATIVE DARK 100% HIEN THI DIEN THOAI)
+    // 4. BAN DO ESRI WORLD DARK GRAY (AUTO GPS ON LOAD & IGNORE DEFAULT DROPOFF)
     // ==========================================================================
-    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh fallback
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai
-    let userGpsCoords = null;
+    let dropoffCoords = null; // BOH GUA DIEM DEN BAN DAU
     
     let routePolyline = null;
+    let pickupMarker = null;
+    let dropoffMarker = null;
     let userLocationMarker = null;
     let measuredDistanceKm = 0;
 
@@ -235,7 +236,7 @@
     const map = L.map('map', { 
       zoomControl: false,
       scrollWheelZoom: false,
-      fadeAnimation: false, // TAT ANIMATION NEU KHONG SATORI MOBILE SE LAM AN TILE
+      fadeAnimation: false,
       markerZoomAnimation: false,
       bounceAtZoomLimits: false,
       maxBounds: VN_BOUNDS,
@@ -244,20 +245,18 @@
       maxZoom: 18,
       tap: true,
       renderer: L.canvas()
-    }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
+    }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 13);
     
-    // NGUON TILE ESRI WORLD DARK GRAY (NATIVE DARK, 0% API KEY, CHAY TIEU CHUAN TREN ALL MOBILE)
+    // NGUON TILE ESRI WORLD DARK GRAY
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 18,
       crossOrigin: true,
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
     }).addTo(map);
 
-    // KICK HOAT MAP RENDER NGAY TRONG KHI WEBPAGE LOAD TREN SAFARI / CHROME MOBILE
+    // KICK HOAT MAP RENDER NGAY TREN SAFARI / CHROME MOBILE
     function forceResizeMap() {
-      if (map) {
-        map.invalidateSize();
-      }
+      if (map) map.invalidateSize();
     }
     setTimeout(forceResizeMap, 100);
     setTimeout(forceResizeMap, 500);
@@ -265,41 +264,109 @@
     window.addEventListener('resize', forceResizeMap);
     window.addEventListener('orientationchange', forceResizeMap);
 
-    // GHIM DIEM DON VA DIEM DEN
-    let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
-    let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
+    // GHIM DIEM DON BAT DAU
+    pickupMarker = L.marker([pickupCoords.lat, pickupCoords.lon], { draggable: true }).addTo(map);
 
-    // HAM TU DONG THU PHONG DE XEM HET CON DUONG DI
-    function autoFitRouteBounds() {
-      const activePoints = [pickupMarker, dropoffMarker];
-      if (userLocationMarker) activePoints.push(userLocationMarker);
-      
-      const featureGroup = L.featureGroup(activePoints);
-      
-      if (routePolyline) {
-        map.fitBounds(routePolyline.getBounds(), { padding: [35, 35], maxZoom: 16 });
-      } else {
-        map.fitBounds(featureGroup.getBounds(), { padding: [35, 35], maxZoom: 15 });
-      }
-    }
-
-    // DRAG EVENTS
     pickupMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
       document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
-      calculateDistance();
+      if (dropoffCoords) calculateDistance();
     });
 
-    dropoffMarker.on('dragend', (e) => {
-      const pos = e.target.getLatLng();
-      dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
+    // HAM CAP NHAT VOI DIEM DEN KHI KHACH CHON/GO
+    function setDropoffLocation(lat, lon) {
+      dropoffCoords = { lat, lon };
+
+      if (!dropoffMarker) {
+        dropoffMarker = L.marker([lat, lon], { draggable: true }).addTo(map);
+        dropoffMarker.on('dragend', (e) => {
+          const pos = e.target.getLatLng();
+          dropoffCoords = { lat: pos.lat, lon: pos.lng };
+          document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
+          calculateDistance();
+        });
+      } else {
+        dropoffMarker.setLatLng([lat, lon]);
+      }
+
       calculateDistance();
+    }
+
+    // ICON CHUYEN DONG GPS VI TRI CUA TOI
+    const userGpsIcon = L.divIcon({
+      className: 'custom-gps-pin',
+      html: `<div class="user-gps-pulse-marker" title="Vị trí của bạn"></div>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
     });
+
+    // HAM AUTOMATIC PING GPS VI TRI CUA TOI
+    function locateUserGps(isAutoLoad = false) {
+      if (!navigator.geolocation) {
+        document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        pickupCoords = { lat, lon };
+
+        pickupMarker.setLatLng([lat, lon]);
+        map.setView([lat, lon], 14);
+
+        if (userLocationMarker) {
+          userLocationMarker.setLatLng([lat, lon]);
+        } else {
+          userLocationMarker = L.marker([lat, lon], { icon: userGpsIcon }).addTo(map);
+        }
+
+        document.getElementById('pickupAddress').value = 'Vị trí hiện tại của bạn';
+
+        if (dropoffCoords) {
+          calculateDistance();
+        }
+      }, (err) => {
+        if (!isAutoLoad) {
+          alert('Không thể truy cập vị trí GPS. Vui lòng bật định vị trên thiết bị!');
+        } else {
+          document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
+        }
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+
+    // AUTO PING VI TRI KHI VUA VAO WEBPAGE!
+    locateUserGps(true);
+
+    // NUT GPS CHUDONG
+    document.getElementById('btnGps').addEventListener('click', () => locateUserGps(false));
+
+    // HAM TU DONG THU PHONG MANG LACE DE HIEN THI HET DIEM & DUONG DI
+    function autoFitRouteBounds() {
+      if (!dropoffCoords) return;
+
+      const activePoints = [pickupMarker];
+      if (dropoffMarker) activePoints.push(dropoffMarker);
+      if (userLocationMarker) activePoints.push(userLocationMarker);
+
+      if (routePolyline) {
+        map.fitBounds(routePolyline.getBounds(), { padding: [35, 35], maxZoom: 16 });
+      } else {
+        const featureGroup = L.featureGroup(activePoints);
+        map.fitBounds(featureGroup.getBounds(), { padding: [35, 35], maxZoom: 15 });
+      }
+    }
 
     // HAM TINH ROUTE VOI OSRM
     async function calculateDistance() {
+      if (!dropoffCoords || !pickupCoords) {
+        document.getElementById('displayDistance').innerText = '-- km';
+        document.getElementById('displayDuration').innerText = '-- phút';
+        if (routePolyline) map.removeLayer(routePolyline);
+        return;
+      }
+
       const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
       
       try {
@@ -321,7 +388,6 @@
             style: { color: '#dfb76c', weight: 5, opacity: 0.95 }
           }).addTo(map);
 
-          // AUTO FIT BOUNDS PUSH VIEW
           autoFitRouteBounds();
 
           const pAddr = document.getElementById('pickupAddress').value;
@@ -340,54 +406,17 @@
       initAddressAutocomplete('pickupAddress', (selected) => {
         pickupCoords = { lat: selected.lat, lon: selected.lon };
         pickupMarker.setLatLng([selected.lat, selected.lon]);
-        calculateDistance();
+        if (dropoffCoords) calculateDistance();
       });
 
       initAddressAutocomplete('dropoffAddress', (selected) => {
-        dropoffCoords = { lat: selected.lat, lon: selected.lon };
-        dropoffMarker.setLatLng([selected.lat, selected.lon]);
-        calculateDistance();
+        setDropoffLocation(selected.lat, selected.lon);
       });
     }
-
-    // ICON GPS CHAT
-    const userGpsIcon = L.divIcon({
-      className: 'custom-gps-pin',
-      html: `<div class="user-gps-pulse-marker" title="Vị trí của bạn"></div>`,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
-    });
-
-    // NUT "VI TRI CUA TOI"
-    document.getElementById('btnGps').addEventListener('click', () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          userGpsCoords = { lat, lon };
-
-          if (userLocationMarker) {
-            userLocationMarker.setLatLng([lat, lon]);
-          } else {
-            userLocationMarker = L.marker([lat, lon], { icon: userGpsIcon }).addTo(map);
-          }
-
-          pickupCoords = { lat, lon };
-          pickupMarker.setLatLng([lat, lon]);
-          document.getElementById('pickupAddress').value = 'Vị trí hiện tại của bạn';
-
-          calculateDistance();
-
-        }, () => {
-          alert('Không thể truy cập vị trí GPS. Vui lòng bật định vị trên thiết bị!');
-        }, { enableHighAccuracy: true });
-      }
-    });
 
     // DOC DU LIEU BAN DAU
     document.getElementById('customerName').value = localStorage.getItem('customerName') || '';
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
-    document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
 
     // SUBMIT FORM
     document.getElementById('bookingForm').addEventListener('submit', (e) => {
@@ -403,13 +432,11 @@
       btn.innerText = 'ĐANG GỬI YÊU CẦU...';
 
       setTimeout(() => {
-        alert(`ĐÃ GỬI YÊU CẦU ĐẶT XE!\nKhách hàng: ${name}\nQuãng đường: ${measuredDistanceKm}km\nBác tài sẽ gọi lại cho bạn ngay theo số ${phone}!`);
+        alert(`ĐÃ GỬI YÊU CẦU ĐẶT XE!\nKhách hàng: ${name}\nQuãng đường: ${measuredDistanceKm || 0}km\nBác tài sẽ gọi lại cho bạn ngay theo số ${phone}!`);
         btn.disabled = false;
         btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
       }, 500);
     });
-
-    calculateDistance();
 
     // LIVE PING
     const pingDot = document.getElementById('pingDot');
