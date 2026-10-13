@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.0.6">
+  <link rel="stylesheet" href="./css/booking.css?v=1.0.7">
 </head>
 <body>
 
@@ -29,13 +29,13 @@
       </button>
     </header>
 
-    <!-- CONTENT KHONG CON NUT GOI Y, CUON TU DO -->
+    <!-- MAIN CONTENT -->
     <main class="booking-content-area">
       
       <!-- TRANG THAI BAC TAI -->
       <div class="driver-status-bar">
         <div class="status-indicator-dot"></div>
-        <span class="status-indicator-text">XE NHÀ ĐÃ SẴN SÀNG PHỤC </span>
+        <span class="status-indicator-text">NHÀ XE ĐÃ SẴN SÀNG PHỤC VỤ</span>
       </div>
 
       <!-- BAN DO -->
@@ -50,7 +50,7 @@
         </button>
       </section>
 
-      <!-- FORM NHAP TU DO -->
+      <!-- FORM NHAP -->
       <form id="bookingForm" class="booking-fields-form">
         
         <!-- DIEM DON -->
@@ -59,7 +59,7 @@
           <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Nhập địa chỉ đón (Ví dụ: Vườn Cau Vị Khê...)">
         </div>
 
-        <!-- DIEM DEN TU DO (CO GOI Y THUAT TOAN GEO-SEARCH) -->
+        <!-- DIEM DEN -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
           <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (Ví dụ: Ngõ Trại Cá, Bệnh viện...)">
@@ -124,7 +124,7 @@
       </form>
     </main>
 
-    <!-- THANH PING DONG DINH TRONG HTML -->
+    <!-- THANH PING -->
     <div class="system-monitor-bar" id="systemMonitor">
       <div class="monitor-dot" id="pingDot"></div>
       <span class="monitor-text" id="pingText">ĐO PING...</span>
@@ -135,17 +135,29 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script type="module">
-    import { autoCropImage } from './js/autocrop.js';
-    import { initAppUpdater } from './js/app-updater.js';
-    import { initAddressAutocomplete } from './js/geo-search.js';
+    // IMPORT AN TOAN: CHONG BLOCKED SCRIPT NEU THIEU FILE JS
+    let autoCropImage, initAppUpdater, initAddressAutocomplete;
+    try {
+      const cropModule = await import('./js/autocrop.js');
+      autoCropImage = cropModule.autoCropImage;
+    } catch (e) { console.warn('Module autocrop không khả dụng'); }
+
+    try {
+      const updaterModule = await import('./js/app-updater.js');
+      initAppUpdater = updaterModule.initAppUpdater;
+      if (initAppUpdater) initAppUpdater();
+    } catch (e) { console.warn('Module updater không khả dụng'); }
+
+    try {
+      const geoModule = await import('./js/geo-search.js');
+      initAddressAutocomplete = geoModule.initAddressAutocomplete;
+    } catch (e) { console.warn('Module geo-search không khả dụng'); }
 
     // 1. VI PHAU ANH ICON
     const installIcon = document.getElementById('installIcon');
-    if (installIcon) {
+    if (installIcon && autoCropImage) {
       try { autoCropImage(installIcon); } catch (e) {}
     }
-
-    initAppUpdater();
 
     // 2. NUT TAI APP
     const installBtn = document.getElementById('pwaInstallBtn');
@@ -177,7 +189,7 @@
       });
     }
 
-    // 3. LOGO 5 LAN XOA CACHE
+    // 3. LOGO SECRET CLEAR CACHE
     const logoBtn = document.getElementById('secretLogo');
     if (logoBtn) {
       let tapCount = 0;
@@ -196,74 +208,78 @@
               names.forEach((name) => caches.delete(name));
             });
           }
-          alert('HE THONG: Da lam moi sach se bo nho cache!');
+          alert('HỆ THỐNG: Đã làm mới sạch sẽ bộ nhớ cache!');
           window.location.replace('./index.html?reset=1');
         }
       });
     }
 
-// ==========================================================================
-    // 4. KHOI TAO BAN DO LEAFLET BONG DEM TOI UU MOBILE 2026 (CANVAS + ESRI)
+    // ==========================================================================
+    // 4. KHOI TAO BAN DO LEAFLET DARK MODE SIEU MUOT CHO MOBILE
     // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
+    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai
     let routePolyline = null;
     let measuredDistanceKm = 0;
 
-    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Dung L.latLngBounds)
-    const southWest = L.latLng(8.179, 102.144);
-    const northEast = L.latLng(23.393, 109.464);
-    const VN_BOUNDS = L.latLngBounds(southWest, northEast);
+    // KHOA GIOI HAN VIET NAM
+    const VN_BOUNDS = L.latLngBounds(
+      L.latLng(8.179, 102.144),
+      L.latLng(23.393, 109.464)
+    );
 
-    // KHOI TAO BAN DO VOI CAC CAU HINH TOI UU TOUCH TREN MOBILE
+    // TAO INSTANCE BAN DO
     const map = L.map('map', { 
       zoomControl: false,
-      scrollWheelZoom: false, // Chong bay ngon tay khi cuon trang
+      scrollWheelZoom: false,
       bounceAtZoomLimits: false,
       maxBounds: VN_BOUNDS,
-      maxBoundsViscosity: 1.0, // Khoa cung 100% bien gioi VN
+      maxBoundsViscosity: 1.0,
       minZoom: 5,
       maxZoom: 19,
-      renderer: L.canvas() // CHUYEN SANG CANVAS RENDERER CHO GPU KHOE
+      tap: true,
+      renderer: L.canvas() // CANVAS GIUP CHAY SIEU NHE TREN CHIP MOBILE
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-    // BAN DO ESRI DARK GRAY BASE: DEN NATIVE, KHONG CAU KIN, KHONG DOI API KEY
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { 
-      attribution: '© Esri',
-      maxNativeZoom: 16, // Zoom den 16 tiles goc, qua 16 Leaflet tu phong to anh khong bi loi
-      maxZoom: 19
+    // TILE MAP CARTO DB DARK MATTER: BAM SAU CAU TRUC NATIVE DARK, TOI UU BAN DO DEM
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
-    // BI KIP 2026: RESIZE OBSERVER KHAC PHUC HOAN TOAN LOI BANG DEN/XAM TREN MOBILE
+    // AUTO RESIZE OBSERVER KHAC PHUC KHONG HIEN MAP TREN MOBILE TUC THI
     const mapElement = document.getElementById('map');
     if (window.ResizeObserver && mapElement) {
-      const observer = new ResizeObserver(() => {
+      new ResizeObserver(() => {
         map.invalidateSize();
-      });
-      observer.observe(mapElement);
+      }).observe(mapElement);
     }
+    
+    // BACKUP FIX DANG KICH THUOC KHI TRANG TAI XONG TREN SAFARI / CHROME MOBILE
+    setTimeout(() => { map.invalidateSize(); }, 300);
+    window.addEventListener('load', () => map.invalidateSize());
 
-    // TAO GHIM DIEM DON VA DIEM DEN
+    // GHIM DIEM DON & DEN
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
 
-    // THUAT TOAN KEO THA GHIM CAP NHAT TOA DO THUC TE
     pickupMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('pickupAddress').value = 'Toa do da ghim tren ban do';
+      document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
     dropoffMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Toa do da ghim tren ban do';
+      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
-    // HAM GOI OSRM VOI CANVAS RENDERER TOI UU TAP TINH
+    // HAM TINH TOAN VA VE DUONG DI TUDONG DUNG OSRM
     async function calculateDistance() {
       const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
       
@@ -277,13 +293,12 @@
           const durationMins = Math.round(route.duration / 60);
 
           document.getElementById('displayDistance').innerText = `${measuredDistanceKm} km`;
-          document.getElementById('displayDuration').innerText = `${durationMins} phut`;
+          document.getElementById('displayDuration').innerText = `${durationMins} phút`;
 
-          // Xoa vach cu va ve vach moi bang Canvas (Sieu muot)
           if (routePolyline) map.removeLayer(routePolyline);
           
           routePolyline = L.geoJSON(route.geometry, {
-            renderer: L.canvas(), // DUNG CANVAS CHONG GIAT LAG TREN MOBILE
+            renderer: L.canvas(),
             style: { color: '#dfb76c', weight: 4, opacity: 0.9 }
           }).addTo(map);
 
@@ -291,47 +306,51 @@
 
           const pAddr = document.getElementById('pickupAddress').value;
           const dAddr = document.getElementById('dropoffAddress').value;
-          const zaloMsg = encodeURIComponent(`Chao bac tai, toi muon dat xe tu ${pAddr} den ${dAddr} (${measuredDistanceKm}km).`);
+          const zaloMsg = encodeURIComponent(`Chào bác tài, tôi muốn đặt xe từ ${pAddr} đến ${dAddr} (${measuredDistanceKm}km).`);
           document.getElementById('btnZaloDirect').href = `https://zalo.me/0912101580?text=${zaloMsg}`;
         }
       } catch (err) {
         document.getElementById('displayDistance').innerText = '-- km';
-        document.getElementById('displayDuration').innerText = '-- phut';
+        document.getElementById('displayDuration').innerText = '-- phút';
       }
     }
 
-    // 6. TICH HOP GEO-SEARCH CHO CA 2 O NHAP (BIEN CHU THANH TOA DO THAT)
-    initAddressAutocomplete('pickupAddress', (selected) => {
-      pickupCoords = { lat: selected.lat, lon: selected.lon };
-      pickupMarker.setLatLng([selected.lat, selected.lon]);
-      calculateDistance();
-    });
+    // TICH HOP AUTOCOMPLETE DIA CHI NEU CO MODULE
+    if (initAddressAutocomplete) {
+      initAddressAutocomplete('pickupAddress', (selected) => {
+        pickupCoords = { lat: selected.lat, lon: selected.lon };
+        pickupMarker.setLatLng([selected.lat, selected.lon]);
+        calculateDistance();
+      });
 
-    initAddressAutocomplete('dropoffAddress', (selected) => {
-      dropoffCoords = { lat: selected.lat, lon: selected.lon };
-      dropoffMarker.setLatLng([selected.lat, selected.lon]);
-      calculateDistance();
-    });
+      initAddressAutocomplete('dropoffAddress', (selected) => {
+        dropoffCoords = { lat: selected.lat, lon: selected.lon };
+        dropoffMarker.setLatLng([selected.lat, selected.lon]);
+        calculateDistance();
+      });
+    }
 
-    // GPS 1-cham
+    // NUT DINH VI GPS TUC THI
     document.getElementById('btnGps').addEventListener('click', () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
           pickupCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
           pickupMarker.setLatLng([pickupCoords.lat, pickupCoords.lon]);
-          map.setView([pickupCoords.lat, pickupCoords.lon], 13);
-          document.getElementById('pickupAddress').value = 'Vi tri hien tai cua ban';
+          map.setView([pickupCoords.lat, pickupCoords.lon], 14);
+          document.getElementById('pickupAddress').value = 'Vị trí hiện tại của bạn';
           calculateDistance();
+        }, () => {
+          alert('Không thể lấy vị trí GPS. Vui lòng bật định vị trên điện thoại của bạn!');
         });
       }
     });
 
-    // Tu dien LocalStorage
+    // DOC DU LIEU TU LOCALSTORAGE
     document.getElementById('customerName').value = localStorage.getItem('customerName') || '';
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
-    document.getElementById('pickupAddress').value = 'Vuon Cau Vi Khe, Nam Dinh';
+    document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
 
-    // Submit form
+    // XU LY SUBMIT FORM
     document.getElementById('bookingForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('customerName').value.trim();
@@ -345,36 +364,37 @@
       btn.innerText = 'ĐANG GỬI YÊU CẦU...';
 
       setTimeout(() => {
-        alert(`DA GUI YEU CAU DAT XE!\nKhach hang: ${name}\nQuang duong: ${measuredDistanceKm}km\nBac tai se goi lai cho ban ngay theo so ${phone}!`);
+        alert(`ĐÃ GỬI YÊU CẦU ĐẶT XE!\nKhách hàng: ${name}\nQuãng đường: ${measuredDistanceKm}km\nBác tài sẽ gọi lại cho bạn ngay theo số ${phone}!`);
         btn.disabled = false;
         btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
       }, 500);
     });
 
+    // CHAY LẦN ĐẦU
     calculateDistance();
 
-    // 7. DO PING THUC TE O DAY (LIVE PING)
+    // MONITOR LIVE PING
     const pingDot = document.getElementById('pingDot');
     const pingText = document.getElementById('pingText');
 
     async function updateRealPing() {
       if (!navigator.onLine) {
         pingDot.style.backgroundColor = '#ef4444';
-        pingText.innerText = 'MAT KET NOI';
+        pingText.innerText = 'MẤT KẾT NỐI';
         pingText.style.color = '#ef4444';
         return;
       }
 
       const t0 = performance.now();
       try {
-        await fetch('./version.json?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        await fetch('./manifest.json?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
         const pingMs = Math.round(performance.now() - t0);
-        pingDot.style.backgroundColor = pingMs < 120 ? '#10b981' : '#f59e0b';
+        pingDot.style.backgroundColor = pingMs < 150 ? '#10b981' : '#f59e0b';
         pingText.innerText = `${pingMs}ms • valpha-3.3`;
         pingText.style.color = '#dfb76c';
       } catch (err) {
         pingDot.style.backgroundColor = '#10b981';
-        pingText.innerText = `OK • valpha-3.3`;
+        pingText.innerText = `ONLINE • valpha-3.3`;
       }
     }
 
