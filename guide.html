@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Hướng Dẫn Cài Đặt Ứng Dụng - Taxi TN</title>
+  <title>Hướng Dẫn Cài Đặt - Taxi TN</title>
   <link rel="stylesheet" href="./css/scale.css">
   <style>
     /* ==========================================================================
-       TRANG HUONG DAN CAI DAT APP & GIAI THICH ZALO WEBVIEW
-       Khong emoji - Bang mau: Deep Navy #09131f, Gold #dfb76c, Red VF5 #dc2626
+       TRANG HUONG DAN CAI DAT APP CHUAN MUC & MINH BACH KY THUAT
+       Thiet ke boi: namutachi-webtachi
+       Bang mau: Deep Navy #060e18, Gold Champagne #dfb76c, Red VF5 #dc2626
        ========================================================================== */
 
     *, *::before, *::after {
@@ -25,60 +26,92 @@
       min-height: 100dvh;
       display: flex;
       justify-content: center;
-      background: radial-gradient(circle at 50% 10%, #0e2036 0%, #060e18 60%, #020508 100%);
+      background: radial-gradient(circle at 50% 0%, #0e2036 0%, #060e18 50%, #020508 100%);
+      line-height: 1.5;
     }
 
     .guide-container {
       width: 100%;
       max-width: 440px;
       min-height: 100dvh;
-      padding: 20px 16px 40px;
+      padding: 20px 16px 45px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
     /* HEADER THUONG HIEU */
-    .guide-header {
+    .brand-header-card {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
+      border: 1px solid rgba(223, 183, 108, 0.35);
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    .brand-left-group {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid rgba(223, 183, 108, 0.2);
     }
 
-    .guide-logo {
-      width: 38px;
+    .brand-logo-img {
+      width: 40px;
       height: auto;
       filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
     }
 
-    .guide-brand-title {
-      font-size: 14px;
-      font-weight: 800;
+    .brand-name-text {
+      font-size: 15px;
+      font-weight: 900;
       letter-spacing: 0.5px;
       color: #dfb76c;
       text-transform: uppercase;
     }
 
-    .guide-brand-sub {
+    .brand-sub-text {
       font-size: 11px;
       color: #94a3b8;
     }
 
-    /* KHUNG THONG BAO GIAI THICH ZALO */
-    .zalo-notice-box {
-      background: linear-gradient(145deg, rgba(223, 183, 108, 0.12) 0%, rgba(13, 27, 42, 0.85) 100%);
+    /* TIEU DE CHINH TINH TE */
+    .page-title-section {
+      text-align: center;
+      padding: 4px 4px;
+    }
+
+    .main-headline {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 60%, #b88d3e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .main-sub-caption {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 6px;
+      line-height: 1.55;
+    }
+
+    /* GIAI THICH ZALO WEBVIEW */
+    .zalo-context-card {
+      background: linear-gradient(145deg, rgba(223, 183, 108, 0.12) 0%, rgba(13, 27, 42, 0.9) 100%);
       border: 1px solid rgba(223, 183, 108, 0.45);
       border-radius: 12px;
       padding: 14px 16px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
 
-    .zalo-notice-title {
+    .zalo-context-title {
       font-size: 12px;
       font-weight: 800;
       color: #dfb76c;
@@ -86,43 +119,80 @@
       text-transform: uppercase;
     }
 
-    .zalo-notice-body {
+    .zalo-context-body {
       font-size: 12px;
       color: #cbd5e1;
       line-height: 1.55;
     }
 
-    /* KHUNG HUONG DAN TUNG BUOC CAI DAT */
-    .steps-container {
-      background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
-      border: 1px solid rgba(223, 183, 108, 0.3);
-      border-radius: 12px;
-      padding: 16px;
+    /* TAB CHUYEN DOI THIET BI */
+    .device-tab-bar {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      background: rgba(13, 27, 42, 0.9);
+      border: 1px solid rgba(223, 183, 108, 0.25);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
     }
 
-    .steps-heading {
+    .tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
+      color: #060e18;
+      box-shadow: 0 2px 8px rgba(223, 183, 108, 0.3);
+    }
+
+    /* KHUNG HUONG DAN TUNG BUOC */
+    .instruction-card {
+      background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
+      border: 1px solid rgba(223, 183, 108, 0.35);
+      border-radius: 14px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .instruction-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(223, 183, 108, 0.15);
+      padding-bottom: 10px;
+    }
+
+    .instruction-title {
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
       color: #dfb76c;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-bottom: 1px solid rgba(223, 183, 108, 0.15);
-      padding-bottom: 8px;
     }
 
-    .step-row {
+    .step-item {
       display: flex;
       align-items: flex-start;
       gap: 12px;
     }
 
-    .step-badge {
-      width: 24px;
-      height: 24px;
+    .step-circle {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
       color: #060e18;
@@ -132,55 +202,71 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-top: 1px;
+      margin-top: 2px;
+      box-shadow: 0 2px 6px rgba(223, 183, 108, 0.3);
     }
 
-    .step-detail {
+    .step-content {
       font-size: 12px;
       color: #e2e8f0;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
-    .step-detail strong {
+    .step-content strong {
       color: #dfb76c;
     }
 
-    /* THE THONG TIN BAO CHUNG UY TIN */
-    .trust-card {
+    .inline-svg-icon {
+      display: inline-block;
+      vertical-align: middle;
+      width: 15px;
+      height: 15px;
+      stroke: #dfb76c;
+      margin: 0 2px;
+    }
+
+    /* THE THONG SO KY THUAT & BAO MAT */
+    .trust-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .trust-tile {
       background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
       border: 1px solid rgba(223, 183, 108, 0.25);
       border-radius: 12px;
       padding: 14px 16px;
       display: flex;
-      gap: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      gap: 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
 
-    .trust-icon-box {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+    .tile-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       background: rgba(223, 183, 108, 0.1);
-      border: 1px solid rgba(223, 183, 108, 0.3);
+      border: 1px solid rgba(223, 183, 108, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .trust-icon-svg {
-      width: 18px;
-      height: 18px;
+    .tile-svg {
+      width: 20px;
+      height: 20px;
       stroke: #dfb76c;
     }
 
-    .trust-content {
+    .tile-main {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
 
-    .trust-card-heading {
+    .tile-title {
       font-size: 12px;
       font-weight: 800;
       color: #dfb76c;
@@ -188,93 +274,99 @@
       text-transform: uppercase;
     }
 
-    .trust-card-body {
+    .tile-desc {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    .tile-tip-box {
       font-size: 11px;
       color: #94a3b8;
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: rgba(6, 14, 24, 0.7);
+      border-left: 2px solid #dfb76c;
+      border-radius: 0 4px 4px 0;
       line-height: 1.5;
     }
 
-    .trust-card-tip {
-      font-size: 11px;
-      color: #cbd5e1;
-      margin-top: 4px;
-      padding: 4px 8px;
-      background: rgba(6, 14, 24, 0.6);
-      border-left: 2px solid #dfb76c;
-      border-radius: 0 4px 4px 0;
+    .opensource-tile {
+      border-color: rgba(16, 185, 129, 0.35);
+      background: linear-gradient(145deg, #0a1924 0%, #060e18 100%);
     }
 
-    /* THE MA NGUON MO */
-    .opensource-card {
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .opensource-card .trust-icon-box {
+    .opensource-tile .tile-icon-box {
       border-color: rgba(16, 185, 129, 0.4);
       background: rgba(16, 185, 129, 0.1);
     }
 
-    .opensource-card .trust-icon-svg {
+    .opensource-tile .tile-svg {
       stroke: #10b981;
     }
 
-    .opensource-card .trust-card-heading {
+    .opensource-tile .tile-title {
       color: #10b981;
     }
 
-    .btn-repo-link {
+    .repo-anchor-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 6px;
-      padding: 5px 12px;
+      margin-top: 8px;
+      padding: 6px 14px;
       background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      border: 1px solid rgba(16, 185, 129, 0.4);
       border-radius: 6px;
       color: #10b981;
       text-decoration: none;
       font-size: 11px;
       font-weight: 700;
       width: fit-content;
+      transition: background 0.2s ease;
+    }
+
+    .repo-anchor-btn:active {
+      background: rgba(16, 185, 129, 0.25);
     }
 
     /* CUM NUT HANH DONG */
-    .action-group {
+    .command-action-group {
       margin-top: 6px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .btn-action-primary {
+    .btn-launch-engine {
       width: 100%;
       background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
       color: #060e18;
       border: none;
-      padding: 14px 20px;
+      padding: 15px 20px;
       border-radius: 10px;
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
       cursor: pointer;
-      box-shadow: 0 4px 18px rgba(223, 183, 108, 0.35);
+      box-shadow: 0 4px 20px rgba(223, 183, 108, 0.4);
       transition: transform 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .btn-action-primary:active {
+    .btn-launch-engine:active {
       transform: scale(0.98);
     }
 
-    .btn-action-back {
+    .btn-return-booking {
       width: 100%;
       background: transparent;
-      border: 1px solid rgba(223, 183, 108, 0.2);
+      border: 1px solid rgba(223, 183, 108, 0.25);
       color: #94a3b8;
-      padding: 11px;
+      padding: 12px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
@@ -282,141 +374,270 @@
       text-decoration: none;
       cursor: pointer;
     }
+
+    .btn-call-hotline {
+      width: 100%;
+      background: rgba(220, 38, 38, 0.12);
+      border: 1px solid rgba(220, 38, 38, 0.4);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
 
   <div class="guide-container">
     
-    <!-- HEADER THUONG HIEU -->
-    <header class="guide-header">
-      <img src="./assets/logo.png" alt="TN Logo" class="guide-logo">
-      <div>
-        <div class="guide-brand-title">TAXI TN</div>
-        <div class="guide-brand-sub">DỊCH VỤ XE RIÊNG CHUYÊN NGHIỆP</div>
+    <!-- 1. HEADER BRAND -->
+    <header class="brand-header-card">
+      <div class="brand-left-group">
+        <img src="./assets/logo.png" alt="TN Logo" class="brand-logo-img">
+        <div>
+          <div class="brand-name-text">TAXI TN</div>
+          <div class="brand-sub-text">DỊCH VỤ XE RIÊNG CHUYÊN NGHIỆP</div>
+        </div>
       </div>
     </header>
 
-    <!-- THONG BAO GIAI THICH ZALO WEBVIEW -->
-    <div class="zalo-notice-box">
-      <div class="zalo-notice-title">LƯU Ý DÀNH CHO NGƯỜI DÙNG ZALO</div>
-      <div class="zalo-notice-body">
-        Trình duyệt nội bộ của Zalo hiện <strong>không hỗ trợ tính năng cài đặt ứng dụng</strong> trực tiếp ra màn hình. Vì vậy, hệ thống cần chuyển hướng bạn sang trình duyệt mặc định của máy (Chrome, Safari, Samsung Internet...) để hoàn tất cài đặt ứng dụng 1-chạm.
+    <!-- 2. TIEU DE CHINH -->
+    <div class="page-title-section">
+      <h1 class="main-headline">HƯỚNG DẪN CÀI ĐẶT</h1>
+      <p class="main-sub-caption">
+        Thêm ứng dụng Taxi TN vào màn hình chính để đặt xe nhanh 1-chạm mà không chiếm dụng bộ nhớ máy.
+      </p>
+    </div>
+
+    <!-- 3. GIAI THICH ZALO WEBVIEW -->
+    <div class="zalo-context-card">
+      <div class="zalo-context-title">
+        LƯU Ý DÀNH CHO KHÁCH HÀNG TỪ ZALO
+      </div>
+      <div class="zalo-context-body">
+        Trình duyệt nội bộ của Zalo hiện không hỗ trợ tính năng cài đặt ứng dụng trực tiếp ra màn hình. Để hoàn tất, hệ thống sẽ mở trang web trên trình duyệt mặc định của thiết bị.
       </div>
     </div>
 
-    <!-- KHUNG HUONG DAN 2 BUOC CAI DAT CU THE -->
-    <div class="steps-container">
-      <div class="steps-heading">HƯỚNG DẪN CÀI ĐẶT 2 BƯỚC</div>
+    <!-- 4. TAB CHUYEN DOI THIET BI -->
+    <div class="device-tab-bar">
+      <button class="tab-btn active" id="tabAndroid">DÀNH CHO ANDROID</button>
+      <button class="tab-btn" id="tabIos">DÀNH CHO IPHONE (IOS)</button>
+    </div>
+
+    <!-- 5. KHUNG HUONG DAN TUNG BUOC -->
+    <div class="instruction-card">
+      <div class="instruction-header-row">
+        <span class="instruction-title" id="instTitle">CÁCH CÀI ĐẶT TRÊN ANDROID</span>
+      </div>
       
-      <!-- BUOC 1 -->
-      <div class="step-row">
-        <div class="step-badge">1</div>
-        <div class="step-detail">
-          Bấm nút <strong>"MỞ TRÌNH DUYỆT ĐỂ CÀI ĐẶT"</strong> ở phía dưới để chuyển khỏi Zalo.
+      <!-- CAC BUOC ANDROID -->
+      <div id="androidSteps">
+        <div class="step-item" style="margin-bottom: 12px;">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            Bấm nút vàng <strong>"MỞ TRÌNH DUYỆT ĐỂ CÀI ĐẶT"</strong> ở phía dưới để chuyển sang trình duyệt web mặc định của máy.
+          </div>
+        </div>
+        <div class="step-item" style="margin-bottom: 12px;">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            Khi trình duyệt mở ra, bảng thông báo cài đặt hệ thống sẽ tự động xuất hiện.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            Bấm chọn <strong>"Cài đặt"</strong> (hoặc "Thêm vào màn hình chính") để hoàn tất đưa biểu tượng Taxi TN ra màn hình điện thoại.
+          </div>
         </div>
       </div>
 
-      <!-- BUOC 2 -->
-      <div class="step-row">
-        <div class="step-badge">2</div>
-        <div class="step-detail">
-          Tại trình duyệt mặc định:<br>
-          - <strong>Điện thoại Android:</strong> Bấm chọn <strong>"Cài đặt"</strong> khi hộp thoại hiện lên.<br>
-          - <strong>Điện thoại iPhone:</strong> Bấm biểu tượng <strong>Chia sẻ</strong> (ở đáy Safari) và chọn <strong>"Thêm vào MH chính"</strong>.
+      <!-- CAC BUOC IPHONE -->
+      <div id="iosSteps" style="display: none;">
+        <div class="step-item" style="margin-bottom: 12px;">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            Nếu đang mở trong Zalo: Bấm vào <strong>dấu 3 chấm (...)</strong> ở góc trên bên phải và chọn <strong>"Mở bằng trình duyệt" (Safari)</strong>.
+          </div>
+        </div>
+        <div class="step-item" style="margin-bottom: 12px;">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            Tại trình duyệt Safari: Nhìn xuống thanh công cụ ở đáy màn hình, bấm vào biểu tượng <strong>Chia sẻ</strong> 
+            <svg class="inline-svg-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg> 
+            (hình ô vuông có mũi tên chỉ lên).
+          </div>
+        </div>
+        <div class="step-item" style="margin-bottom: 12px;">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            Cuộn xuống danh sách tùy chọn và chọn dòng <strong>"Thêm vào MH chính"</strong> (Add to Home Screen).
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            Bấm nút <strong>"Thêm"</strong> ở góc trên bên phải để hoàn tất đưa ứng dụng ra ngoài.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TIEU CHI 1: CHUNG CHI AN TOAN TLS 1.3 -->
-    <div class="trust-card">
-      <div class="trust-icon-box">
-        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M10 11V9a2 2 0 1 1 4 0v2"/>
-          <rect x="8" y="11" width="8" height="6" rx="1"/>
-        </svg>
-      </div>
-      <div class="trust-content">
-        <div class="trust-card-heading">CHỨNG CHỈ BẢO MẬT TLS 1.3</div>
-        <div class="trust-card-body">
-          Kết nối an toàn được xác thực chính thức bởi tổ chức quốc tế. Thông tin số điện thoại và lộ trình được mã hóa bảo vệ tuyệt đối.
+    <!-- 6. HE THONG 4 THE THONG SO KY THUAT & BAO MAT -->
+    <div class="trust-grid">
+      
+      <!-- CHUNG CHI SO GOOGLE YR1 -->
+      <div class="trust-tile">
+        <div class="tile-icon-box">
+          <svg class="tile-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M10 11V9a2 2 0 1 1 4 0v2"/>
+            <rect x="8" y="11" width="8" height="6" rx="1"/>
+          </svg>
         </div>
-        <div class="trust-card-tip">
-          Mẹo: Bạn có thể tự bấm vào biểu tượng Ổ Khóa trên thanh địa chỉ để xem giấy chứng nhận an toàn này.
+        <div class="tile-main">
+          <div class="tile-title">CHỨNG CHỈ SỐ TLS 1.3 (GOOGLE TRUST SERVICES YR1)</div>
+          <div class="tile-desc">
+            Kết nối được xác thực chính thức bởi tổ chức Google Trust Services (YR1). Dữ liệu được mã hóa bằng AES_128_GCM cùng cơ chế trao đổi khóa hiện đại X25519MLKEM768.
+          </div>
+          <div class="tile-tip-box">
+            Xác minh: Bạn có thể tự bấm vào biểu tượng Ổ Khóa trên thanh địa chỉ trình duyệt để kiểm tra trực tiếp thông tin chứng chỉ này.
+          </div>
         </div>
       </div>
+
+      <!-- KHONG TON DUNG LUONG -->
+      <div class="trust-tile">
+        <div class="tile-icon-box">
+          <svg class="tile-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <path d="M9 4v16"/>
+            <path d="M15 4v16"/>
+            <path d="M4 9h16"/>
+            <path d="M4 15h16"/>
+          </svg>
+        </div>
+        <div class="tile-main">
+          <div class="tile-title">KHÔNG TỐN BỘ NHỚ MÁY (0 MB DUNG LƯỢNG)</div>
+          <div class="tile-desc">
+            Ứng dụng vận hành theo tiêu chuẩn Web PWA trực tiếp từ đám mây, hoàn toàn không chiếm dung lượng ổ nhớ và không gây chậm máy.
+          </div>
+        </div>
+      </div>
+
+      <!-- TRINH DUYET HE THONG -->
+      <div class="trust-tile">
+        <div class="tile-icon-box">
+          <svg class="tile-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+        </div>
+        <div class="tile-main">
+          <div class="tile-title">TRÌNH DUYỆT MẶC ĐỊNH AN TOÀN</div>
+          <div class="tile-desc">
+            Tuyệt đối không yêu cầu tải bất kỳ tệp tin cài đặt APK ngoài luồng nào. Thao tác diễn ra an toàn trực tiếp trên trình duyệt web mặc định của điện thoại.
+          </div>
+        </div>
+      </div>
+
+      <!-- MA NGUON MO GITHUB -->
+      <div class="trust-tile opensource-tile">
+        <div class="tile-icon-box">
+          <svg class="tile-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="tile-main">
+          <div class="tile-title">MINH BẠCH MÃ NGUỒN MỞ GITHUB</div>
+          <div class="tile-desc">
+            Mã nguồn giao diện được lưu trữ công khai trên GitHub để cộng đồng có thể kiểm chứng tính minh bạch và an toàn.
+          </div>
+          <a href="https://github.com/namutachi-webtachi/datxe" target="_blank" class="repo-anchor-btn">
+            XEM MÃ NGUỒN TRÊN GITHUB
+          </a>
+        </div>
+      </div>
+
     </div>
 
-    <!-- TIEU CHI 2: KHONG TON BO NHO MAY (0 MB) -->
-    <div class="trust-card">
-      <div class="trust-icon-box">
-        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="16" height="16" rx="2"/>
-          <path d="M9 4v16"/>
-          <path d="M15 4v16"/>
-          <path d="M4 9h16"/>
-          <path d="M4 15h16"/>
-        </svg>
-      </div>
-      <div class="trust-content">
-        <div class="trust-card-heading">KHÔNG TỐN BỘ NHỚ MÁY (0 MB)</div>
-        <div class="trust-card-body">
-          Không giống ứng dụng nặng nề thông thường, Web App chỉ tạo biểu tượng lối tắt ngoài màn hình, hoàn toàn không chiếm dung lượng máy.
-        </div>
-      </div>
-    </div>
-
-    <!-- TIEU CHI 3: MINH BACH MA NGUON MO GITHUB -->
-    <div class="trust-card opensource-card">
-      <div class="trust-icon-box">
-        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6"/>
-          <polyline points="8 6 2 12 8 18"/>
-        </svg>
-      </div>
-      <div class="trust-content">
-        <div class="trust-card-heading">MINH BẠCH MÃ NGUỒN MỞ</div>
-        <div class="trust-card-body">
-          Mã nguồn giao diện được công khai 100% trên GitHub để bất kỳ ai cũng có thể kiểm tra tính an toàn, đảm bảo không chứa mã độc.
-        </div>
-        <a href="https://github.com/namutachi-webtachi/datxe" target="_blank" class="btn-repo-link">
-          XEM MÃ NGUỒN TRÊN GITHUB
-        </a>
-      </div>
-    </div>
-
-    <!-- CUM NUT HANH DONG -->
-    <div class="action-group">
-      <button class="btn-action-primary" id="btnLaunchBrowser">
+    <!-- 7. CUM NUT HANH DONG -->
+    <div class="command-action-group">
+      <button class="btn-launch-engine" id="btnLaunchEngine">
         MỞ TRÌNH DUYỆT ĐỂ CÀI ĐẶT
       </button>
-      <a href="./booking.html" class="btn-action-back">
+
+      <a href="./booking.html" class="btn-return-booking">
         QUAY LẠI TRANG ĐẶT XE
+      </a>
+
+      <a href="tel:0912101580" class="btn-call-hotline">
+        GỌI HOTLINE TRỰC TIẾP: 0912.101.580
       </a>
     </div>
 
   </div>
 
   <script>
-    // KHI BAM NUT: CHUYEN SANG TRINH DUYET MAC DINH KEM CO ?auto_install=1
-    document.getElementById('btnLaunchBrowser').addEventListener('click', () => {
-      if (navigator.vibrate) {
-        navigator.vibrate(30);
-      }
-      
-      const currentHost = window.location.host;
-      const targetPath = window.location.pathname.replace('guide.html', 'booking.html');
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isIos = /iphone|ipad|ipod/.test(userAgent);
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isIos = /iphone|ipad|ipod/.test(userAgent);
 
-      if (isIos) {
-        alert('TREN IPHONE:\nVui long bam bieu tuong Chia se o day trinh duyet Safari -> Chon "Them vao MH Chinh" (Add to Home Screen) de hoan tat!');
-      } else {
+    const tabAndroid = document.getElementById('tabAndroid');
+    const tabIos = document.getElementById('tabIos');
+    const androidSteps = document.getElementById('androidSteps');
+    const iosSteps = document.getElementById('iosSteps');
+    const instTitle = document.getElementById('instTitle');
+    const btnLaunchEngine = document.getElementById('btnLaunchEngine');
+
+    function showIosTab() {
+      tabIos.classList.add('active');
+      tabAndroid.classList.remove('active');
+      iosSteps.style.display = 'block';
+      androidSteps.style.display = 'none';
+      instTitle.innerText = 'CÁCH CÀI ĐẶT TRÊN IPHONE (SAFARI)';
+    }
+
+    function showAndroidTab() {
+      tabAndroid.classList.add('active');
+      tabIos.classList.remove('active');
+      androidSteps.style.display = 'block';
+      iosSteps.style.display = 'none';
+      instTitle.innerText = 'CÁCH CÀI ĐẶT TRÊN ANDROID';
+    }
+
+    tabAndroid.addEventListener('click', showAndroidTab);
+    tabIos.addEventListener('click', showIosTab);
+
+    if (isIos) {
+      showIosTab();
+      btnLaunchEngine.innerText = 'ĐÃ HIỂU - QUAY LẠI ĐẶT XE';
+      btnLaunchEngine.onclick = () => {
+        window.location.href = './booking.html';
+      };
+    } else {
+      showAndroidTab();
+      btnLaunchEngine.addEventListener('click', () => {
+        if (navigator.vibrate) navigator.vibrate(30);
+
+        const currentHost = window.location.host;
+        const targetPath = window.location.pathname.replace('guide.html', 'booking.html');
         const intentUrl = 'intent://' + currentHost + targetPath + '?auto_install=1#Intent;scheme=https;action=android.intent.action.VIEW;end';
         window.location.href = intentUrl;
-      }
-    });
+      });
+    }
   </script>
 </body>
 </html>
