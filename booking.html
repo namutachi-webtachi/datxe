@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.0.8">
+  <link rel="stylesheet" href="./css/booking.css?v=1.0.9">
 </head>
 <body>
 
@@ -50,7 +50,7 @@
         </button>
       </section>
 
-      <!-- FORM NHAP TU DO -->
+      <!-- FORM NHAP -->
       <form id="bookingForm" class="booking-fields-form">
         
         <!-- DIEM DON -->
@@ -124,7 +124,7 @@
       </form>
     </main>
 
-    <!-- THANH PING DONG DINH -->
+    <!-- THANH PING -->
     <div class="system-monitor-bar" id="systemMonitor">
       <div class="monitor-dot" id="pingDot"></div>
       <span class="monitor-text" id="pingText">ĐO PING...</span>
@@ -215,7 +215,7 @@
     }
 
     // ==========================================================================
-    // 4. BAN DO BAN QUYEN OPENSTREETMAP NATIVE DARK (0% API KEY, 100% FREE & DETAIL)
+    // 4. BAN DO ESRI WORLD DARK GRAY (NATIVE DARK 100% HIEN THI DIEN THOAI)
     // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
@@ -235,31 +235,41 @@
     const map = L.map('map', { 
       zoomControl: false,
       scrollWheelZoom: false,
+      fadeAnimation: false, // TAT ANIMATION NEU KHONG SATORI MOBILE SE LAM AN TILE
+      markerZoomAnimation: false,
       bounceAtZoomLimits: false,
       maxBounds: VN_BOUNDS,
       maxBoundsViscosity: 1.0,
       minZoom: 5,
-      maxZoom: 19,
+      maxZoom: 18,
       tap: true,
       renderer: L.canvas()
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-    // TIEN TAY WATERMARK: OPENSTREETMAP GLOBAL TILE SERVER VOI CSS DARK-FILTER
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      className: 'dark-tile-layer',
-      attribution: '&copy; OpenStreetMap contributors'
+    // NGUON TILE ESRI WORLD DARK GRAY (NATIVE DARK, 0% API KEY, CHAY TIEU CHUAN TREN ALL MOBILE)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 18,
+      crossOrigin: true,
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
     }).addTo(map);
 
-    // FIX CO DAN KHI WEBPAGE LOAD TREN DIEN THOAI
-    setTimeout(() => { map.invalidateSize(); }, 300);
-    window.addEventListener('load', () => map.invalidateSize());
+    // KICK HOAT MAP RENDER NGAY TRONG KHI WEBPAGE LOAD TREN SAFARI / CHROME MOBILE
+    function forceResizeMap() {
+      if (map) {
+        map.invalidateSize();
+      }
+    }
+    setTimeout(forceResizeMap, 100);
+    setTimeout(forceResizeMap, 500);
+    window.addEventListener('load', forceResizeMap);
+    window.addEventListener('resize', forceResizeMap);
+    window.addEventListener('orientationchange', forceResizeMap);
 
     // GHIM DIEM DON VA DIEM DEN
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
 
-    // HAM TU DONG THU PHONG MANG LACE DE HIEN THI HET DIEM & DUONG DI
+    // HAM TU DONG THU PHONG DE XEM HET CON DUONG DI
     function autoFitRouteBounds() {
       const activePoints = [pickupMarker, dropoffMarker];
       if (userLocationMarker) activePoints.push(userLocationMarker);
@@ -267,9 +277,9 @@
       const featureGroup = L.featureGroup(activePoints);
       
       if (routePolyline) {
-        map.fitBounds(routePolyline.getBounds(), { padding: [40, 40], maxZoom: 16 });
+        map.fitBounds(routePolyline.getBounds(), { padding: [35, 35], maxZoom: 16 });
       } else {
-        map.fitBounds(featureGroup.getBounds(), { padding: [40, 40], maxZoom: 15 });
+        map.fitBounds(featureGroup.getBounds(), { padding: [35, 35], maxZoom: 15 });
       }
     }
 
@@ -311,7 +321,7 @@
             style: { color: '#dfb76c', weight: 5, opacity: 0.95 }
           }).addTo(map);
 
-          // TU DONG THU PHONG DE XEM HET CON DUONG DI
+          // AUTO FIT BOUNDS PUSH VIEW
           autoFitRouteBounds();
 
           const pAddr = document.getElementById('pickupAddress').value;
@@ -340,7 +350,7 @@
       });
     }
 
-    // TAO ICON PULSE RED/BLUE DANH DAU VI TRI HIEN TAI CUA TOI
+    // ICON GPS CHAT
     const userGpsIcon = L.divIcon({
       className: 'custom-gps-pin',
       html: `<div class="user-gps-pulse-marker" title="Vị trí của bạn"></div>`,
@@ -348,7 +358,7 @@
       iconAnchor: [9, 9]
     });
 
-    // NUT "VI TRI CUA TOI" DRIVEN WITH AUTO FIT BOUNDS
+    // NUT "VI TRI CUA TOI"
     document.getElementById('btnGps').addEventListener('click', () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
@@ -356,19 +366,16 @@
           const lon = pos.coords.longitude;
           userGpsCoords = { lat, lon };
 
-          // 1. Cap nhat ghim GPS rieng biet
           if (userLocationMarker) {
             userLocationMarker.setLatLng([lat, lon]);
           } else {
             userLocationMarker = L.marker([lat, lon], { icon: userGpsIcon }).addTo(map);
           }
 
-          // 2. Lay diem don la vi tri nay
           pickupCoords = { lat, lon };
           pickupMarker.setLatLng([lat, lon]);
           document.getElementById('pickupAddress').value = 'Vị trí hiện tại của bạn';
 
-          // 3. Tinh duong & Tu dong co dan full lo trình
           calculateDistance();
 
         }, () => {
