@@ -35,7 +35,7 @@
       <!-- TRANG THAI BAC TAI -->
       <div class="driver-status-bar">
         <div class="status-indicator-dot"></div>
-        <span class="status-indicator-text">XE NHÀ VF5 SẴN SÀNG PHỤC VỤ 24/7</span>
+        <span class="status-indicator-text">XE NHÀ ĐÃ SẴN SÀNG PHỤC </span>
       </div>
 
       <!-- BAN DO -->
@@ -202,7 +202,7 @@
       });
     }
 
-  // 4. KHOI TAO BAN DO LEAFLET BONG DEM (DUNG OPENSTREETMAP GOC 0 DONG)
+ // 4. KHOI TAO BAN DO LEAFLET BONG DEM (DUNG OPENSTREETMAP GOC 0 DONG)
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
@@ -224,13 +224,6 @@
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
       document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
-      calculateDistance();
-    });
-
-    dropoffMarker.on('dragend', (e) => {
-      const pos = e.target.getLatLng();
-      dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
