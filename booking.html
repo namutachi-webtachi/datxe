@@ -202,36 +202,37 @@
       });
     }
 
-// 4. KHOI TAO BAN DO LEAFLET BONG DEM (NATIVE DARK MAP)
+// 4. KHOI TAO BAN DO LEAFLET BONG DEM (CHUAN 2026)
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
     let routePolyline = null;
     let measuredDistanceKm = 0;
 
-    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Khong cho vuot ra ngoai)
-    const VN_BOUNDS = [
-      [8.179, 102.144], // Toa do Tay Nam (Ca Mau / Phu Quoc)
-      [23.393, 109.464] // Toa do Dong Bac (Ha Giang / Mong Cai)
-    ];
+    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Dung chuan L.latLngBounds)
+    const southWest = L.latLng(8.179, 102.144);
+    const northEast = L.latLng(23.393, 109.464);
+    const VN_BOUNDS = L.latLngBounds(southWest, northEast);
 
     const map = L.map('map', { 
       zoomControl: false,
       maxBounds: VN_BOUNDS,
-      maxBoundsViscosity: 1.0, // Khoa cung, khong cho keo bat ra ngoai
-      minZoom: 5 // Khong cho zoom out qua nho mat hinh
+      maxBoundsViscosity: 1.0, // Khoa cung 100%, keo ra ngoai no bat lai ngay
+      minZoom: 5,
+      maxZoom: 19
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-    // Dung ban do CartoDB Dark Matter ban Public (Khong doi API Key)
+    // Ban do CartoDB Dark Matter
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
-      maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // FIX LOI DEN MAN HINH DIEN THOAI: Ep Leaflet cap nhat lai kich thuoc sau khi render
-    setTimeout(() => {
+    // GIAI PHAP 2026: DUNG RESIZE OBSERVER DE EP DIEN THOAI LOAD MAP (KHONG DUNG SETTIMEOUT NUA)
+    const mapContainer = document.getElementById('map');
+    const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize();
-    }, 400);
+    });
+    resizeObserver.observe(mapContainer);
 
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
@@ -249,7 +250,6 @@
       document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
-
     // 5. THUAT TOAN GOI OSRM DO KM THAT
     async function calculateDistance() {
       const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
