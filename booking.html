@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.1.1">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.2">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
         <!-- DIEM DEN -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
-          <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (Ví dụ: Bệnh viện, Ga tàu, Ngõ Trại Cá...)">
+          <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (Ví dụ: Bệnh viện, Ga tàu,...)">
         </div>
 
         <!-- LOAI CHUYEN -->
@@ -397,16 +397,17 @@
       }
     }
 
-    // HAM TUDONG DICH CHU THANH TOA DO GPS NEU KHANG KHONG BAM DROPDOWN
+    // HAM TUDONG DICH CHU THANH TOA DO GPS (SUA LOI HTTP 400 BAD REQUEST)
     async function autoGeocodeAddressInput(addressText, isPickup = false) {
       if (!addressText || addressText.length < 2) return null;
 
-      const lat = pickupCoords ? pickupCoords.lat : 20.4288;
-      const lon = pickupCoords ? pickupCoords.lon : 106.1685;
-      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&bbox=102.0,8.0,109.9,23.5&limit=1&lang=vi`;
+      const lat = pickupCoords ? parseFloat(pickupCoords.lat).toFixed(5) : '20.4288';
+      const lon = pickupCoords ? parseFloat(pickupCoords.lon).toFixed(5) : '106.1685';
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&countrycode=vn&limit=1&lang=vi`;
 
       try {
         const res = await fetch(url);
+        if (!res.ok) return null;
         const data = await res.json();
 
         if (data && data.features && data.features.length > 0) {
@@ -426,7 +427,7 @@
       return null;
     }
 
-    // BATCH EVENT BLUR DE TUDONG DICH CHU KHI KHANG CHUYEN O NHAP
+    // AUTO GEOCODE KHI RỜI Ô NHẬP ĐIỂM ĐẾN
     document.getElementById('dropoffAddress').addEventListener('blur', async (e) => {
       const text = e.target.value.trim();
       if (text && !dropoffCoords) {
@@ -456,8 +457,7 @@
       e.preventDefault();
       
       const dropoffText = document.getElementById('dropoffAddress').value.trim();
-      
-      // NEU CHUA CO TOA DO DIEM DEN, TU DONG DICH CHU THANH TOA DO
+
       if (!dropoffCoords && dropoffText) {
         await autoGeocodeAddressInput(dropoffText, false);
       }
