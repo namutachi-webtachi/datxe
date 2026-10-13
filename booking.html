@@ -202,20 +202,36 @@
       });
     }
 
- // 4. KHOI TAO BAN DO LEAFLET BONG DEM (DUNG OPENSTREETMAP GOC 0 DONG)
+// 4. KHOI TAO BAN DO LEAFLET BONG DEM (NATIVE DARK MAP)
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
     let routePolyline = null;
     let measuredDistanceKm = 0;
 
-    const map = L.map('map', { zoomControl: false }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
+    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Khong cho vuot ra ngoai)
+    const VN_BOUNDS = [
+      [8.179, 102.144], // Toa do Tay Nam (Ca Mau / Phu Quoc)
+      [23.393, 109.464] // Toa do Dong Bac (Ha Giang / Mong Cai)
+    ];
+
+    const map = L.map('map', { 
+      zoomControl: false,
+      maxBounds: VN_BOUNDS,
+      maxBoundsViscosity: 1.0, // Khoa cung, khong cho keo bat ra ngoai
+      minZoom: 5 // Khong cho zoom out qua nho mat hinh
+    }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-    // DUNG CHINH GOC OPENSTREETMAP - KHONG BAO GIO DOI API KEY
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+    // Dung ban do CartoDB Dark Matter ban Public (Khong doi API Key)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
+
+    // FIX LOI DEN MAN HINH DIEN THOAI: Ep Leaflet cap nhat lai kich thuoc sau khi render
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 400);
 
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
@@ -224,6 +240,13 @@
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
       document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
+      calculateDistance();
+    });
+
+    dropoffMarker.on('dragend', (e) => {
+      const pos = e.target.getLatLng();
+      dropoffCoords = { lat: pos.lat, lon: pos.lng };
+      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
