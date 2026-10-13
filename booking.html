@@ -147,11 +147,14 @@
       if (initAppUpdater) initAppUpdater();
     } catch (e) {}
 
-    try {
+try {
       const geoModule = await import('./js/geo-search.js');
       initAddressAutocomplete = geoModule.initAddressAutocomplete;
-    } catch (e) {}
+    } catch (e) {
+      console.error("LỖI CMN FILE GEO-SEARCH RỒI BRO ƠI! KIỂM TRA LẠI FILE JS ĐI:", e);
+    }
 
+    const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
     const installIcon = document.getElementById('installIcon');
     if (installIcon && autoCropImage) {
       try { autoCropImage(installIcon); } catch (e) {}
