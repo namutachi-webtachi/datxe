@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.1.5">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.6">
 </head>
 <body>
 
@@ -211,17 +211,20 @@
     }
 
     // ==========================================================================
-    // BAN DO BAN QUYEN ESRI WORLD DARK GRAY (HIEN THI SAN 2 GHIM VA DUONG DI)
+    // KHỞI TẠO BẢN ĐỒ BẢN QUYỀN ESRI WORLD DARK GRAY (MIỄN PHÍ)
     // ==========================================================================
-    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh fallback
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; 
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
+    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; 
     
     let routePolyline = null;
     let pickupMarker = null;
     let dropoffMarker = null;
     let userLocationMarker = null;
     let measuredDistanceKm = 0;
+
+    // THAY ĐÚNG LINK CLOUDFLARE CỦA BRO VÀO ĐÂY:
+    const WORKER_URL = 'https://taxi-search-api.TEN-CUA-BRO.workers.dev';
 
     const VN_BOUNDS = L.latLngBounds(
       L.latLng(8.179, 102.144),
@@ -331,6 +334,7 @@
       }
     }
 
+    // CHỈ ĐƯỜNG KẼ VẠCH OSRM MIỄN PHÍ
     async function calculateDistance() {
       if (!dropoffCoords || !pickupCoords) return;
 
@@ -368,23 +372,23 @@
       }
     }
 
-    // AUTO GEOCODE CHAY DUAL ENGINE (PHOTON + NOMINATIM) KHONG BAO GIO BI LOI 400
+    // TỰ ĐỘNG DỊCH CHỮ KHI KHÁCH GÕ (GỌI QUA CLOUDFLARE)
     async function autoGeocodeAddressInput(addressText, isPickup = false) {
       if (!addressText || addressText.length < 2) return null;
 
       const lat = pickupCoords ? parseFloat(pickupCoords.lat).toFixed(4) : '20.4288';
       const lon = pickupCoords ? parseFloat(pickupCoords.lon).toFixed(4) : '106.1685';
 
-      // 1. DUAL ENGINE: THU PHOTON TRUOC
-      const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&limit=1`;
+      const url = `${WORKER_URL}/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&limit=1`;
 
       try {
-        const res = await fetch(photonUrl);
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           if (data && data.features && data.features.length > 0) {
             const feature = data.features[0];
-            const coords = feature.geometry.coordinates; // [lon, lat]
+            const coords = feature.center; // Mapbox trả về [lon, lat]
+            
             if (isPickup) {
               pickupCoords = { lat: coords[1], lon: coords[0] };
               pickupMarker.setLatLng([coords[1], coords[0]]);
@@ -395,28 +399,6 @@
           }
         }
       } catch (e) {}
-
-      // 2. DUAL ENGINE: FALLBACK SANG NOMINATIM OSM
-      const nomUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressText)}&countrycodes=vn&limit=1`;
-      try {
-        const resNom = await fetch(nomUrl);
-        if (resNom.ok) {
-          const dataNom = await resNom.json();
-          if (dataNom && dataNom.length > 0) {
-            const item = dataNom[0];
-            const cLat = parseFloat(item.lat);
-            const cLon = parseFloat(item.lon);
-            if (isPickup) {
-              pickupCoords = { lat: cLat, lon: cLon };
-              pickupMarker.setLatLng([cLat, cLon]);
-            } else {
-              setDropoffLocation(cLat, cLon);
-            }
-            return [cLon, cLat];
-          }
-        }
-      } catch (e) {}
-
       return null;
     }
 
