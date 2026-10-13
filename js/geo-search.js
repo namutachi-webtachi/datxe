@@ -1,6 +1,9 @@
 // ==========================================================================
-// GEO-SEARCH.JS - DỊCH ĐỊA CHỈ TIẾNG VIỆT CHUẨN DUAL-ENGINE (PHOTON + NOMINATIM)
+// GEO-SEARCH.JS - DÙNG CLOUDFLARE WORKER (BẢO MẬT TOKEN TUYỆT ĐỐI)
 // ==========================================================================
+
+// THAY ĐÚNG LINK CLOUDFLARE WORKER CỦA BRO VÀO ĐÂY NHÉ:
+const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev/';
 
 export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoordsFn) {
   const inputEl = document.getElementById(inputId);
@@ -40,85 +43,46 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
           } catch (e) {}
         }
 
-        let results = [];
+        // GỌI LÊN CON SERVER ẢO CLOUDFLARE ĐỂ GIẤU TOKEN
+        const url = `${WORKER_URL}/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&limit=5`;
 
-        // ENGIN 1: PHOTON CLEAN REQUEST (KHONG CHUA LANG=VI DE TRANH BAD REQUEST 400)
-        const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&limit=5`;
-        
-        try {
-          const res = await fetch(photonUrl);
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.features && data.features.length > 0) {
-              results = data.features.map(f => {
-                const p = f.properties || {};
-                const name = p.name || p.street || p.housenumber || query;
-                const parts = [
-                  p.housenumber ? `Số ${p.housenumber}` : null,
-                  p.street && p.street !== p.name ? p.street : null,
-                  p.district || p.suburb || p.locality,
-                  p.city || p.county || p.state
-                ].filter(Boolean);
-                const cleanParts = parts.filter((part, idx, self) => part !== name && self.indexOf(part) === idx);
-                const sub = cleanParts.join(', ');
-                return {
-                  lat: f.geometry.coordinates[1],
-                  lon: f.geometry.coordinates[0],
-                  mainName: name,
-                  fullName: sub ? `${name}, ${sub}` : name,
-                  subText: sub
-                };
-              });
-            }
-          }
-        } catch (e) {}
-
-        // ENGIN 2: NOMINATIM OSM FALLBACK (NEU PHOTON KHONG CO KET QUA HOAC LOI)
-        if (results.length === 0) {
-          const nomUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=vn&limit=5&addressdetails=1`;
-          try {
-            const resNom = await fetch(nomUrl, { headers: { 'Accept-Language': 'vi' } });
-            if (resNom.ok) {
-              const dataNom = await resNom.json();
-              if (dataNom && dataNom.length > 0) {
-                results = dataNom.map(item => {
-                  const addr = item.address || {};
-                  const name = addr.amenity || addr.road || addr.suburb || item.display_name.split(',')[0];
-                  return {
-                    lat: parseFloat(item.lat),
-                    lon: parseFloat(item.lon),
-                    mainName: name,
-                    fullName: item.display_name,
-                    subText: item.display_name
-                  };
-                });
-              }
-            }
-          } catch (e) {}
+        const res = await fetch(url);
+        if (!res.ok) {
+          dropdown.style.display = 'none';
+          return;
         }
 
+        const data = await res.json();
         dropdown.innerHTML = '';
 
-        if (results.length > 0) {
+        if (data && data.features && data.features.length > 0) {
           dropdown.style.display = 'block';
 
-          results.forEach(item => {
+          data.features.forEach((feature) => {
+            // Mapbox trả về text và place_name
+            const mainTitle = feature.text || feature.place_name.split(',')[0];
+            const fullAddress = feature.place_name;
+            const coords = feature.center; // [lon, lat]
+
+            const addressParts = fullAddress.split(',');
+            const subLabel = addressParts.slice(1).join(',').trim();
+
             const itemEl = document.createElement('div');
             itemEl.className = 'geo-autocomplete-item';
             itemEl.innerHTML = `
-              <div style="font-weight: 700; color: #dfb76c; font-size: 13px;">${item.mainName}</div>
-              <div style="font-size: 11px; color: #94a3b8; margin-top: 2px; line-height: 1.3;">${item.subText || item.fullName}</div>
+              <div style="font-weight: 700; color: #dfb76c; font-size: 13px;">${mainTitle}</div>
+              <div style="font-size: 11px; color: #94a3b8; margin-top: 2px; line-height: 1.3;">${subLabel || fullAddress}</div>
             `;
 
             itemEl.addEventListener('click', () => {
-              inputEl.value = item.fullName;
+              inputEl.value = fullAddress;
               dropdown.style.display = 'none';
               dropdown.innerHTML = '';
 
               onSelectCallback({
-                lat: item.lat,
-                lon: item.lon,
-                name: item.fullName
+                lat: coords[1],
+                lon: coords[0],
+                name: fullAddress
               });
             });
 
