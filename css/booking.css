@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BOOKING.CSS - GIAO DIEN DAT XE CHINH
+   BOOKING.CSS - GIAO DIEN DAT XE CHINH CHUAN CHUYEN CO MAT DAT
    Bang mau: Deep Navy #09131f, Gold #dfb76c, Red VF5 #dc2626
    ========================================================================== */
 
@@ -30,75 +30,79 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
 }
 
 /* ==========================================================================
-   HEADER NAVIGATION (LOGO & NUT TAI APP)
+   HEADER NAVIGATION (LOGO & NUT TAI APP CAO CAP)
    ========================================================================== */
 .top-nav {
   width: 100%;
-  height: 70px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 18px;
   border-bottom: 1px solid rgba(223, 183, 108, 0.15);
   background: rgba(6, 14, 24, 0.85);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   z-index: 100;
 }
 
-/* Logo TN - Nhan 5 lan de xoa cache */
 .nav-logo {
   height: 38px;
   width: auto;
   object-fit: contain;
   cursor: pointer;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
   transition: transform 0.2s ease;
 }
 
 .nav-logo:active {
-  transform: scale(0.9);
+  transform: scale(0.92);
 }
 
-/* Nut Tai App - Giau di neu da cai dat */
+/* NUT TAI APP FORM VIEN THUOC TO, DAM TAY, SANG TRONG */
 .nav-install-btn {
   display: flex;
   align-items: center;
-  gap: 12px; /* Tang khoang cach giua icon va chu */
-  background: linear-gradient(135deg, rgba(223, 183, 108, 0.15) 0%, rgba(166, 124, 46, 0.05) 100%);
-  border: 1px solid rgba(223, 183, 108, 0.4);
-  padding: 10px 18px; /* Cho nut to va dai hon */
-  border-radius: 10px;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(223, 183, 108, 0.18) 0%, rgba(13, 27, 42, 0.9) 100%);
+  border: 1px solid rgba(223, 183, 108, 0.45);
+  padding: 8px 18px;
+  border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Them do bong cho nut */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(223, 183, 108, 0.1);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .nav-install-btn:active {
   transform: scale(0.95);
-  background: rgba(223, 183, 108, 0.25);
+  background: rgba(223, 183, 108, 0.28);
+  border-color: #dfb76c;
 }
 
-/* Icon rieng de Chu tich de dang thay the anh */
+/* ICON PHONG TO CAN DOI, NET CANG */
 .install-icon-img {
-  width: 32px;  /* TANG KICH THUOC TU 18px LEN 32px */
-  height: 32px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  flex-shrink: 0;
 }
 
+/* CHU TO RO, SANG TRONG */
 .install-text {
-  font-size: 15px; /* Tang size chu de can doi voi icon 32px */
+  font-size: 13px;
   font-weight: 800;
   color: #dfb76c;
   letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 /* ==========================================================================
-   KHU VUC NOI DUNG CHINH (SE CODE TIEP O CAC MODULE SAU)
+   KHU VUC NOI DUNG CHINH
    ========================================================================== */
 .main-content {
   flex: 1;
