@@ -202,56 +202,68 @@
       });
     }
 
-// 4. KHOI TAO BAN DO LEAFLET BONG DEM (CHUAN 2026)
+// ==========================================================================
+    // 4. KHOI TAO BAN DO LEAFLET BONG DEM TOI UU MOBILE 2026 (CANVAS + ESRI)
+    // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
     let routePolyline = null;
     let measuredDistanceKm = 0;
 
-    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Dung chuan L.latLngBounds)
+    // KHOA GIOI HAN BAN DO TRONG KHU VUC VIET NAM (Dung L.latLngBounds)
     const southWest = L.latLng(8.179, 102.144);
     const northEast = L.latLng(23.393, 109.464);
     const VN_BOUNDS = L.latLngBounds(southWest, northEast);
 
+    // KHOI TAO BAN DO VOI CAC CAU HINH TOI UU TOUCH TREN MOBILE
     const map = L.map('map', { 
       zoomControl: false,
+      scrollWheelZoom: false, // Chong bay ngon tay khi cuon trang
+      bounceAtZoomLimits: false,
       maxBounds: VN_BOUNDS,
-      maxBoundsViscosity: 1.0, // Khoa cung 100%, keo ra ngoai no bat lai ngay
+      maxBoundsViscosity: 1.0, // Khoa cung 100% bien gioi VN
       minZoom: 5,
-      maxZoom: 19
+      maxZoom: 19,
+      renderer: L.canvas() // CHUYEN SANG CANVAS RENDERER CHO GPU KHOE
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-   // DUNG CHUAN OPENSTREETMAP GOC 100% MIEN PHI TRON DOI
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
+    // BAN DO ESRI DARK GRAY BASE: DEN NATIVE, KHONG CAU KIN, KHONG DOI API KEY
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { 
+      attribution: '© Esri',
+      maxNativeZoom: 16, // Zoom den 16 tiles goc, qua 16 Leaflet tu phong to anh khong bi loi
+      maxZoom: 19
     }).addTo(map);
 
-    // GIAI PHAP 2026: DUNG RESIZE OBSERVER DE EP DIEN THOAI LOAD MAP (KHONG DUNG SETTIMEOUT NUA)
-    const mapContainer = document.getElementById('map');
-    const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize();
-    });
-    resizeObserver.observe(mapContainer);
+    // BI KIP 2026: RESIZE OBSERVER KHAC PHUC HOAN TOAN LOI BANG DEN/XAM TREN MOBILE
+    const mapElement = document.getElementById('map');
+    if (window.ResizeObserver && mapElement) {
+      const observer = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      observer.observe(mapElement);
+    }
 
+    // TAO GHIM DIEM DON VA DIEM DEN
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
 
+    // THUAT TOAN KEO THA GHIM CAP NHAT TOA DO THUC TE
     pickupMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
+      document.getElementById('pickupAddress').value = 'Toa do da ghim tren ban do';
       calculateDistance();
     });
 
     dropoffMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
+      document.getElementById('dropoffAddress').value = 'Toa do da ghim tren ban do';
       calculateDistance();
     });
-    // 5. THUAT TOAN GOI OSRM DO KM THAT
+
+    // HAM GOI OSRM VOI CANVAS RENDERER TOI UU TAP TINH
     async function calculateDistance() {
       const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
       
@@ -267,9 +279,12 @@
           document.getElementById('displayDistance').innerText = `${measuredDistanceKm} km`;
           document.getElementById('displayDuration').innerText = `${durationMins} phut`;
 
+          // Xoa vach cu va ve vach moi bang Canvas (Sieu muot)
           if (routePolyline) map.removeLayer(routePolyline);
+          
           routePolyline = L.geoJSON(route.geometry, {
-            style: { color: '#dfb76c', weight: 4, opacity: 0.85 }
+            renderer: L.canvas(), // DUNG CANVAS CHONG GIAT LAG TREN MOBILE
+            style: { color: '#dfb76c', weight: 4, opacity: 0.9 }
           }).addTo(map);
 
           map.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
@@ -281,6 +296,7 @@
         }
       } catch (err) {
         document.getElementById('displayDistance').innerText = '-- km';
+        document.getElementById('displayDuration').innerText = '-- phut';
       }
     }
 
