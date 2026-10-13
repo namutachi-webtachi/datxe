@@ -1,9 +1,8 @@
 // ==========================================================================
-// GEO-SEARCH.JS - DÙNG CLOUDFLARE WORKER (BẢO MẬT TOKEN TUYỆT ĐỐI)
+// GEO-SEARCH.JS - BẢN FIX LỖI HIỂN THỊ DROPDOWN
 // ==========================================================================
 
-// THAY ĐÚNG LINK CLOUDFLARE WORKER CỦA BRO VÀO ĐÂY NHÉ:
-const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev/';
+const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
 
 export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoordsFn) {
   const inputEl = document.getElementById(inputId);
@@ -43,7 +42,6 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
           } catch (e) {}
         }
 
-        // GỌI LÊN CON SERVER ẢO CLOUDFLARE ĐỂ GIẤU TOKEN
         const url = `${WORKER_URL}/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&limit=5`;
 
         const res = await fetch(url);
@@ -59,7 +57,6 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
           dropdown.style.display = 'block';
 
           data.features.forEach((feature) => {
-            // Mapbox trả về text và place_name
             const mainTitle = feature.text || feature.place_name.split(',')[0];
             const fullAddress = feature.place_name;
             const coords = feature.center; // [lon, lat]
