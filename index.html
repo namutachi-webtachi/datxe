@@ -21,6 +21,19 @@
   </style>
 
   <script>
+    // 0. TU DONG XE RAO ZALO WEBVIEW TREN ANDROID (AUTO BREAKOUT TO CHROME)
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isZalo = userAgent.includes('zalo');
+    const isAndroid = userAgent.includes('android');
+
+    if (isZalo && isAndroid) {
+      // Biet la Zalo Android -> Biet lap tuc ban Intent ep Android mo Chrome
+      const currentFullUrl = window.location.href.replace(/^https?:\/\//, '');
+      const intentUrl = 'intent://' + currentFullUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+      
+      // Chuyen huong tu dong 100%
+      window.location.href = intentUrl;
+    }
     async function initGateway() {
       // 1. DANG KY SERVICE WORKER
       if ('serviceWorker' in navigator) {
