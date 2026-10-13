@@ -222,8 +222,9 @@
       maxZoom: 19
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
     
-    // Ban do CartoDB Dark Matter
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
+   // DUNG CHUAN OPENSTREETMAP GOC 100% MIEN PHI TRON DOI
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+      maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
