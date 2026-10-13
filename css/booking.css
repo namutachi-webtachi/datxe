@@ -125,7 +125,7 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* KHU VUC BAN DO */
+/* KHU VUC BAN DO - TOI UU DIEN THOAI */
 .map-wrapper {
   position: relative;
   width: 100%;
@@ -147,12 +147,7 @@ body {
   z-index: 1;
 }
 
-/* TIEU DIET API KEY REQUIRED: BIEN MAP THUONG THANH MAP BONG DEM SANG TRONG */
-.dark-tile-layer {
-  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.75) !important;
-}
-
-/* ICON DANH DAU VI TRI CUA TOI (PULSE BLUE DOT) */
+/* ICON CHUYEN DONG GPS VI TRI CUA TOI */
 .user-gps-pulse-marker {
   width: 18px;
   height: 18px;
@@ -206,7 +201,7 @@ body {
   height: 14px;
 }
 
-/* FORM VA INPUTS */
+/* FORM FIELDS */
 .booking-fields-form {
   display: flex;
   flex-direction: column;
@@ -271,7 +266,7 @@ body {
   color: #dfb76c;
 }
 
-/* TRIP OPTIONS */
+/* RADIO OPTIONS */
 .trip-options-row {
   display: flex;
   gap: 12px;
