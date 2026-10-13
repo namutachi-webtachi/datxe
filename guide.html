@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Hướng Dẫn Cài Đặt Ứng Dụng - Taxi TN</title>
+  <link rel="stylesheet" href="./css/scale.css">
+  <style>
+    /* ==========================================================================
+       TRANG HUONG DAN CAI DAT APP & GIAI THICH ZALO WEBVIEW
+       Khong emoji - Bang mau: Deep Navy #09131f, Gold #dfb76c, Red VF5 #dc2626
+       ========================================================================== */
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #060e18;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 10%, #0e2036 0%, #060e18 60%, #020508 100%);
+    }
+
+    .guide-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100dvh;
+      padding: 20px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* HEADER THUONG HIEU */
+    .guide-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(223, 183, 108, 0.2);
+    }
+
+    .guide-logo {
+      width: 38px;
+      height: auto;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+    }
+
+    .guide-brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #dfb76c;
+      text-transform: uppercase;
+    }
+
+    .guide-brand-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* KHUNG THONG BAO GIAI THICH ZALO */
+    .zalo-notice-box {
+      background: linear-gradient(145deg, rgba(223, 183, 108, 0.12) 0%, rgba(13, 27, 42, 0.85) 100%);
+      border: 1px solid rgba(223, 183, 108, 0.45);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .zalo-notice-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #dfb76c;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .zalo-notice-body {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    /* KHUNG HUONG DAN TUNG BUOC CAI DAT */
+    .steps-container {
+      background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
+      border: 1px solid rgba(223, 183, 108, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .steps-heading {
+      font-size: 13px;
+      font-weight: 800;
+      color: #dfb76c;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(223, 183, 108, 0.15);
+      padding-bottom: 8px;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .step-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
+      color: #060e18;
+      font-size: 12px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-detail {
+      font-size: 12px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .step-detail strong {
+      color: #dfb76c;
+    }
+
+    /* THE THONG TIN BAO CHUNG UY TIN */
+    .trust-card {
+      background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
+      border: 1px solid rgba(223, 183, 108, 0.25);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .trust-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(223, 183, 108, 0.1);
+      border: 1px solid rgba(223, 183, 108, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .trust-icon-svg {
+      width: 18px;
+      height: 18px;
+      stroke: #dfb76c;
+    }
+
+    .trust-content {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .trust-card-heading {
+      font-size: 12px;
+      font-weight: 800;
+      color: #dfb76c;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .trust-card-body {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .trust-card-tip {
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-top: 4px;
+      padding: 4px 8px;
+      background: rgba(6, 14, 24, 0.6);
+      border-left: 2px solid #dfb76c;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* THE MA NGUON MO */
+    .opensource-card {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .opensource-card .trust-icon-box {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .opensource-card .trust-icon-svg {
+      stroke: #10b981;
+    }
+
+    .opensource-card .trust-card-heading {
+      color: #10b981;
+    }
+
+    .btn-repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 5px 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 6px;
+      color: #10b981;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    /* CUM NUT HANH DONG */
+    .action-group {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-action-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
+      color: #060e18;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(223, 183, 108, 0.35);
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-action-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-action-back {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(223, 183, 108, 0.2);
+      color: #94a3b8;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="guide-container">
+    
+    <!-- HEADER THUONG HIEU -->
+    <header class="guide-header">
+      <img src="./assets/logo.png" alt="TN Logo" class="guide-logo">
+      <div>
+        <div class="guide-brand-title">TAXI TN</div>
+        <div class="guide-brand-sub">DỊCH VỤ XE RIÊNG CHUYÊN NGHIỆP</div>
+      </div>
+    </header>
+
+    <!-- THONG BAO GIAI THICH ZALO WEBVIEW -->
+    <div class="zalo-notice-box">
+      <div class="zalo-notice-title">LƯU Ý DÀNH CHO NGƯỜI DÙNG ZALO</div>
+      <div class="zalo-notice-body">
+        Trình duyệt nội bộ của Zalo hiện <strong>không hỗ trợ tính năng cài đặt ứng dụng</strong> trực tiếp ra màn hình. Vì vậy, hệ thống cần chuyển hướng bạn sang trình duyệt mặc định của máy (Chrome, Safari, Samsung Internet...) để hoàn tất cài đặt ứng dụng 1-chạm.
+      </div>
+    </div>
+
+    <!-- KHUNG HUONG DAN 2 BUOC CAI DAT CU THE -->
+    <div class="steps-container">
+      <div class="steps-heading">HƯỚNG DẪN CÀI ĐẶT 2 BƯỚC</div>
+      
+      <!-- BUOC 1 -->
+      <div class="step-row">
+        <div class="step-badge">1</div>
+        <div class="step-detail">
+          Bấm nút <strong>"MỞ TRÌNH DUYỆT ĐỂ CÀI ĐẶT"</strong> ở phía dưới để chuyển khỏi Zalo.
+        </div>
+      </div>
+
+      <!-- BUOC 2 -->
+      <div class="step-row">
+        <div class="step-badge">2</div>
+        <div class="step-detail">
+          Tại trình duyệt mặc định:<br>
+          - <strong>Điện thoại Android:</strong> Bấm chọn <strong>"Cài đặt"</strong> khi hộp thoại hiện lên.<br>
+          - <strong>Điện thoại iPhone:</strong> Bấm biểu tượng <strong>Chia sẻ</strong> (ở đáy Safari) và chọn <strong>"Thêm vào MH chính"</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- TIEU CHI 1: CHUNG CHI AN TOAN TLS 1.3 -->
+    <div class="trust-card">
+      <div class="trust-icon-box">
+        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M10 11V9a2 2 0 1 1 4 0v2"/>
+          <rect x="8" y="11" width="8" height="6" rx="1"/>
+        </svg>
+      </div>
+      <div class="trust-content">
+        <div class="trust-card-heading">CHỨNG CHỈ BẢO MẬT TLS 1.3</div>
+        <div class="trust-card-body">
+          Kết nối an toàn được xác thực chính thức bởi tổ chức quốc tế. Thông tin số điện thoại và lộ trình được mã hóa bảo vệ tuyệt đối.
+        </div>
+        <div class="trust-card-tip">
+          Mẹo: Bạn có thể tự bấm vào biểu tượng Ổ Khóa trên thanh địa chỉ để xem giấy chứng nhận an toàn này.
+        </div>
+      </div>
+    </div>
+
+    <!-- TIEU CHI 2: KHONG TON BO NHO MAY (0 MB) -->
+    <div class="trust-card">
+      <div class="trust-icon-box">
+        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <path d="M9 4v16"/>
+          <path d="M15 4v16"/>
+          <path d="M4 9h16"/>
+          <path d="M4 15h16"/>
+        </svg>
+      </div>
+      <div class="trust-content">
+        <div class="trust-card-heading">KHÔNG TỐN BỘ NHỚ MÁY (0 MB)</div>
+        <div class="trust-card-body">
+          Không giống ứng dụng nặng nề thông thường, Web App chỉ tạo biểu tượng lối tắt ngoài màn hình, hoàn toàn không chiếm dung lượng máy.
+        </div>
+      </div>
+    </div>
+
+    <!-- TIEU CHI 3: MINH BACH MA NGUON MO GITHUB -->
+    <div class="trust-card opensource-card">
+      <div class="trust-icon-box">
+        <svg class="trust-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <div class="trust-content">
+        <div class="trust-card-heading">MINH BẠCH MÃ NGUỒN MỞ</div>
+        <div class="trust-card-body">
+          Mã nguồn giao diện được công khai 100% trên GitHub để bất kỳ ai cũng có thể kiểm tra tính an toàn, đảm bảo không chứa mã độc.
+        </div>
+        <a href="https://github.com/namutachi-webtachi/datxe" target="_blank" class="btn-repo-link">
+          XEM MÃ NGUỒN TRÊN GITHUB
+        </a>
+      </div>
+    </div>
+
+    <!-- CUM NUT HANH DONG -->
+    <div class="action-group">
+      <button class="btn-action-primary" id="btnLaunchBrowser">
+        MỞ TRÌNH DUYỆT ĐỂ CÀI ĐẶT
+      </button>
+      <a href="./booking.html" class="btn-action-back">
+        QUAY LẠI TRANG ĐẶT XE
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // KHI BAM NUT: CHUYEN SANG TRINH DUYET MAC DINH KEM CO ?auto_install=1
+    document.getElementById('btnLaunchBrowser').addEventListener('click', () => {
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
+      
+      const currentHost = window.location.host;
+      const targetPath = window.location.pathname.replace('guide.html', 'booking.html');
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isIos = /iphone|ipad|ipod/.test(userAgent);
+
+      if (isIos) {
+        alert('TREN IPHONE:\nVui long bam bieu tuong Chia se o day trinh duyet Safari -> Chon "Them vao MH Chinh" (Add to Home Screen) de hoan tat!');
+      } else {
+        const intentUrl = 'intent://' + currentHost + targetPath + '?auto_install=1#Intent;scheme=https;action=android.intent.action.VIEW;end';
+        window.location.href = intentUrl;
+      }
+    });
+  </script>
+</body>
+</html>
