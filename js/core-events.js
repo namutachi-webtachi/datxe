@@ -55,8 +55,9 @@ function initPwaInstallButton() {
     deferredPrompt = e;
   });
 
-  // Xu ly khi khach bam vao nut Tai App
+// Xu ly khi khach bam vao nut Tai App
   installBtn.addEventListener('click', async () => {
+    // 1. Neu dang o Google Chrome chuan da san sang PWA -> Bat bang cai dat Native ngay
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -64,14 +65,9 @@ function initPwaInstallButton() {
         installBtn.style.display = 'none';
       }
       deferredPrompt = null;
-    } else {
-      // Huong dan du phong cho iPhone Safari (vi iOS khong ho tro prompt tu dong)
-      const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-      if (isIos) {
-        alert('TREN IPHONE: Ban hay bam vao bieu tuong Chia Se o duoi trinh duyet -> Chon "Them vao MH Chinh" nhe!');
-      } else {
-        alert('Trinh duyet cua ban hien khong ho tro cai dat tu dong hoac ban da cai roi.');
-      }
+    } 
+    // 2. Neu dang o Zalo hoac cac trinh duyet can huong dan -> Bay thang vao trang Bao Chung guide.html
+    else {
+      window.location.href = './guide.html';
     }
   });
-}
