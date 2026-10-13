@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.1.0">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.1">
 </head>
 <body>
 
@@ -215,11 +215,11 @@
     }
 
     // ==========================================================================
-    // 4. BAN DO ESRI WORLD DARK GRAY (AUTO GPS ON LOAD & IGNORE DEFAULT DROPOFF)
+    // 4. BAN DO BAN QUYEN ESRI WORLD DARK GRAY (TUDONG GEOCODE DIEM DEN)
     // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh fallback
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = null; // BOH GUA DIEM DEN BAN DAU
+    let dropoffCoords = null;
     
     let routePolyline = null;
     let pickupMarker = null;
@@ -227,7 +227,6 @@
     let userLocationMarker = null;
     let measuredDistanceKm = 0;
 
-    // KHOA GIOI HAN BAN DO TRONG PHAM VI VIET NAM
     const VN_BOUNDS = L.latLngBounds(
       L.latLng(8.179, 102.144),
       L.latLng(23.393, 109.464)
@@ -247,14 +246,12 @@
       renderer: L.canvas()
     }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 13);
     
-    // NGUON TILE ESRI WORLD DARK GRAY
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 18,
       crossOrigin: true,
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
     }).addTo(map);
 
-    // KICK HOAT MAP RENDER NGAY TREN SAFARI / CHROME MOBILE
     function forceResizeMap() {
       if (map) map.invalidateSize();
     }
@@ -274,7 +271,7 @@
       if (dropoffCoords) calculateDistance();
     });
 
-    // HAM CAP NHAT VOI DIEM DEN KHI KHACH CHON/GO
+    // HAM CAP NHAT GHIM DIEM DEN
     function setDropoffLocation(lat, lon) {
       dropoffCoords = { lat, lon };
 
@@ -336,10 +333,9 @@
       }, { enableHighAccuracy: true, timeout: 8000 });
     }
 
-    // AUTO PING VI TRI KHI VUA VAO WEBPAGE!
+    // AUTO PING KHI VUA VAO TRANG WEB
     locateUserGps(true);
 
-    // NUT GPS CHUDONG
     document.getElementById('btnGps').addEventListener('click', () => locateUserGps(false));
 
     // HAM TU DONG THU PHONG MANG LACE DE HIEN THI HET DIEM & DUONG DI
@@ -401,17 +397,54 @@
       }
     }
 
+    // HAM TUDONG DICH CHU THANH TOA DO GPS NEU KHANG KHONG BAM DROPDOWN
+    async function autoGeocodeAddressInput(addressText, isPickup = false) {
+      if (!addressText || addressText.length < 2) return null;
+
+      const lat = pickupCoords ? pickupCoords.lat : 20.4288;
+      const lon = pickupCoords ? pickupCoords.lon : 106.1685;
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&bbox=102.0,8.0,109.9,23.5&limit=1&lang=vi`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data && data.features && data.features.length > 0) {
+          const feature = data.features[0];
+          const coords = feature.geometry.coordinates; // [lon, lat]
+
+          if (isPickup) {
+            pickupCoords = { lat: coords[1], lon: coords[0] };
+            pickupMarker.setLatLng([coords[1], coords[0]]);
+            if (dropoffCoords) calculateDistance();
+          } else {
+            setDropoffLocation(coords[1], coords[0]);
+          }
+          return coords;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    // BATCH EVENT BLUR DE TUDONG DICH CHU KHI KHANG CHUYEN O NHAP
+    document.getElementById('dropoffAddress').addEventListener('blur', async (e) => {
+      const text = e.target.value.trim();
+      if (text && !dropoffCoords) {
+        await autoGeocodeAddressInput(text, false);
+      }
+    });
+
     // AUTOCOMPLETE INTEGRATION
     if (initAddressAutocomplete) {
       initAddressAutocomplete('pickupAddress', (selected) => {
         pickupCoords = { lat: selected.lat, lon: selected.lon };
         pickupMarker.setLatLng([selected.lat, selected.lon]);
         if (dropoffCoords) calculateDistance();
-      });
+      }, () => pickupCoords);
 
       initAddressAutocomplete('dropoffAddress', (selected) => {
         setDropoffLocation(selected.lat, selected.lon);
-      });
+      }, () => pickupCoords);
     }
 
     // DOC DU LIEU BAN DAU
@@ -419,8 +452,16 @@
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
 
     // SUBMIT FORM
-    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const dropoffText = document.getElementById('dropoffAddress').value.trim();
+      
+      // NEU CHUA CO TOA DO DIEM DEN, TU DONG DICH CHU THANH TOA DO
+      if (!dropoffCoords && dropoffText) {
+        await autoGeocodeAddressInput(dropoffText, false);
+      }
+
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('phoneNumber').value.trim();
 
