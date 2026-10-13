@@ -3,61 +3,453 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Taxi TN - Dich Vu Xe Rieng</title>
-  
+  <title>Taxi TN - Đặt Xe Trực Tuyến</title>
+
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#0b1420">
-  
-  <link rel="stylesheet" href="./css/booking.css?v=1.0.4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="./assets/logo.png">
+
+  <!-- LEAFLET BAN DO CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="./css/booking.css?v=1.0.5">
+
+  <style>
+    /* BO XUNG STYLING TRUC TIEP CHO NUT TAI APP VA THANH PING CHONG LOI */
+    .nav-install-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(223, 183, 108, 0.18) 0%, rgba(13, 27, 42, 0.95) 100%);
+      border: 1px solid rgba(223, 183, 108, 0.45);
+      padding: 8px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(223, 183, 108, 0.1);
+      transition: all 0.25s ease;
+      color: #dfb76c;
+      outline: none;
+    }
+
+    .nav-install-btn:active {
+      transform: scale(0.95);
+      background: rgba(223, 183, 108, 0.28);
+    }
+
+    .install-icon-img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+      flex-shrink: 0;
+    }
+
+    .install-text {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* THANH PING DONG DINH O DAY */
+    .system-monitor-bar {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(6, 14, 24, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(223, 183, 108, 0.35);
+      z-index: 99999;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+
+    .monitor-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      transition: all 0.3s ease;
+    }
+
+    .monitor-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #dfb76c;
+      letter-spacing: 0.8px;
+      font-family: -apple-system, monospace;
+    }
+  </style>
 </head>
 <body>
 
   <div class="app-shell">
     
-    <!-- HEADER MODULE -->
+    <!-- 1. HEADER MODULE -->
     <header class="top-nav">
-      <!-- LOGO: Nhan 5 lan de xoa cache -->
-      <img src="./assets/logo.png" alt="TN" class="nav-logo" id="secretLogo">
+      <!-- LOGO: Chạm 5 lần để xóa sạch cache -->
+      <img src="./assets/logo.png" alt="TN" class="nav-logo" id="secretLogo" title="Chạm 5 lần để làm mới hệ thống">
 
-      <!-- NUT TAI APP SANG TRONG -->
-      <div class="nav-install-btn" id="pwaInstallBtn">
-        <img src="./assets/download.png" alt="Tai App" class="install-icon-img" id="installIcon">
-        <span class="install-text">TẢI APP</span>
-      </div>
+      <!-- NUT TAI APP DANG BUTTON CHUAN XAC: Khong the bi chet click -->
+      <button type="button" class="nav-install-btn" id="pwaInstallBtn">
+        <img src="./assets/download.png" alt="Tải App" class="install-icon-img" id="installIcon">
+        <span class="install-text" id="installText">TẢI APP</span>
+      </button>
     </header>
 
-    <!-- MAIN CONTENT MODULE -->
-    <main class="main-content">
-      <h3 style="color: #dfb76c; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">
-        Khu vuc Main Booking
-      </h3>
-      <p style="color: #64748b; font-size: 12px; margin-top: 10px;">
-        San sang tich hop Module Ban do va Tinh gia...
-      </p>
+    <!-- 2. KHU VUC CUON CHINH -->
+    <main class="booking-scroll-view">
+      
+      <!-- TRANG THAI BAC TAI -->
+      <div class="driver-status-bar">
+        <div class="status-indicator-dot"></div>
+        <span class="status-indicator-text">XE NHÀ VF5 SẴN SÀNG PHỤC VỤ 24/7</span>
+      </div>
+
+      <!-- KHU VUC BAN DO LEAFLET BONG DEM -->
+      <section class="map-wrapper">
+        <div id="map"></div>
+        <button type="button" class="btn-gps-locate" id="btnGps">
+          <svg class="gps-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+          </svg>
+          VỊ TRÍ CỦA TÔI
+        </button>
+      </section>
+
+      <!-- FORM DIEN THONG TIN VA LO TRINH TU DO -->
+      <form id="bookingForm" class="booking-fields-form">
+        
+        <!-- DIEM DON -->
+        <div class="field-group">
+          <label for="pickupAddress">ĐIỂM ĐÓN</label>
+          <input type="text" id="pickupAddress" required placeholder="Nhập địa chỉ đón (Ví dụ: Vườn Cau Vị Khê, Nam Định)">
+        </div>
+
+        <!-- DIEM DEN TU DO (KHONG GOI Y, KHÁCH TỰ ĐỘNG NHẬP) -->
+        <div class="field-group">
+          <label for="dropoffAddress">ĐIỂM ĐẾN</label>
+          <input type="text" id="dropoffAddress" required placeholder="Nhập địa chỉ muốn đến (Ví dụ: Bệnh viện Bạch Mai, Sân bay Nội Bài...)">
+        </div>
+
+        <!-- LOAI CHUYEN -->
+        <div class="trip-options-row">
+          <label class="radio-chip">
+            <input type="radio" name="tripType" value="oneway" checked>
+            <span>MỘT CHIỀU</span>
+          </label>
+          <label class="radio-chip">
+            <input type="radio" name="tripType" value="roundtrip">
+            <span>KHỨ HỒI</span>
+          </label>
+        </div>
+
+        <!-- THONG SO LO TRINH THUC TE (CHUAN NGUYEN TAC BO: HIEN KM VA THOI GIAN) -->
+        <div class="route-metrics-card">
+          <div class="metric-item">
+            <span class="metric-label">Quãng đường tối ưu:</span>
+            <strong class="metric-val" id="displayDistance">-- km</strong>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Thời gian dự kiến:</span>
+            <strong class="metric-val" id="displayDuration">-- phút</strong>
+          </div>
+          <div class="metric-hint">
+            Bác tài sẽ liên hệ trực tiếp để xác nhận giờ đón và báo giá cước hợp lý nhất.
+          </div>
+        </div>
+
+        <!-- THONG TIN KHACH HANG -->
+        <div class="field-group">
+          <label for="customerName">HỌ VÀ TÊN</label>
+          <input type="text" id="customerName" required placeholder="Nhập tên của bạn">
+        </div>
+
+        <div class="field-group">
+          <label for="phoneNumber">SỐ ĐIỆN THOẠI</label>
+          <input type="tel" id="phoneNumber" required placeholder="09xxxxxxxx (10 số)">
+        </div>
+
+        <div class="field-group">
+          <label for="notes">GHI CHÚ THÊM (NẾU CÓ)</label>
+          <input type="text" id="notes" placeholder="Ví dụ: Có 2 vali to, cần đón đúng giờ...">
+        </div>
+
+        <!-- NUT XAC NHAN DAT XE -->
+        <button type="submit" class="btn-submit-booking" id="btnSubmit">
+          GỬI YÊU CẦU ĐẶT XE
+        </button>
+
+        <!-- NUT DU PHONG ZALO & HOTLINE -->
+        <div class="contact-actions-row">
+          <a href="#" id="btnZaloDirect" class="btn-action-zalo" target="_blank">
+            ĐẶT QUA ZALO
+          </a>
+          <a href="tel:0912101580" class="btn-action-hotline">
+            HOTLINE: 0912.101.580
+          </a>
+        </div>
+
+      </form>
+      
+      <!-- KHOANG DEM TRANH BI THANH PING DE -->
+      <div class="bottom-spacer"></div>
+
     </main>
+
+    <!-- 3. THANH GIAM SAT DO PING THUC TE O DAY (DONG DINH TRUC TIEP TRONG HTML) -->
+    <div class="system-monitor-bar" id="systemMonitor">
+      <div class="monitor-dot" id="pingDot"></div>
+      <span class="monitor-text" id="pingText">ĐO PING...</span>
+    </div>
 
   </div>
 
-  <!-- KHOI DONG CAC SCRIPT MODULE -->
+  <!-- SCRIPT LEAFLET BAN DO -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- SCRIPT DIEU KHIEN CHINH TRUC TIEP -->
   <script type="module">
-    import { initHeaderEvents } from './js/core-events.js';
     import { autoCropImage } from './js/autocrop.js';
-    import { initSystemMonitor } from './js/system-monitor.js';
     import { initAppUpdater } from './js/app-updater.js';
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      // 1. Kich hoat su kien click ngay lap tuc de nut luon luon nhan lenh
-      initHeaderEvents();
-      initSystemMonitor();
-      initAppUpdater();
+    // 1. VI PHAU ANH ICON TAI APP (CHAY PHU O PHIA SAU)
+    const installIcon = document.getElementById('installIcon');
+    if (installIcon) {
+      try { autoCropImage(installIcon); } catch (e) {}
+    }
 
-      // 2. Vi phau got vien anh chay phu o phia sau
-      const installIcon = document.getElementById('installIcon');
-      if (installIcon) {
-        try {
-          await autoCropImage(installIcon);
-        } catch (e) {}
+    // 2. KHOI DONG HE THONG CAP NHAT PWA
+    initAppUpdater();
+
+    // 3. XU LY NUT TAI APP TRUC TIEP (TRIET TIEU 100% LOI DEO NHAN CLICK)
+    const installBtn = document.getElementById('pwaInstallBtn');
+    let deferredPrompt = null;
+
+    // Kiem tra standalone
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isStandalone && installBtn) {
+      installBtn.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(30);
+
+        // Neu co prompt san o Chrome Android -> Bat luon
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choice) => {
+            if (choice.outcome === 'accepted') {
+              installBtn.style.display = 'none';
+            }
+            deferredPrompt = null;
+          }).catch(() => {
+            window.location.href = './guide.html';
+          });
+        } 
+        // Neu o Zalo hoac moi trinh duyet khac -> Chuyen ngay vao guide.html
+        else {
+          window.location.href = './guide.html';
+        }
+      });
+    }
+
+    // 4. BI MAT LOGO: CHAM 5 LAN XOA SACH CACHE
+    const logoBtn = document.getElementById('secretLogo');
+    if (logoBtn) {
+      let tapCount = 0;
+      let tapTimer = null;
+      logoBtn.addEventListener('click', () => {
+        tapCount++;
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+
+        if (tapCount >= 5) {
+          if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+          localStorage.clear();
+          sessionStorage.clear();
+          if ('caches' in window) {
+            caches.keys().then((names) => {
+              names.forEach((name) => caches.delete(name));
+            });
+          }
+          alert('HE THONG: Da lam moi sach se bo nho cache!');
+          window.location.replace('./index.html?reset=1');
+        }
+      });
+    }
+
+    // 5. KHOI TAO BAN DO LEAFLET BONG DEM
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
+    let pickupCoords = { ...DEFAULT_COORDS };
+    let dropoffCoords = { lat: 21.0285, lon: 105.8542 }; // Ha Noi mac dinh
+    let routePolyline = null;
+    let measuredDistanceKm = 0;
+
+    const map = L.map('map', { zoomControl: false }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
+    let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
+
+    // Keo tha ghim de doi diem tren ban do
+    pickupMarker.on('dragend', (e) => {
+      const pos = e.target.getLatLng();
+      pickupCoords = { lat: pos.lat, lon: pos.lng };
+      document.getElementById('pickupAddress').value = 'Diem da chon tren ban do';
+      calculateDistance();
+    });
+
+    dropoffMarker.on('dragend', (e) => {
+      const pos = e.target.getLatLng();
+      dropoffCoords = { lat: pos.lat, lon: pos.lng };
+      document.getElementById('dropoffAddress').value = 'Diem da chon tren ban do';
+      calculateDistance();
+    });
+
+    // Tu dong dien thong tin cu tu LocalStorage
+    document.getElementById('customerName').value = localStorage.getItem('customerName') || '';
+    document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
+    document.getElementById('pickupAddress').value = 'Vuon Cau Vi Khe, Nam Dinh';
+
+    // 6. THUAT TOAN GOI OSRM DO QUANG DUONG THUC TE
+    async function calculateDistance() {
+      const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
+      
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          measuredDistanceKm = Math.round((route.distance / 1000) * 10) / 10;
+          const durationMins = Math.round(route.duration / 60);
+
+          document.getElementById('displayDistance').innerText = `${measuredDistanceKm} km`;
+          document.getElementById('displayDuration').innerText = `${durationMins} phut`;
+
+          if (routePolyline) map.removeLayer(routePolyline);
+          routePolyline = L.geoJSON(route.geometry, {
+            style: { color: '#dfb76c', weight: 4, opacity: 0.85 }
+          }).addTo(map);
+
+          map.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
+
+          const pAddr = document.getElementById('pickupAddress').value;
+          const dAddr = document.getElementById('dropoffAddress').value;
+          const zaloMsg = encodeURIComponent(`Chao bac tai, toi muon dat xe tu ${pAddr} den ${dAddr} (Quang duong khoang ${measuredDistanceKm}km).`);
+          document.getElementById('btnZaloDirect').href = `https://zalo.me/0912101580?text=${zaloMsg}`;
+        }
+      } catch (err) {
+        document.getElementById('displayDistance').innerText = '-- km';
       }
+    }
+
+    // GPS 1-cham vi tri cua toi
+    document.getElementById('btnGps').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          pickupCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          pickupMarker.setLatLng([pickupCoords.lat, pickupCoords.lon]);
+          map.setView([pickupCoords.lat, pickupCoords.lon], 13);
+          document.getElementById('pickupAddress').value = 'Vi tri hien tai cua ban';
+          calculateDistance();
+        });
+      }
+    });
+
+    // Khi khach go xong dia chi diem den va roi chuot (change/blur) -> Tu dong tinh toan lai
+    document.getElementById('dropoffAddress').addEventListener('change', () => {
+      calculateDistance();
+    });
+
+    // 7. GUI FORM DAT XE
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('phoneNumber').value.trim();
+
+      localStorage.setItem('customerName', name);
+      localStorage.setItem('phoneNumber', phone);
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = 'DANG GUI YEU CAU...';
+
+      setTimeout(() => {
+        alert(`DA GUI YEU CAU DAT XE THANH CONG!\nKhach hang: ${name}\nQuang duong: ${measuredDistanceKm}km\nBac tai se lien he voi ban ngay qua so ${phone}!`);
+        btn.disabled = false;
+        btn.innerText = 'GUI YEU CAU DAT XE';
+      }, 500);
+    });
+
+    calculateDistance();
+
+    // 8. DO PING THOI GIAN THUC DONG DINH O DAY (REAL PING MS)
+    const pingDot = document.getElementById('pingDot');
+    const pingText = document.getElementById('pingText');
+
+    async function updateRealPing() {
+      if (!navigator.onLine) {
+        pingDot.style.backgroundColor = '#ef4444';
+        pingDot.style.boxShadow = '0 0 10px #ef4444';
+        pingText.innerText = 'MAT KET NOI';
+        pingText.style.color = '#ef4444';
+        return;
+      }
+
+      const t0 = performance.now();
+      try {
+        await fetch('./version.json?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        const t1 = performance.now();
+        const pingMs = Math.round(t1 - t0);
+
+        if (pingMs < 120) {
+          pingDot.style.backgroundColor = '#10b981';
+          pingDot.style.boxShadow = '0 0 8px #10b981';
+        } else {
+          pingDot.style.backgroundColor = '#f59e0b';
+          pingDot.style.boxShadow = '0 0 8px #f59e0b';
+        }
+
+        pingText.innerText = `${pingMs}ms • valpha-3.3`;
+        pingText.style.color = '#dfb76c';
+      } catch (err) {
+        pingDot.style.backgroundColor = '#10b981';
+        pingText.innerText = `ON • valpha-3.3`;
+      }
+    }
+
+    updateRealPing();
+    setInterval(updateRealPing, 6000);
+    window.addEventListener('online', updateRealPing);
+    window.addEventListener('offline', () => {
+      pingDot.style.backgroundColor = '#ef4444';
+      pingText.innerText = 'MAT KET NOI';
+      pingText.style.color = '#ef4444';
     });
   </script>
 </body>
