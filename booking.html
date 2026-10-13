@@ -202,7 +202,7 @@
       });
     }
 
-    // 4. KHOI TAO BAN DO LEAFLET
+  // 4. KHOI TAO BAN DO LEAFLET BONG DEM (DUNG OPENSTREETMAP GOC 0 DONG)
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; // Bach Mai mac dinh
@@ -210,23 +210,27 @@
     let measuredDistanceKm = 0;
 
     const map = L.map('map', { zoomControl: false }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+    
+    // DUNG CHINH GOC OPENSTREETMAP - KHONG BAO GIO DOI API KEY
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
 
     let pickupMarker = L.marker([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], { draggable: true }).addTo(map);
     let dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
 
-    // Keo tha ghim de lay toa do that
     pickupMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('pickupAddress').value = 'Toa do da ghim tren ban do';
+      document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
     dropoffMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Toa do da ghim tren ban do';
+      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
       calculateDistance();
     });
 
