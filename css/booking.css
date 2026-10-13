@@ -1,6 +1,5 @@
 /* ==========================================================================
-   BOOKING.CSS - NEN TANG GIAO DIEN CHUYEN CO MAT DAT VF5
-   Thiet ke boi: namutachi-webtachi
+   BOOKING.CSS - MO KHOA CUON TRANG TU NHIEN & GOI Y DIA CHI
    Bang mau: Deep Navy #09131f, Gold #dfb76c, Red VF5 #dc2626
    ========================================================================== */
 
@@ -9,33 +8,38 @@
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
+}
+
+html {
+  height: 100%;
 }
 
 body {
   width: 100vw;
-  height: 100dvh;
+  min-height: 100%;
   background-color: #04080e;
   display: flex;
   justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  align-items: flex-start;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto; /* MO KHOA CUON TRANG TU NHIEN 100% */
+  -webkit-overflow-scrolling: touch;
 }
 
 .app-shell {
   width: 100%;
   max-width: 460px;
-  height: 100%;
+  min-height: 100dvh;
   background: radial-gradient(circle at 50% 0%, #0d1e33 0%, #060e18 40%, #020508 100%);
   display: flex;
   flex-direction: column;
   position: relative;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-  overflow: hidden;
+  padding-bottom: 50px;
 }
 
-/* 1. TOP NAVIGATION HEADER */
+/* 1. TOP NAV */
 .top-nav {
   width: 100%;
   height: 72px;
@@ -44,10 +48,11 @@ body {
   justify-content: space-between;
   padding: 0 18px;
   border-bottom: 1px solid rgba(223, 183, 108, 0.2);
-  background: rgba(6, 14, 24, 0.92);
+  background: rgba(6, 14, 24, 0.95);
   backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
   z-index: 1000;
-  flex-shrink: 0;
 }
 
 .nav-logo {
@@ -56,66 +61,45 @@ body {
   object-fit: contain;
   cursor: pointer;
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
-  transition: transform 0.2s ease;
-}
-
-.nav-logo:active {
-  transform: scale(0.92);
 }
 
 .nav-install-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, rgba(223, 183, 108, 0.18) 0%, rgba(13, 27, 42, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(223, 183, 108, 0.18) 0%, rgba(13, 27, 42, 0.95) 100%);
   border: 1px solid rgba(223, 183, 108, 0.45);
   padding: 8px 18px;
   border-radius: 999px;
   cursor: pointer;
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(223, 183, 108, 0.1);
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.nav-install-btn:active {
-  transform: scale(0.95);
-  background: rgba(223, 183, 108, 0.28);
+  color: #dfb76c;
+  outline: none;
 }
 
 .install-icon-img {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
   flex-shrink: 0;
 }
 
 .install-text {
   font-size: 13px;
   font-weight: 800;
-  color: #dfb76c;
   letter-spacing: 0.8px;
   text-transform: uppercase;
 }
 
-/* 2. KHU VUC CUON CHINH (SCROLLABLE VIEW) */
-.booking-scroll-view {
-  flex: 1;
+/* 2. BODY CONTENT */
+.booking-content-area {
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  -webkit-overflow-scrolling: touch;
+  gap: 14px;
 }
 
-.booking-scroll-view::-webkit-scrollbar {
-  display: none;
-}
-
-/* THANH TRANG THAI BAC TAI */
 .driver-status-bar {
   display: flex;
   align-items: center;
@@ -141,48 +125,11 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* TUYEN DUONG PHO BIEN */
-.section-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.section-title {
-  font-size: 11px;
-  font-weight: 800;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
-}
-
-.preset-grid {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-preset {
-  flex: 1;
-  background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
-  border: 1px solid rgba(223, 183, 108, 0.3);
-  color: #dfb76c;
-  padding: 10px 4px;
-  font-size: 11px;
-  font-weight: 800;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-preset:active {
-  background: rgba(223, 183, 108, 0.2);
-  border-color: #dfb76c;
-}
-
-/* KHU VUC BAN DO */
+/* BAN DO */
 .map-wrapper {
   position: relative;
   width: 100%;
-  height: 210px;
+  height: 220px;
   border-radius: 12px;
   overflow: hidden;
   border: 1.5px solid rgba(223, 183, 108, 0.35);
@@ -202,23 +149,22 @@ body {
   background: rgba(6, 14, 24, 0.9);
   color: #dfb76c;
   border: 1px solid rgba(223, 183, 108, 0.4);
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
 }
 
 .gps-icon-svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
 }
 
-/* FORM DIEN THONG TIN */
+/* FORM VA GOI Y DIA CHI */
 .booking-fields-form {
   display: flex;
   flex-direction: column;
@@ -229,6 +175,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 }
 
 .field-group label {
@@ -246,19 +193,46 @@ body {
   border-radius: 8px;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s ease;
 }
 
 .field-group input:focus {
   border-color: #dfb76c;
-  box-shadow: 0 0 8px rgba(223, 183, 108, 0.2);
 }
 
-/* RADIO MOT CHIEU / KHU HOI */
+/* DROPDOWN GOI Y DIA CHI THUAT TOAN PHOTON */
+.geo-autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #091422;
+  border: 1px solid rgba(223, 183, 108, 0.4);
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 900;
+  display: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
+}
+
+.geo-autocomplete-item {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(223, 183, 108, 0.1);
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.geo-autocomplete-item:active {
+  background: rgba(223, 183, 108, 0.2);
+  color: #dfb76c;
+}
+
+/* RADIO */
 .trip-options-row {
   display: flex;
   gap: 12px;
-  padding: 4px 0;
 }
 
 .radio-chip {
@@ -284,7 +258,7 @@ body {
   color: #cbd5e1;
 }
 
-/* THE THONG SO LO TRINH */
+/* THONG SO LO TRINH */
 .route-metrics-card {
   background: linear-gradient(145deg, #0d1b2a 0%, #07111b 100%);
   border: 1px solid rgba(223, 183, 108, 0.4);
@@ -307,10 +281,9 @@ body {
 }
 
 .metric-val {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
   color: #dfb76c;
-  letter-spacing: 0.5px;
 }
 
 .metric-hint {
@@ -318,10 +291,8 @@ body {
   color: #64748b;
   border-top: 1px dashed rgba(223, 183, 108, 0.2);
   padding-top: 6px;
-  line-height: 1.4;
 }
 
-/* NUT XAC NHAN DAT XE */
 .btn-submit-booking {
   width: 100%;
   background: linear-gradient(135deg, #fbe8b5 0%, #dfb76c 100%);
@@ -331,18 +302,11 @@ body {
   border-radius: 10px;
   font-size: 14px;
   font-weight: 900;
-  letter-spacing: 0.8px;
   text-transform: uppercase;
   cursor: pointer;
   box-shadow: 0 4px 18px rgba(223, 183, 108, 0.35);
-  transition: transform 0.2s ease;
 }
 
-.btn-submit-booking:active {
-  transform: scale(0.98);
-}
-
-/* NUT DU PHONG */
 .contact-actions-row {
   display: flex;
   gap: 10px;
@@ -356,40 +320,27 @@ body {
   font-size: 11px;
   font-weight: 800;
   border-radius: 8px;
-  letter-spacing: 0.5px;
 }
 
-.btn-action-zalo {
-  background: #0284c7;
-  color: #ffffff;
-}
+.btn-action-zalo { background: #0284c7; color: #ffffff; }
+.btn-action-hotline { background: #dc2626; color: #ffffff; }
 
-.btn-action-hotline {
-  background: #dc2626;
-  color: #ffffff;
-}
-
-.bottom-spacer {
-  height: 50px;
-  width: 100%;
-}
-
-/* 3. THANH GIAM SAT DO PING THUC TE DONG DINH O DAY */
+/* THANH PING CO DINH O DAY */
 .system-monitor-bar {
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(6, 14, 24, 0.92);
-  backdrop-filter: blur(8px);
-  padding: 5px 16px;
+  background: rgba(6, 14, 24, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
   border-radius: 999px;
   border: 1px solid rgba(223, 183, 108, 0.35);
   z-index: 2000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
   pointer-events: none;
 }
 
