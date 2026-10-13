@@ -135,6 +135,9 @@ body {
   border: 1.5px solid rgba(223, 183, 108, 0.35);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
   background-color: #060e18;
+  /* Ep GPU render nguyen khoi ban do de chong giat lag */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 #map {
@@ -143,6 +146,18 @@ body {
   background: transparent;
 }
 
+/* EP GPU DIEN THOAI XU LY TILE BAN DO MUOT MA, CHONG DEN MAN HINH */
+.leaflet-container,
+.leaflet-tile-pane,
+.leaflet-tile,
+.leaflet-layer {
+  transform: translate3d(0,0,0);
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* NUT GPS */
 .btn-gps-locate {
   position: absolute;
   bottom: 10px;
@@ -159,6 +174,7 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
 .gps-icon-svg {
