@@ -19,25 +19,42 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* MO KHOA LAN CUON MAN HINH TREN MOI THIET BI */
+    html {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
     body {
       background-color: #060e18;
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      width: 100vw;
       min-height: 100dvh;
+      height: auto !important;
       display: flex;
       justify-content: center;
+      align-items: flex-start;
       background: radial-gradient(circle at 50% 0%, #0e2036 0%, #060e18 50%, #020508 100%);
       line-height: 1.5;
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
     }
 
     .guide-container {
       width: 100%;
       max-width: 440px;
       min-height: 100dvh;
-      padding: 20px 16px 45px;
+      height: auto !important;
+      padding: 20px 16px calc(45px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       gap: 16px;
+      overflow: visible !important;
     }
 
     /* HEADER THUONG HIEU */
