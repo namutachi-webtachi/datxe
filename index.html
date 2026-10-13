@@ -17,11 +17,15 @@
   <link rel="apple-touch-icon" href="./assets/logo.png">
 
   <style>
-    html, body { width: 100%; height: 100%; margin: 0; background-color: #060e18; overflow: hidden; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; background-color: #060e18; overflow: hidden; }
   </style>
 
-  <script>
-   
+  <!-- THEM type="module" VA KHAI BAO HAM ASYNC DAY DU -->
+  <script type="module">
+    const CACHE_KEY = 'thanh_nguyen_intro_seen';
+    const VERSION_KEY = 'thanh_nguyen_app_version';
+
+    async function initGateway() {
       // 1. DANG KY SERVICE WORKER
       if ('serviceWorker' in navigator) {
         try {
@@ -29,12 +33,12 @@
         } catch (e) {}
       }
 
-      // 2. SO SANH PHIEN BAN QUA NGON HAI DANG version.json (BO QUA 100% CACHE)
+      // 2. SO SANH PHIEN BAN QUA NGON HAI DANG version.json
       try {
         const res = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
         const serverVersion = data.version;
-        const localVersion = localStorage.getItem('thanh_nguyen_app_version');
+        const localVersion = localStorage.getItem(VERSION_KEY);
 
         if (localVersion && localVersion !== serverVersion) {
           // Co ban moi -> Xoa sach Cache cu cua PWA
@@ -43,27 +47,27 @@
             await Promise.all(keys.map(k => caches.delete(k)));
           }
         }
-        localStorage.setItem('thanh_nguyen_app_version', serverVersion);
+        localStorage.setItem(VERSION_KEY, serverVersion);
       } catch (err) {}
 
       // 3. DIEU HUONG CHUAN XAC
       const urlParams = new URLSearchParams(window.location.search);
       
-      // 1. NEU YEU CAU VAO THANG TRANG GUIDE
+      // Neu yeu cau vao thang trang guide
       if (urlParams.get('guide') === '1') {
         window.location.replace('./guide.html');
       }
-      // 2. NEU RESET
+      // Neu reset
       else if (urlParams.get('reset') === '1') {
         localStorage.clear();
         window.history.replaceState({}, document.title, window.location.pathname);
         window.location.replace('./intro.html');
       } 
-      // 3. KHACH QUEN
+      // Khach quen
       else if (localStorage.getItem(CACHE_KEY) === 'true') {
         window.location.replace('./booking.html');
       } 
-      // 4. KHACH MOI
+      // Khach moi
       else {
         window.location.replace('./intro.html');
       }
