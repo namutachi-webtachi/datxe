@@ -375,33 +375,49 @@ try {
       }
     }
 
-    // TỰ ĐỘNG DỊCH CHỮ KHI KHÁCH GÕ (GỌI QUA CLOUDFLARE)
+  // TU DONG DICH CHU KHI KHACH GO (GOI QUA CLOUDFLARE)
     async function autoGeocodeAddressInput(addressText, isPickup = false) {
       if (!addressText || addressText.length < 2) return null;
 
+      const styleOk = 'color: #10b981; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #10b981; border-radius: 4px;';
+      const styleErr = 'color: #ef4444; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #ef4444; border-radius: 4px;';
+      
       const lat = pickupCoords ? parseFloat(pickupCoords.lat).toFixed(4) : '20.4288';
       const lon = pickupCoords ? parseFloat(pickupCoords.lon).toFixed(4) : '106.1685';
 
       const url = `${WORKER_URL}/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&limit=1`;
+      console.log(`%c[AUTO GEOCODE] Dang tu dong phan tich toa do: "${addressText}"...`, 'color: #dfb76c; font-weight: bold;');
 
       try {
         const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.features && data.features.length > 0) {
-            const feature = data.features[0];
-            const coords = feature.center; // Mapbox trả về [lon, lat]
-            
-            if (isPickup) {
-              pickupCoords = { lat: coords[1], lon: coords[0] };
-              pickupMarker.setLatLng([coords[1], coords[0]]);
-            } else {
-              setDropoffLocation(coords[1], coords[0]);
-            }
-            return coords;
-          }
+        
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error(`%c[AUTO GEOCODE ERROR] Cloudflare chan hoac loi HTTP ${res.status}: ${errText}`, styleErr);
+          return null;
         }
-      } catch (e) {}
+
+        const data = await res.json();
+        
+        if (data && data.features && data.features.length > 0) {
+          const feature = data.features[0];
+          const coords = feature.center; 
+          
+          console.log(`%c[AUTO GEOCODE SUCCESS] Da ghim vi tri: [${coords[1].toFixed(5)}, ${coords[0].toFixed(5)}]`, styleOk);
+          
+          if (isPickup) {
+            pickupCoords = { lat: coords[1], lon: coords[0] };
+            pickupMarker.setLatLng([coords[1], coords[0]]);
+          } else {
+            setDropoffLocation(coords[1], coords[0]);
+          }
+          return coords;
+        } else {
+          console.warn(`[AUTO GEOCODE] Khong the quy doi chuoi nay ra toa do GPS.`);
+        }
+      } catch (e) {
+        console.error(`%c[AUTO GEOCODE CRASH] Loi fetch: ${e.message}`, styleErr);
+      }
       return null;
     }
 
