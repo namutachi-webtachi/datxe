@@ -1,8 +1,13 @@
 // ==========================================================================
-// GEO-SEARCH.JS - BẢN FIX LỖI HIỂN THỊ DROPDOWN
+// GEO-SEARCH.JS - DUNG CLOUDFLARE WORKER & CONSOLE LOG VIP
 // ==========================================================================
 
 const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
+
+// CSS Style cho Console
+const styleOk = 'color: #10b981; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #10b981; border-radius: 4px;';
+const styleErr = 'color: #ef4444; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #ef4444; border-radius: 4px;';
+const styleWarn = 'color: #f59e0b; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #f59e0b; border-radius: 4px;';
 
 export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoordsFn) {
   const inputEl = document.getElementById(inputId);
@@ -43,9 +48,14 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
         }
 
         const url = `${WORKER_URL}/?q=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}&limit=5`;
+        console.log(`%c[SEARCH API] Dang gui yeu cau tim: "${query}"...`, styleWarn);
 
         const res = await fetch(url);
+        
+        // BAT LOI VA VA THANG VAO CONSOLE
         if (!res.ok) {
+          const errText = await res.text();
+          console.error(`%c[SEARCH API ERROR] HTTP ${res.status}: ${errText}`, styleErr);
           dropdown.style.display = 'none';
           return;
         }
@@ -54,6 +64,7 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
         dropdown.innerHTML = '';
 
         if (data && data.features && data.features.length > 0) {
+          console.log(`%c[SEARCH API SUCCESS] Da bat duoc ${data.features.length} ket qua tra ve!`, styleOk);
           dropdown.style.display = 'block';
 
           data.features.forEach((feature) => {
@@ -86,9 +97,11 @@ export function initAddressAutocomplete(inputId, onSelectCallback, getCurrentCoo
             dropdown.appendChild(itemEl);
           });
         } else {
+          console.log(`%c[SEARCH API EMPTY] Ban do khong tim thay ket qua nao cho: "${query}"`, styleWarn);
           dropdown.style.display = 'none';
         }
       } catch (err) {
+        console.error(`%c[SEARCH API CRASH] Loi mang hoac Worker bi sap: ${err.message}`, styleErr);
         dropdown.style.display = 'none';
       }
     }, 300);
