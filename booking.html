@@ -12,9 +12,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="./assets/logo.png">
 
-  <!-- LEAFLET BẢN ĐỒ CDN -->
+  <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.2.3">
+  <link rel="stylesheet" href="./css/booking.css?v=1.2.4">
 
   <!-- CLOUDFLARE TURNSTILE CAPTCHA -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -35,7 +35,7 @@
     <!-- MAIN CONTENT -->
     <main class="booking-content-area">
       
-      <!-- KHU VỰC BẢN ĐỒ -->
+      <!-- KHU VUC BAN DO -->
       <section class="map-wrapper">
         <div id="map"></div>
         <button type="button" class="btn-gps-locate" id="btnGps">
@@ -47,22 +47,22 @@
         </button>
       </section>
 
-      <!-- FORM NHẬP THÔNG TIN -->
+      <!-- FORM NHAP THONG TIN -->
       <form id="bookingForm" class="booking-fields-form">
         
-        <!-- ĐIỂM ĐÓN -->
+        <!-- DIEM DON -->
         <div class="field-group">
           <label for="pickupAddress">ĐIỂM ĐÓN</label>
           <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Đang xác định vị trí của bạn...">
         </div>
 
-        <!-- ĐIỂM ĐẾN TỰ DO -->
+        <!-- DIEM DEN TU DO -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
           <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (kể cả tên ngõ, xóm, cổng làng...)">
         </div>
 
-        <!-- LOẠI CHUYẾN -->
+        <!-- LOAI CHUYEN -->
         <div class="trip-options-row">
           <label class="radio-chip">
             <input type="radio" name="tripType" value="oneway" checked>
@@ -74,7 +74,7 @@
           </label>
         </div>
 
-        <!-- THÔNG SỐ LỘ TRÌNH -->
+        <!-- THONG SO LO TRINH -->
         <div class="route-metrics-card">
           <div class="metric-item">
             <span class="metric-label">Quãng đường ước tính:</span>
@@ -89,7 +89,7 @@
           </div>
         </div>
 
-        <!-- THÔNG TIN KHÁCH -->
+        <!-- THONG TIN KHACH -->
         <div class="field-group">
           <label for="customerName">HỌ VÀ TÊN</label>
           <input type="text" id="customerName" required placeholder="Nhập tên của bạn">
@@ -105,13 +105,13 @@
           <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
-        <!-- CAPTCHA HOÀN TOÀN TỰ ĐỘNG & VÔ HÌNH (SẠCH SẼ 100%) -->
+        <!-- CAPTCHA VO HINH, KHONG HIEN GIAO DIEN -->
         <div class="cf-turnstile" 
              data-sitekey="1x00000000000000000000BB" 
              data-callback="onCaptchaVerified"
              style="display: none;"></div>
 
-        <!-- NÚT GỬI -->
+        <!-- NUT SUBMIT -->
         <button type="submit" class="btn-submit-booking" id="btnSubmit">
           GỬI YÊU CẦU ĐẶT XE (QUA ZALO)
         </button>
@@ -128,25 +128,29 @@
       </form>
     </main>
 
-    <!-- THANH PING HỆ THỐNG -->
-    <div class="system-monitor-bar" id="systemMonitor">
-      <div class="monitor-dot" id="pingDot"></div>
-      <span class="monitor-text" id="pingText">ĐO PING...</span>
-    </div>
-
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Tự động vượt Captcha ngầm mà không cần hiện hộp giao diện
-    window.isCaptchaPassed = true; 
+    window.isCaptchaPassed = true;
     function onCaptchaVerified(token) {
       window.isCaptchaPassed = true;
     }
   </script>
 
   <script type="module">
+    // 1. TÍCH HỢP SYSTEM MONITOR TỪ MODULE RIÊNG
+    try {
+      const monitorModule = await import('./js/system-monitor.js');
+      if (monitorModule.initSystemMonitor) {
+        monitorModule.initSystemMonitor();
+      }
+    } catch (e) {
+      console.warn('Khong the khoi tao system-monitor:', e);
+    }
+
+    // 2. CAC MODULE KHAC
     let autoCropImage, initAppUpdater, initAddressAutocomplete;
     try {
       const cropModule = await import('./js/autocrop.js');
@@ -216,16 +220,16 @@
               names.forEach((name) => caches.delete(name));
             });
           }
-          alert('HỆ THỐNG: Đã làm mới bộ nhớ cache!');
+          alert('HE THONG: Da lam moi bo nho cache!');
           window.location.replace('./index.html?reset=1');
         }
       });
     }
 
     // ==========================================================================
-    // CẤU HÌNH TỌA ĐỘ VÀ BẢN ĐỒ
+    // CAU HINH BAN DO VA TOA DO
     // ==========================================================================
-    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Định
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = null; 
     
@@ -461,7 +465,7 @@
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
 
     // ==========================================================================
-    // SAO CHÉP CLIPBOARD TƯƠNG THÍCH MỌI TRÌNH DUYỆT
+    // SAO CHEP VA SUBMIT
     // ==========================================================================
     async function copyToClipboard(text) {
       if (navigator.clipboard && window.isSecureContext) {
@@ -488,9 +492,6 @@
       }
     }
 
-    // ==========================================================================
-    // XỬ LÝ ĐẶT XE: TẠO LINK CHỈ DẪN VỊ TRÍ TÀI XẾ -> ĐIỂM ĐÓN
-    // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -512,7 +513,7 @@
         await autoGeocodeAddressInput(dAddr, false);
       }
 
-      // 📍 LINK DẪN ĐƯỜNG: VỊ TRÍ HIỆN TẠI CỦA BÁC TÀI -> ĐIỂM ĐÓN CỦA KHÁCH
+      // Link Google Maps: Vi tri Tai xe -> Diem don
       let driverToPickupMapLink = '';
       if (pickupCoords && pickupCoords.lat && pickupCoords.lon) {
         driverToPickupMapLink = `https://www.google.com/maps/dir/?api=1&destination=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}`;
@@ -523,24 +524,45 @@
       const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `~${measuredDistanceKm} km` : 'Bác tài báo';
       const currentTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN');
 
-      // TIN NHẮN TỐI ƯU CỰC KỲ GỌN CHO LÁI XE
+      // TIN NHAN CHUAN DIEU PHOI, KHONG EMOJI THUA THAI
       const cleanMessage = [
-        `🚕 ĐƠN ĐẶT XE - TAXI TN`,
-        `👤 Khách: ${name}`,
-        `📞 SĐT: ${phone}`,
-        `📍 Đón: ${pAddr}`,
-        `🏁 Đến: ${dAddr}`,
-        `🛣️ Cự ly: ${distanceInfo} (${tripType})`,
-        notes ? `📝 Ghi chú: ${notes}` : null,
-        `⏰ Thời gian: ${currentTime}`,
-        `🗺️ Dẫn đường tới đón khách:`,
+        `[TAXI TN] YEU CAU DAT XE MOI`,
+        `---------------------------------`,
+        `Khach hang: ${name}`,
+        `So dien thoai: ${phone}`,
+        `Diem don: ${pAddr}`,
+        `Diem den: ${dAddr}`,
+        `Loai chuyen: ${tripType} (${distanceInfo})`,
+        notes ? `Ghi chu: ${notes}` : null,
+        `Thoi gian: ${currentTime}`,
+        `---------------------------------`,
+        `DAN DUONG TOI DIEM DON (GOOGLE MAPS):`,
         driverToPickupMapLink
       ].filter(Boolean).join('\n');
 
-      // Tự động copy nội dung vào bộ nhớ tạm
+      // 1. Luu san vao Clipboard phong khi khach can paste
       await copyToClipboard(cleanMessage);
 
-      // Chuyển thẳng tới Zalo của bác tài
+      // 2. Ban du lieu ve backend Core Taxi (de ghi Supabase -> Bot Zalo tu bat)
+      /*
+      fetch('https://api-coretaxi-cua-bro.com/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: name,
+          phone_number: phone,
+          pickup_address: pAddr,
+          dropoff_address: dAddr,
+          trip_type: tripType,
+          distance: distanceInfo,
+          notes: notes,
+          pickup_lat: pickupCoords?.lat,
+          pickup_lon: pickupCoords?.lon
+        })
+      }).catch(() => {});
+      */
+
+      // 3. Chuyen thang vao Zalo cua Bo
       window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
 
       setTimeout(() => {
@@ -548,34 +570,6 @@
         btn.innerText = 'GỬI YÊU CẦU ĐẶT XE (QUA ZALO)';
       }, 2000);
     });
-
-    // PING HỆ THỐNG
-    const pingDot = document.getElementById('pingDot');
-    const pingText = document.getElementById('pingText');
-
-    async function updateRealPing() {
-      if (!navigator.onLine) {
-        pingDot.style.backgroundColor = '#ef4444';
-        pingText.innerText = 'MẤT KẾT NỐI';
-        pingText.style.color = '#ef4444';
-        return;
-      }
-
-      const t0 = performance.now();
-      try {
-        await fetch('./manifest.json?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
-        const pingMs = Math.round(performance.now() - t0);
-        pingDot.style.backgroundColor = pingMs < 150 ? '#10b981' : '#f59e0b';
-        pingText.innerText = `${pingMs}ms • v3.5`;
-        pingText.style.color = '#dfb76c';
-      } catch (err) {
-        pingDot.style.backgroundColor = '#10b981';
-        pingText.innerText = `ONLINE • v3.5`;
-      }
-    }
-
-    updateRealPing();
-    setInterval(updateRealPing, 6000);
   </script>
 </body>
 </html>
