@@ -14,16 +14,16 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.2.0">
+  <link rel="stylesheet" href="./css/booking.css?v=1.2.1">
 
-  <!-- CLOUDFLARE TURNSTILE CAPTCHA TU XAC NHAN (KHONG CHON HINH) -->
+  <!-- CLOUDFLARE TURNSTILE CAPTCHA TU XAC NHAN -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
   <style>
     .captcha-container {
       display: flex;
       justify-content: center;
-      margin: 8px 0;
+      margin: 10px 0;
       width: 100%;
     }
   </style>
@@ -114,7 +114,7 @@
           <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
-        <!-- CAPTCHA TU XAC NHAN -->
+        <!-- CAPTCHA TU XAC NHAN (GON GANG, KHONG CHU THICH) -->
         <div class="captcha-container">
           <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark" data-callback="onCaptchaVerified"></div>
         </div>
@@ -468,13 +468,13 @@
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
 
     // ==========================================================================
-    // XỬ LÝ GỬI ĐƠN: TIẾNG VIỆT CÓ DẤU 100%, KHÔNG CÒN GẠCH NGANG
+    // XỬ LÝ SUBMIT: CHUYỂN HƯỚNG TRỰC TIẾP VÀO NICK ZALO BỐ BẠN
     // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       if (!window.isCaptchaPassed) {
-        alert('Hệ thống đang xác thực danh tính bảo mật, vui lòng thử lại sau giây lát!');
+        alert('Vui lòng hoàn thành xác thực bảo mật!');
         return;
       }
 
@@ -490,7 +490,7 @@
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = 'ĐANG XỬ LÝ...';
+      btn.innerText = 'ĐANG MỞ ZALO...';
 
       if (!dropoffCoords && dAddr) {
         await autoGeocodeAddressInput(dAddr, false);
@@ -517,7 +517,6 @@
 
       const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `${measuredDistanceKm} km` : 'Bác tài báo trực tiếp';
 
-      // NỘI DUNG CHUẨN TIẾNG VIỆT CÓ DẤU, KHÔNG DÒNG GẠCH
       const messageLines = [
         'ĐƠN ĐẶT XE - TAXI TN',
         `Khách hàng: ${name}`,
@@ -527,13 +526,14 @@
         `Google Maps đón: ${pickupMapLink}`,
         `Điểm đến: ${dAddr}`,
         `Google Maps đến: ${dropoffMapLink}`,
-        `Quãng đường ước tính: ${distanceInfo}`,
+        `Quãng đường: ${distanceInfo}`,
         notes ? `Ghi chú: ${notes}` : null,
         routeMapLink ? `Dẫn đường toàn trình: ${routeMapLink}` : null
       ].filter(Boolean);
 
       const fullBookingText = messageLines.join('\n');
 
+      // TỰ ĐỘNG COPY VÀO BỘ NHỚ TẠM
       try {
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(fullBookingText);
@@ -549,22 +549,13 @@
         }
       } catch (err) {}
 
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'ĐƠN ĐẶT XE - TAXI TN',
-            text: fullBookingText
-          });
-          btn.disabled = false;
-          btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
-          return;
-        } catch (err) {}
-      }
-
-      alert('ĐÃ SAO CHÉP ĐƠN ĐẶT XE!\n\nSau khi Zalo mở ra, bạn chỉ cần CHẠM VÀO KHUNG CHAT rồi bấm DÁN (PASTE) để gửi cho Bác tài.');
+      // MỞ THẲNG ĐÚNG CHAT ZALO CỦA BỐ BẠN
       window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
-      btn.disabled = false;
-      btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
+      
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
+      }, 1000);
     });
 
     // PING HE THONG
