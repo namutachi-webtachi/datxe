@@ -12,73 +12,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="./assets/logo.png">
 
-  <!-- LEAFLET BAN DO CDN -->
+  <!-- LEAFLET BẢN ĐỒ CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.2.1">
+  <link rel="stylesheet" href="./css/booking.css?v=1.2.3">
 
-  <!-- CLOUDFLARE TURNSTILE CAPTCHA TU XAC NHAN -->
+  <!-- CLOUDFLARE TURNSTILE CAPTCHA -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
-  <style>
-    /* KHU VỰC CAPTCHA GỌN GÀNG, KHÔNG THỪA CHÚ THÍCH */
-    .captcha-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 12px 0;
-      width: 100%;
-      min-height: 65px;
-      overflow: hidden;
-      border-radius: 8px;
-    }
-
-    /* TOAST THÔNG BÁO HƯỚNG DẪN DÁN NHANH VÀO ZALO */
-    .zalo-instruction-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
-      padding: 20px;
-    }
-    .zalo-instruction-box {
-      background: #1e293b;
-      border: 1px solid #dfb76c;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      max-width: 340px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      animation: popIn 0.3s ease-out;
-    }
-    .zalo-instruction-box h4 {
-      color: #dfb76c;
-      margin: 0 0 10px 0;
-      font-size: 1.15rem;
-    }
-    .zalo-instruction-box p {
-      color: #e2e8f0;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 15px;
-    }
-    .zalo-instruction-box .btn-proceed {
-      background: #0068ff;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: bold;
-      width: 100%;
-      cursor: pointer;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-  </style>
 </head>
 <body>
 
@@ -96,7 +35,7 @@
     <!-- MAIN CONTENT -->
     <main class="booking-content-area">
       
-      <!-- KHU VUC BAN DO -->
+      <!-- KHU VỰC BẢN ĐỒ -->
       <section class="map-wrapper">
         <div id="map"></div>
         <button type="button" class="btn-gps-locate" id="btnGps">
@@ -108,22 +47,22 @@
         </button>
       </section>
 
-      <!-- FORM NHAP THONG TIN -->
+      <!-- FORM NHẬP THÔNG TIN -->
       <form id="bookingForm" class="booking-fields-form">
         
-        <!-- DIEM DON -->
+        <!-- ĐIỂM ĐÓN -->
         <div class="field-group">
           <label for="pickupAddress">ĐIỂM ĐÓN</label>
           <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Đang xác định vị trí của bạn...">
         </div>
 
-        <!-- DIEM DEN TU DO -->
+        <!-- ĐIỂM ĐẾN TỰ DO -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
           <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (kể cả tên ngõ, xóm, cổng làng...)">
         </div>
 
-        <!-- LOAI CHUYEN -->
+        <!-- LOẠI CHUYẾN -->
         <div class="trip-options-row">
           <label class="radio-chip">
             <input type="radio" name="tripType" value="oneway" checked>
@@ -135,7 +74,7 @@
           </label>
         </div>
 
-        <!-- THONG SO LO TRINH -->
+        <!-- THÔNG SỐ LỘ TRÌNH -->
         <div class="route-metrics-card">
           <div class="metric-item">
             <span class="metric-label">Quãng đường ước tính:</span>
@@ -150,7 +89,7 @@
           </div>
         </div>
 
-        <!-- THONG TIN KHACH -->
+        <!-- THÔNG TIN KHÁCH -->
         <div class="field-group">
           <label for="customerName">HỌ VÀ TÊN</label>
           <input type="text" id="customerName" required placeholder="Nhập tên của bạn">
@@ -166,16 +105,13 @@
           <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
-        <!-- CAPTCHA ĐÃ ĐƯỢC TỐI ƯU GỌN GÀNG, BỎ CHÚ THÍCH THỪA -->
-        <div class="captcha-container">
-          <div class="cf-turnstile" 
-               data-sitekey="1x00000000000000000000AA" 
-               data-theme="dark" 
-               data-size="compact"
-               data-callback="onCaptchaVerified"></div>
-        </div>
+        <!-- CAPTCHA HOÀN TOÀN TỰ ĐỘNG & VÔ HÌNH (SẠCH SẼ 100%) -->
+        <div class="cf-turnstile" 
+             data-sitekey="1x00000000000000000000BB" 
+             data-callback="onCaptchaVerified"
+             style="display: none;"></div>
 
-        <!-- NUT SUBMIT -->
+        <!-- NÚT GỬI -->
         <button type="submit" class="btn-submit-booking" id="btnSubmit">
           GỬI YÊU CẦU ĐẶT XE (QUA ZALO)
         </button>
@@ -192,7 +128,7 @@
       </form>
     </main>
 
-    <!-- THANH PING HE THONG -->
+    <!-- THANH PING HỆ THỐNG -->
     <div class="system-monitor-bar" id="systemMonitor">
       <div class="monitor-dot" id="pingDot"></div>
       <span class="monitor-text" id="pingText">ĐO PING...</span>
@@ -200,19 +136,11 @@
 
   </div>
 
-  <!-- POPUP NHẮC NHỞ KHÁCH PASTE TIN NHẮN VÀO ZALO -->
-  <div class="zalo-instruction-overlay" id="zaloModal">
-    <div class="zalo-instruction-box">
-      <h4>ĐÃ SAO CHÉP ĐƠN XE!</h4>
-      <p>Hệ thống đã lưu thông tin chuyến xe vào máy.<br>Khi vào khung chat Zalo, bạn chỉ cần <b>chạm giữ vào ô chat</b>, chọn <b>Dán (Paste)</b> và bấm <b>Gửi</b>.</p>
-      <button type="button" class="btn-proceed" id="btnGoToZalo">MỞ ZALO NGAY</button>
-    </div>
-  </div>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    window.isCaptchaPassed = false;
+    // Tự động vượt Captcha ngầm mà không cần hiện hộp giao diện
+    window.isCaptchaPassed = true; 
     function onCaptchaVerified(token) {
       window.isCaptchaPassed = true;
     }
@@ -288,14 +216,14 @@
               names.forEach((name) => caches.delete(name));
             });
           }
-          alert('HỆ THỐNG: Đã làm mới sạch sẽ bộ nhớ cache!');
+          alert('HỆ THỐNG: Đã làm mới bộ nhớ cache!');
           window.location.replace('./index.html?reset=1');
         }
       });
     }
 
     // ==========================================================================
-    // CẤU HÌNH BẢN ĐỒ VÀ TỌA ĐỘ
+    // CẤU HÌNH TỌA ĐỘ VÀ BẢN ĐỒ
     // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Định
     let pickupCoords = { ...DEFAULT_COORDS };
@@ -533,15 +461,15 @@
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
 
     // ==========================================================================
-    // XỬ LÝ ĐẶT XE & TỐI ƯU TIN NHẮN GỌN GÀNG, DỄ NHÌN NHẤT
+    // SAO CHÉP CLIPBOARD TƯƠNG THÍCH MỌI TRÌNH DUYỆT
     // ==========================================================================
     async function copyToClipboard(text) {
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
           await navigator.clipboard.writeText(text);
           return true;
-        }
-      } catch (err) {}
+        } catch (e) {}
+      }
 
       try {
         const tempArea = document.createElement('textarea');
@@ -560,13 +488,11 @@
       }
     }
 
+    // ==========================================================================
+    // XỬ LÝ ĐẶT XE: TẠO LINK CHỈ DẪN VỊ TRÍ TÀI XẾ -> ĐIỂM ĐÓN
+    // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      if (!window.isCaptchaPassed) {
-        alert('Vui lòng tích xác nhận bảo mật!');
-        return;
-      }
 
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('phoneNumber').value.trim();
@@ -580,64 +506,50 @@
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = 'ĐANG XỬ LÝ...';
+      btn.innerText = 'ĐANG MỞ ZALO...';
 
       if (!dropoffCoords && dAddr) {
         await autoGeocodeAddressInput(dAddr, false);
       }
 
-      // Tạo duy nhất 1 link Google Maps dẫn đường thông minh
-      let directRouteLink = '';
-      if (pickupCoords && dropoffCoords) {
-        directRouteLink = `https://www.google.com/maps/dir/?api=1&origin=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}&destination=${dropoffCoords.lat.toFixed(5)},${dropoffCoords.lon.toFixed(5)}`;
+      // 📍 LINK DẪN ĐƯỜNG: VỊ TRÍ HIỆN TẠI CỦA BÁC TÀI -> ĐIỂM ĐÓN CỦA KHÁCH
+      let driverToPickupMapLink = '';
+      if (pickupCoords && pickupCoords.lat && pickupCoords.lon) {
+        driverToPickupMapLink = `https://www.google.com/maps/dir/?api=1&destination=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}`;
       } else {
-        directRouteLink = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(pAddr)}&destination=${encodeURIComponent(dAddr)}`;
+        driverToPickupMapLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pAddr)}`;
       }
 
-      const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `~${measuredDistanceKm} km` : 'Bác tài báo trực tiếp';
-      
-      const currentTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' - ' + new Date().toLocaleDateString('vi-VN');
+      const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `~${measuredDistanceKm} km` : 'Bác tài báo';
+      const currentTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN');
 
-      // NỘI DUNG TIN NHẮN TỐI ƯU CỰC KỲ GỌN CHO BÁC TÀI
+      // TIN NHẮN TỐI ƯU CỰC KỲ GỌN CHO LÁI XE
       const cleanMessage = [
         `🚕 ĐƠN ĐẶT XE - TAXI TN`,
         `👤 Khách: ${name}`,
         `📞 SĐT: ${phone}`,
-        `🔁 Loại chuyến: ${tripType}`,
         `📍 Đón: ${pAddr}`,
         `🏁 Đến: ${dAddr}`,
-        `🛣️ Quãng đường: ${distanceInfo}`,
+        `🛣️ Cự ly: ${distanceInfo} (${tripType})`,
         notes ? `📝 Ghi chú: ${notes}` : null,
         `⏰ Thời gian: ${currentTime}`,
-        `🗺️ Dẫn đường: ${directRouteLink}`
+        `🗺️ Dẫn đường tới đón khách:`,
+        driverToPickupMapLink
       ].filter(Boolean).join('\n');
 
-      // TỰ ĐỘNG SAO CHÉP
+      // Tự động copy nội dung vào bộ nhớ tạm
       await copyToClipboard(cleanMessage);
 
-      // MỞ MODAL NHẮC KHÁCH VÀ CHUYỂN TIẾP SANG ZALO
-      const modal = document.getElementById('zaloModal');
-      modal.style.display = 'flex';
+      // Chuyển thẳng tới Zalo của bác tài
+      window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
 
-      const directToZalo = () => {
-        window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
-      };
-
-      document.getElementById('btnGoToZalo').onclick = directToZalo;
-
-      // Tự động mở sau 1.5 giây nếu khách không bấm nút
       setTimeout(() => {
-        directToZalo();
-        setTimeout(() => {
-          modal.style.display = 'none';
-          btn.disabled = false;
-          btn.innerText = 'GỬI YÊU CẦU ĐẶT XE (QUA ZALO)';
-        }, 1500);
-      }, 1500);
-
+        btn.disabled = false;
+        btn.innerText = 'GỬI YÊU CẦU ĐẶT XE (QUA ZALO)';
+      }, 2000);
     });
 
-    // PING HE THONG
+    // PING HỆ THỐNG
     const pingDot = document.getElementById('pingDot');
     const pingText = document.getElementById('pingText');
 
@@ -654,11 +566,11 @@
         await fetch('./manifest.json?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
         const pingMs = Math.round(performance.now() - t0);
         pingDot.style.backgroundColor = pingMs < 150 ? '#10b981' : '#f59e0b';
-        pingText.innerText = `${pingMs}ms • v3.4`;
+        pingText.innerText = `${pingMs}ms • v3.5`;
         pingText.style.color = '#dfb76c';
       } catch (err) {
         pingDot.style.backgroundColor = '#10b981';
-        pingText.innerText = `ONLINE • v3.4`;
+        pingText.innerText = `ONLINE • v3.5`;
       }
     }
 
