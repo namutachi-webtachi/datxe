@@ -510,11 +510,31 @@
           body: JSON.stringify(bookingPayload)
         });
 
-        if (res.ok) {
-          alert('✅ ĐẶT XE THÀNH CÔNG!\nBác tài đã nhận được lộ trình và sẽ liên hệ ngay cho bạn!');
-          document.getElementById('bookingForm').reset();
+      if (res.ok) {
+          alert('ĐẶT XE THÀNH CÔNG!\nBác tài đã nhận được lộ trình và sẽ liên hệ ngay cho bạn!');
+          
+          // 1. LƯU CỨNG TÊN VÀ SĐT VÀO LOCALSTORAGE
+          localStorage.setItem('customerName', name);
+          localStorage.setItem('phoneNumber', phone);
+
+          // 2. CHỈ XÓA ĐIỂM ĐẾN VÀ GHI CHÚ (GIỮ NGUYÊN TÊN VÀ SĐT CHO KHÁCH)
+          document.getElementById('dropoffAddress').value = '';
+          document.getElementById('notes').value = '';
+          
+          // Giữ lại Tên và SĐT trên màn hình
+          document.getElementById('customerName').value = name;
+          document.getElementById('phoneNumber').value = phone;
+
+          // 3. RESET LẠI BẢN ĐỒ VÀ THÔNG SỐ
           document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
           document.getElementById('displayDuration').innerText = '-- phút';
+          if (routePolyline) map.removeLayer(routePolyline);
+          if (dropoffMarker) {
+            map.removeLayer(dropoffMarker);
+            dropoffMarker = null;
+          }
+          dropoffCoords = null;
+
         } else {
           alert('⚠️ Hệ thống đang bận. Bạn vui lòng liên hệ trực tiếp Hotline: 0912.101.580');
         }
