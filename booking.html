@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.3.0">
+  <link rel="stylesheet" href="./css/booking.css?v=1.3.1">
 
   <!-- CLOUDFLARE TURNSTILE CAPTCHA -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -105,7 +105,7 @@
           <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
-        <!-- CAPTCHA VO HINH -->
+        <!-- CAPTCHA VO HINH, TU DONG THONG QUA -->
         <div class="cf-turnstile" 
              data-sitekey="1x00000000000000000000BB" 
              data-callback="onCaptchaVerified"
@@ -140,9 +140,7 @@
   </script>
 
   <script type="module">
-    // ==========================================================================
-    // TÍCH HỢP SYSTEM MONITOR TỪ REPO CỦA BRO
-    // ==========================================================================
+    // 1. TÍCH HỢP SYSTEM MONITOR TỰ ĐỘNG TỪ REPO
     try {
       const monitorModule = await import('./js/system-monitor.js');
       if (monitorModule.initSystemMonitor) {
@@ -152,7 +150,7 @@
       console.warn('[Monitor] Chua khoi tao duoc system-monitor:', e);
     }
 
-    // TÍCH HỢP CÁC MODULE KHÁC TỪ THƯ MỤC JS/
+    // 2. TÍCH HỢP CÁC MODULE KHÁC
     let autoCropImage, initAppUpdater, initAddressAutocomplete;
     try {
       const cropModule = await import('./js/autocrop.js');
@@ -222,7 +220,7 @@
               names.forEach((name) => caches.delete(name));
             });
           }
-          alert('HE THONG: Da lam moi sach se bo nho cache!');
+          alert('HỆ THỐNG: Đã làm mới sạch sẽ bộ nhớ cache!');
           window.location.replace('./booking.html?reset=1');
         }
       });
@@ -231,7 +229,7 @@
     // ==========================================================================
     // CẤU HÌNH BẢN ĐỒ VÀ ĐỊA CHỈ
     // ==========================================================================
-    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Định
     let pickupCoords = { ...DEFAULT_COORDS };
     let dropoffCoords = null; 
     
@@ -242,11 +240,8 @@
     let measuredDistanceKm = 0;
 
     const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
-    const PAPA_ZALO_PHONE = '0912101580';
-
-    // BRO ĐIỀN ĐƯỜNG LINK RENDER VÀO ĐÂY (VÍ DỤ: https://coretaxi-xxxx.onrender.com/api/bookings)
     const BACKEND_API_URL = 'https://coretaxi.onrender.com/api/dispatch';
-    
+
     const VN_BOUNDS = L.latLngBounds(
       L.latLng(8.179, 102.144),
       L.latLng(23.393, 109.464)
@@ -470,35 +465,7 @@
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
 
     // ==========================================================================
-    // SAO CHÉP CLIPBOARD TƯƠNG THÍCH MỌI TRÌNH DUYỆT
-    // ==========================================================================
-    async function copyToClipboard(text) {
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await navigator.clipboard.writeText(text);
-          return true;
-        } catch (e) {}
-      }
-
-      try {
-        const tempArea = document.createElement('textarea');
-        tempArea.value = text;
-        tempArea.style.position = 'fixed';
-        tempArea.style.left = '-9999px';
-        tempArea.style.top = '0';
-        document.body.appendChild(tempArea);
-        tempArea.focus();
-        tempArea.select();
-        const success = document.execCommand('copy');
-        document.body.removeChild(tempArea);
-        return success;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    // ==========================================================================
-    // SUBMIT ĐƠN HÀNG: VỪA BẮN VỀ BACKEND RENDER, VỪA MỞ ZALO
+    // XỬ LÝ SUBMIT: CHỈ GỬI VỀ RENDER ĐỂ BẮN BOT ZALO (KHÔNG NHẢY SANG ZALO NỮA)
     // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -515,43 +482,14 @@
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = 'ĐANG GỬI ĐƠN...';
+      btn.innerText = 'ĐANG GỬI VỀ TỔNG ĐÀI...';
 
       if (!dropoffCoords && dAddr) {
         await autoGeocodeAddressInput(dAddr, false);
       }
 
-      // Link dẫn đường: Vị trí Bác tài -> Điểm đón
-      let driverToPickupMapLink = '';
-      if (pickupCoords && pickupCoords.lat && pickupCoords.lon) {
-        driverToPickupMapLink = `https://www.google.com/maps/dir/?api=1&destination=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}`;
-      } else {
-        driverToPickupMapLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pAddr)}`;
-      }
-
       const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `~${measuredDistanceKm} km` : 'Bác tài báo';
-      const currentTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date().toLocaleDateString('vi-VN');
 
-      // TIN NHẮN CHUẨN ĐIỀU PHỐI (KHÔNG EMOJI LÒE LOẸT)
-      const cleanMessage = [
-        `[TAXI TN] YEU CAU DAT XE MOI`,
-        `---------------------------------`,
-        `Khach hang: ${name}`,
-        `So dien thoai: ${phone}`,
-        `Diem don: ${pAddr}`,
-        `Diem den: ${dAddr}`,
-        `Loai chuyen: ${tripType} (${distanceInfo})`,
-        notes ? `Ghi chu: ${notes}` : null,
-        `Thoi gian: ${currentTime}`,
-        `---------------------------------`,
-        `DAN DUONG TOI DIEM DON (GOOGLE MAPS):`,
-        driverToPickupMapLink
-      ].filter(Boolean).join('\n');
-
-      // 1. Sao chép sẵn vào Clipboard
-      await copyToClipboard(cleanMessage);
-
-      // 2. BẮN DỮ LIỆU VỀ BACKEND RENDER (CORETAXI) ĐỂ BẮN ZALO BOT TỰ ĐỘNG
       const bookingPayload = {
         customerName: name,
         phoneNumber: phone,
@@ -565,20 +503,28 @@
       };
 
       try {
-        fetch(BACKEND_API_URL, {
+        // GỬI REQUEST VÀ ĐỢI RENDER PHẢN HỒI
+        const res = await fetch(BACKEND_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bookingPayload)
-        }).catch(err => console.error('[Render API] Loi ket noi:', err));
-      } catch (err) {}
+        });
 
-      // 3. MỞ THẲNG ZALO CỦA BỐ
-      window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
-
-      setTimeout(() => {
+        if (res.ok) {
+          alert('✅ ĐẶT XE THÀNH CÔNG!\nBác tài đã nhận được lộ trình và sẽ liên hệ ngay cho bạn!');
+          document.getElementById('bookingForm').reset();
+          document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
+          document.getElementById('displayDuration').innerText = '-- phút';
+        } else {
+          alert('⚠️ Hệ thống đang bận. Bạn vui lòng liên hệ trực tiếp Hotline: 0912.101.580');
+        }
+      } catch (err) {
+        console.error('[Render API] Loi ket noi:', err);
+        alert('⚠️ Lỗi kết nối máy chủ. Bạn vui lòng liên hệ trực tiếp Hotline: 0912.101.580');
+      } finally {
         btn.disabled = false;
         btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
-      }, 2000);
+      }
     });
   </script>
 </body>
