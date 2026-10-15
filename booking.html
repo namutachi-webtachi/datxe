@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.1.6">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.7">
 </head>
 <body>
 
@@ -32,13 +32,13 @@
     <!-- MAIN CONTENT -->
     <main class="booking-content-area">
       
-      <!-- TRANG THAI BAC TAI -->
+      <!-- DONG THONG BAO UY TIN THAY CHO 24/7 -->
       <div class="driver-status-bar">
         <div class="status-indicator-dot"></div>
-        <span class="status-indicator-text">XE NHÀ ĐÃ SẴN SÀNG PHỤC VỤ</span>
+        <span class="status-indicator-text">XE GIA ĐÌNH - QUÝ KHÁCH NÊN ĐẶT TRƯỚC ĐỂ ĐÓN ĐÚNG GIỜ</span>
       </div>
 
-      <!-- BAN DO -->
+      <!-- KHU VUC BAN DO -->
       <section class="map-wrapper">
         <div id="map"></div>
         <button type="button" class="btn-gps-locate" id="btnGps">
@@ -50,7 +50,7 @@
         </button>
       </section>
 
-      <!-- FORM NHAP TU DO -->
+      <!-- FORM NHAP THONG TIN -->
       <form id="bookingForm" class="booking-fields-form">
         
         <!-- DIEM DON -->
@@ -59,10 +59,10 @@
           <input type="text" id="pickupAddress" autocomplete="off" required placeholder="Đang xác định vị trí của bạn...">
         </div>
 
-        <!-- DIEM DEN -->
+        <!-- DIEM DEN TU DO -->
         <div class="field-group">
           <label for="dropoffAddress">ĐIỂM ĐẾN</label>
-          <input type="text" id="dropoffAddress" autocomplete="off" required value="Bệnh viện Bạch Mai, Hà Nội" placeholder="Nhập điểm đến (Ví dụ: Bệnh viện, Ga tàu...)">
+          <input type="text" id="dropoffAddress" autocomplete="off" required placeholder="Nhập điểm đến (kể cả tên ngõ, xóm, cổng làng...)">
         </div>
 
         <!-- LOAI CHUYEN -->
@@ -80,15 +80,15 @@
         <!-- THONG SO LO TRINH -->
         <div class="route-metrics-card">
           <div class="metric-item">
-            <span class="metric-label">Quãng đường tối ưu:</span>
-            <strong class="metric-val" id="displayDistance">-- km</strong>
+            <span class="metric-label">Quãng đường ước tính:</span>
+            <strong class="metric-val" id="displayDistance">Bác tài báo trực tiếp</strong>
           </div>
           <div class="metric-item">
             <span class="metric-label">Thời gian dự kiến:</span>
             <strong class="metric-val" id="displayDuration">-- phút</strong>
           </div>
-          <div class="metric-hint">
-            Bác tài sẽ liên hệ trực tiếp để xác nhận giờ đón và báo giá cước hợp lý nhất.
+          <div class="metric-hint" id="metricHint">
+            Quý khách có thể nhập địa chỉ bất kỳ. Bác tài sẽ liên hệ trực tiếp để xác nhận giờ đón và báo giá cước chuẩn nhất.
           </div>
         </div>
 
@@ -105,16 +105,17 @@
 
         <div class="field-group">
           <label for="notes">GHI CHÚ THÊM (NẾU CÓ)</label>
-          <input type="text" id="notes" placeholder="Ví dụ: Có 2 vali to, cần đón đúng giờ...">
+          <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
+        <!-- NUT GUI BAN THANG SANG ZALO BO BAN -->
         <button type="submit" class="btn-submit-booking" id="btnSubmit">
           GỬI YÊU CẦU ĐẶT XE
         </button>
 
         <div class="contact-actions-row">
           <a href="#" id="btnZaloDirect" class="btn-action-zalo" target="_blank">
-            ĐẶT QUA ZALO
+            CHAT TRỰC TIẾP QUA ZALO
           </a>
           <a href="tel:0912101580" class="btn-action-hotline">
             HOTLINE: 0912.101.580
@@ -124,7 +125,7 @@
       </form>
     </main>
 
-    <!-- THANH PING -->
+    <!-- THANH PING HE THONG -->
     <div class="system-monitor-bar" id="systemMonitor">
       <div class="monitor-dot" id="pingDot"></div>
       <span class="monitor-text" id="pingText">ĐO PING...</span>
@@ -147,14 +148,11 @@
       if (initAppUpdater) initAppUpdater();
     } catch (e) {}
 
-try {
+    try {
       const geoModule = await import('./js/geo-search.js');
       initAddressAutocomplete = geoModule.initAddressAutocomplete;
-    } catch (e) {
-      console.error("LỖI CMN FILE GEO-SEARCH RỒI BRO ƠI! KIỂM TRA LẠI FILE JS ĐI:", e);
-    }
+    } catch (e) {}
 
-   
     const installIcon = document.getElementById('installIcon');
     if (installIcon && autoCropImage) {
       try { autoCropImage(installIcon); } catch (e) {}
@@ -207,18 +205,18 @@ try {
               names.forEach((name) => caches.delete(name));
             });
           }
-          alert('HỆ THỐNG: Đã làm mới sạch sẽ bộ nhớ cache!');
+          alert('HE THONG: Da lam moi sach se bo nho cache!');
           window.location.replace('./index.html?reset=1');
         }
       });
     }
 
     // ==========================================================================
-    // KHỞI TẠO BẢN ĐỒ BẢN QUYỀN ESRI WORLD DARK GRAY (MIỄN PHÍ)
+    // CAU HINH BAN DO VA DU LIEU TOA DO
     // ==========================================================================
-    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; 
+    const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = { lat: 20.9997, lon: 105.8413 }; 
+    let dropoffCoords = null; // Mac dinh de null de khach tu nhap
     
     let routePolyline = null;
     let pickupMarker = null;
@@ -226,8 +224,9 @@ try {
     let userLocationMarker = null;
     let measuredDistanceKm = 0;
 
-    // THAY ĐÚNG LINK CLOUDFLARE CỦA BRO VÀO ĐÂY:
+    // LINK CLOUDFLARE WORKER PROXY
     const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
+    const PAPA_ZALO_PHONE = '0912101580';
 
     const VN_BOUNDS = L.latLngBounds(
       L.latLng(8.179, 102.144),
@@ -246,7 +245,7 @@ try {
       maxZoom: 18,
       tap: true,
       renderer: L.canvas()
-    }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 11);
+    }).setView([DEFAULT_COORDS.lat, DEFAULT_COORDS.lon], 13);
     
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 18,
@@ -263,26 +262,31 @@ try {
     window.addEventListener('resize', forceResizeMap);
     window.addEventListener('orientationchange', forceResizeMap);
 
+    // GHIM DIEM DON MAC DINH
     pickupMarker = L.marker([pickupCoords.lat, pickupCoords.lon], { draggable: true }).addTo(map);
-    dropoffMarker = L.marker([dropoffCoords.lat, dropoffCoords.lon], { draggable: true }).addTo(map);
 
     pickupMarker.on('dragend', (e) => {
       const pos = e.target.getLatLng();
       pickupCoords = { lat: pos.lat, lon: pos.lng };
       document.getElementById('pickupAddress').value = 'Tọa độ đã ghim trên bản đồ';
-      calculateDistance();
-    });
-
-    dropoffMarker.on('dragend', (e) => {
-      const pos = e.target.getLatLng();
-      dropoffCoords = { lat: pos.lat, lon: pos.lng };
-      document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
-      calculateDistance();
+      if (dropoffCoords) calculateDistance();
     });
 
     function setDropoffLocation(lat, lon) {
       dropoffCoords = { lat, lon };
-      dropoffMarker.setLatLng([lat, lon]);
+
+      if (!dropoffMarker) {
+        dropoffMarker = L.marker([lat, lon], { draggable: true }).addTo(map);
+        dropoffMarker.on('dragend', (e) => {
+          const pos = e.target.getLatLng();
+          dropoffCoords = { lat: pos.lat, lon: pos.lng };
+          document.getElementById('dropoffAddress').value = 'Tọa độ đã ghim trên bản đồ';
+          calculateDistance();
+        });
+      } else {
+        dropoffMarker.setLatLng([lat, lon]);
+      }
+
       calculateDistance();
     }
 
@@ -296,7 +300,6 @@ try {
     function locateUserGps(isAutoLoad = false) {
       if (!navigator.geolocation) {
         document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
-        calculateDistance();
         return;
       }
 
@@ -306,6 +309,7 @@ try {
         pickupCoords = { lat, lon };
 
         pickupMarker.setLatLng([lat, lon]);
+        map.setView([lat, lon], 14);
 
         if (userLocationMarker) {
           userLocationMarker.setLatLng([lat, lon]);
@@ -314,10 +318,16 @@ try {
         }
 
         document.getElementById('pickupAddress').value = 'Vị trí hiện tại của bạn';
-        calculateDistance();
+
+        if (dropoffCoords) {
+          calculateDistance();
+        }
       }, (err) => {
-        document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
-        calculateDistance();
+        if (!isAutoLoad) {
+          alert('Không thể truy cập vị trí GPS. Vui lòng bật định vị trên thiết bị!');
+        } else {
+          document.getElementById('pickupAddress').value = 'Vườn Cau Vị Khê, Nam Định';
+        }
       }, { enableHighAccuracy: true, timeout: 8000 });
     }
 
@@ -326,7 +336,10 @@ try {
     document.getElementById('btnGps').addEventListener('click', () => locateUserGps(false));
 
     function autoFitRouteBounds() {
-      const activePoints = [pickupMarker, dropoffMarker];
+      if (!dropoffCoords) return;
+
+      const activePoints = [pickupMarker];
+      if (dropoffMarker) activePoints.push(dropoffMarker);
       if (userLocationMarker) activePoints.push(userLocationMarker);
 
       if (routePolyline) {
@@ -337,9 +350,14 @@ try {
       }
     }
 
-    // CHỈ ĐƯỜNG KẼ VẠCH OSRM MIỄN PHÍ
+    // TINH KHOANG CACH VA VE DUONG
     async function calculateDistance() {
-      if (!dropoffCoords || !pickupCoords) return;
+      if (!dropoffCoords || !pickupCoords) {
+        document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
+        document.getElementById('displayDuration').innerText = '-- phút';
+        if (routePolyline) map.removeLayer(routePolyline);
+        return;
+      }
 
       const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lon},${pickupCoords.lat};${dropoffCoords.lon},${dropoffCoords.lat}?overview=full&geometries=geojson`;
       
@@ -363,60 +381,64 @@ try {
           }).addTo(map);
 
           autoFitRouteBounds();
-
-          const pAddr = document.getElementById('pickupAddress').value;
-          const dAddr = document.getElementById('dropoffAddress').value;
-          const zaloMsg = encodeURIComponent(`Chào bác tài, tôi muốn đặt xe từ ${pAddr} đến ${dAddr} (${measuredDistanceKm}km).`);
-          document.getElementById('btnZaloDirect').href = `https://zalo.me/0912101580?text=${zaloMsg}`;
+          updateQuickZaloLink();
         }
       } catch (err) {
-        document.getElementById('displayDistance').innerText = '-- km';
+        document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
         document.getElementById('displayDuration').innerText = '-- phút';
       }
     }
 
-  // TU DONG DICH CHU KHI KHACH GO (GOI QUA CLOUDFLARE)
+    // CAP NHAT LINK ZALO NHANH
+    function updateQuickZaloLink() {
+      const pAddr = document.getElementById('pickupAddress').value;
+      const dAddr = document.getElementById('dropoffAddress').value;
+      const distInfo = measuredDistanceKm > 0 ? ` (${measuredDistanceKm}km)` : '';
+      const zaloMsg = encodeURIComponent(`Chào bác tài, tôi muốn đặt xe từ ${pAddr} đến ${dAddr}${distInfo}. Bác tài báo giá giúp tôi.`);
+      document.getElementById('btnZaloDirect').href = `https://zalo.me/${PAPA_ZALO_PHONE}?text=${zaloMsg}`;
+    }
+
+    // AUTO GEOCODE QUA CLOUDFLARE WORKER
     async function autoGeocodeAddressInput(addressText, isPickup = false) {
       if (!addressText || addressText.length < 2) return null;
 
-      const styleOk = 'color: #10b981; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #10b981; border-radius: 4px;';
-      const styleErr = 'color: #ef4444; font-weight: bold; background: #060e18; padding: 2px 6px; border: 1px solid #ef4444; border-radius: 4px;';
-      
       const lat = pickupCoords ? parseFloat(pickupCoords.lat).toFixed(4) : '20.4288';
       const lon = pickupCoords ? parseFloat(pickupCoords.lon).toFixed(4) : '106.1685';
-
       const url = `${WORKER_URL}/?q=${encodeURIComponent(addressText)}&lat=${lat}&lon=${lon}&limit=1`;
-      console.log(`%c[AUTO GEOCODE] Dang tu dong phan tich toa do: "${addressText}"...`, 'color: #dfb76c; font-weight: bold;');
 
       try {
         const res = await fetch(url);
-        
-        if (!res.ok) {
-          const errText = await res.text();
-          console.error(`%c[AUTO GEOCODE ERROR] Cloudflare chan hoac loi HTTP ${res.status}: ${errText}`, styleErr);
-          return null;
-        }
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.features && data.features.length > 0) {
+            const feature = data.features[0];
+            const coords = feature.center; 
 
-        const data = await res.json();
-        
-        if (data && data.features && data.features.length > 0) {
-          const feature = data.features[0];
-          const coords = feature.center; 
-          
-          console.log(`%c[AUTO GEOCODE SUCCESS] Da ghim vi tri: [${coords[1].toFixed(5)}, ${coords[0].toFixed(5)}]`, styleOk);
-          
-          if (isPickup) {
-            pickupCoords = { lat: coords[1], lon: coords[0] };
-            pickupMarker.setLatLng([coords[1], coords[0]]);
-          } else {
-            setDropoffLocation(coords[1], coords[0]);
+            if (isPickup) {
+              pickupCoords = { lat: coords[1], lon: coords[0] };
+              pickupMarker.setLatLng([coords[1], coords[0]]);
+            } else {
+              setDropoffLocation(coords[1], coords[0]);
+            }
+            return coords;
           }
-          return coords;
-        } else {
-          console.warn(`[AUTO GEOCODE] Khong the quy doi chuoi nay ra toa do GPS.`);
         }
-      } catch (e) {
-        console.error(`%c[AUTO GEOCODE CRASH] Loi fetch: ${e.message}`, styleErr);
+      } catch (e) {}
+
+      // Neu khong tim duoc toa do thi danh dau la diem den tu do
+      if (!isPickup) {
+        dropoffCoords = null;
+        if (dropoffMarker) {
+          map.removeLayer(dropoffMarker);
+          dropoffMarker = null;
+        }
+        if (routePolyline) {
+          map.removeLayer(routePolyline);
+          routePolyline = null;
+        }
+        document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
+        document.getElementById('displayDuration').innerText = '-- phút';
+        updateQuickZaloLink();
       }
       return null;
     }
@@ -432,7 +454,7 @@ try {
       initAddressAutocomplete('pickupAddress', (selected) => {
         pickupCoords = { lat: selected.lat, lon: selected.lon };
         pickupMarker.setLatLng([selected.lat, selected.lon]);
-        calculateDistance();
+        if (dropoffCoords) calculateDistance();
       }, () => pickupCoords);
 
       initAddressAutocomplete('dropoffAddress', (selected) => {
@@ -442,32 +464,85 @@ try {
 
     document.getElementById('customerName').value = localStorage.getItem('customerName') || '';
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
+    updateQuickZaloLink();
 
+    // ==========================================================================
+    // XU LY SUBMIT: BAN THANG DON VE ZALO CUA BO BAN KEM LINK MAPS CHI TIET
+    // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const dropoffText = document.getElementById('dropoffAddress').value.trim();
-      if (dropoffText) {
-        await autoGeocodeAddressInput(dropoffText, false);
-      }
 
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('phoneNumber').value.trim();
+      const pAddr = document.getElementById('pickupAddress').value.trim();
+      const dAddr = document.getElementById('dropoffAddress').value.trim();
+      const tripType = document.querySelector('input[name="tripType"]:checked')?.value === 'roundtrip' ? 'Khứ hồi' : 'Một chiều';
+      const notes = document.getElementById('notes').value.trim();
 
       localStorage.setItem('customerName', name);
       localStorage.setItem('phoneNumber', phone);
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = 'ĐANG GỬI YÊU CẦU...';
+      btn.innerText = 'ĐANG MỞ ZALO BÁC TÀI...';
 
+      // Thu dich toa do lan cuoi neu khach go xong an gui ngay
+      if (!dropoffCoords && dAddr) {
+        await autoGeocodeAddressInput(dAddr, false);
+      }
+
+      // 1. Tao link Google Maps Diem Don cho bo
+      let pickupMapLink = '';
+      if (pickupCoords && pickupCoords.lat && pickupCoords.lon) {
+        pickupMapLink = `https://www.google.com/maps?q=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}`;
+      } else {
+        pickupMapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pAddr)}`;
+      }
+
+      // 2. Tao link Google Maps Diem Den cho bo
+      let dropoffMapLink = '';
+      if (dropoffCoords && dropoffCoords.lat && dropoffCoords.lon) {
+        dropoffMapLink = `https://www.google.com/maps?q=${dropoffCoords.lat.toFixed(5)},${dropoffCoords.lon.toFixed(5)}`;
+      } else {
+        dropoffMapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dAddr)}`;
+      }
+
+      // 3. Tao link Dan Duong toan trinh tren Google Maps neu du 2 diem
+      let routeMapLink = '';
+      if (pickupCoords && dropoffCoords) {
+        routeMapLink = `https://www.google.com/maps/dir/?api=1&origin=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}&destination=${dropoffCoords.lat.toFixed(5)},${dropoffCoords.lon.toFixed(5)}`;
+      }
+
+      const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `${measuredDistanceKm} km` : 'Bác tài báo trực tiếp';
+
+      // Soan san noi dung tin nhan Zalo ro rang tung dong
+      const messageLines = [
+        'DON DAT XE MOI - TAXI TN',
+        '-------------------------',
+        `Khach hang: ${name}`,
+        `So dien thoai: ${phone}`,
+        `Loai chuyen: ${tripType}`,
+        `Diem don: ${pAddr}`,
+        `Maps diem don: ${pickupMapLink}`,
+        `Diem den: ${dAddr}`,
+        `Maps diem den: ${dropoffMapLink}`,
+        `Quang duong: ${distanceInfo}`,
+        notes ? `Ghi chu: ${notes}` : null,
+        routeMapLink ? `Chi duong toan trinh: ${routeMapLink}` : null
+      ].filter(Boolean);
+
+      const fullZaloText = messageLines.join('\n');
+      const zaloDirectUrl = `https://zalo.me/${PAPA_ZALO_PHONE}?text=${encodeURIComponent(fullZaloText)}`;
+
+      // Mo Zalo
       setTimeout(() => {
-        alert(`ĐÃ GỬI YÊU CẦU ĐẶT XE!\nKhách hàng: ${name}\nQuãng đường: ${measuredDistanceKm || 0}km\nBác tài sẽ gọi lại cho bạn ngay theo số ${phone}!`);
+        window.location.href = zaloDirectUrl;
         btn.disabled = false;
         btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
-      }, 500);
+      }, 350);
     });
 
+    // PING HE THONG
     const pingDot = document.getElementById('pingDot');
     const pingText = document.getElementById('pingText');
 
