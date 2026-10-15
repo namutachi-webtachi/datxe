@@ -14,7 +14,7 @@
 
   <!-- LEAFLET BAN DO CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./css/booking.css?v=1.1.7">
+  <link rel="stylesheet" href="./css/booking.css?v=1.1.8">
 </head>
 <body>
 
@@ -32,12 +32,6 @@
     <!-- MAIN CONTENT -->
     <main class="booking-content-area">
       
-      <!-- DONG THONG BAO UY TIN THAY CHO 24/7 -->
-      <div class="driver-status-bar">
-        <div class="status-indicator-dot"></div>
-        <span class="status-indicator-text">XE GIA ĐÌNH - QUÝ KHÁCH NÊN ĐẶT TRƯỚC ĐỂ ĐÓN ĐÚNG GIỜ</span>
-      </div>
-
       <!-- KHU VUC BAN DO -->
       <section class="map-wrapper">
         <div id="map"></div>
@@ -108,13 +102,13 @@
           <input type="text" id="notes" placeholder="Ví dụ: Đón lúc 6h sáng, có 2 vali to...">
         </div>
 
-        <!-- NUT GUI BAN THANG SANG ZALO BO BAN -->
+        <!-- NUT SUBMIT -->
         <button type="submit" class="btn-submit-booking" id="btnSubmit">
           GỬI YÊU CẦU ĐẶT XE
         </button>
 
         <div class="contact-actions-row">
-          <a href="#" id="btnZaloDirect" class="btn-action-zalo" target="_blank">
+          <a href="https://zalo.me/0912101580" id="btnZaloDirect" class="btn-action-zalo" target="_blank">
             CHAT TRỰC TIẾP QUA ZALO
           </a>
           <a href="tel:0912101580" class="btn-action-hotline">
@@ -216,7 +210,7 @@
     // ==========================================================================
     const DEFAULT_COORDS = { lat: 20.4288, lon: 106.1685 }; // Nam Dinh
     let pickupCoords = { ...DEFAULT_COORDS };
-    let dropoffCoords = null; // Mac dinh de null de khach tu nhap
+    let dropoffCoords = null; 
     
     let routePolyline = null;
     let pickupMarker = null;
@@ -224,7 +218,6 @@
     let userLocationMarker = null;
     let measuredDistanceKm = 0;
 
-    // LINK CLOUDFLARE WORKER PROXY
     const WORKER_URL = 'https://taxi-search-api.nnam14884.workers.dev';
     const PAPA_ZALO_PHONE = '0912101580';
 
@@ -262,7 +255,6 @@
     window.addEventListener('resize', forceResizeMap);
     window.addEventListener('orientationchange', forceResizeMap);
 
-    // GHIM DIEM DON MAC DINH
     pickupMarker = L.marker([pickupCoords.lat, pickupCoords.lon], { draggable: true }).addTo(map);
 
     pickupMarker.on('dragend', (e) => {
@@ -350,7 +342,6 @@
       }
     }
 
-    // TINH KHOANG CACH VA VE DUONG
     async function calculateDistance() {
       if (!dropoffCoords || !pickupCoords) {
         document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
@@ -381,7 +372,6 @@
           }).addTo(map);
 
           autoFitRouteBounds();
-          updateQuickZaloLink();
         }
       } catch (err) {
         document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
@@ -389,16 +379,6 @@
       }
     }
 
-    // CAP NHAT LINK ZALO NHANH
-    function updateQuickZaloLink() {
-      const pAddr = document.getElementById('pickupAddress').value;
-      const dAddr = document.getElementById('dropoffAddress').value;
-      const distInfo = measuredDistanceKm > 0 ? ` (${measuredDistanceKm}km)` : '';
-      const zaloMsg = encodeURIComponent(`Chào bác tài, tôi muốn đặt xe từ ${pAddr} đến ${dAddr}${distInfo}. Bác tài báo giá giúp tôi.`);
-      document.getElementById('btnZaloDirect').href = `https://zalo.me/${PAPA_ZALO_PHONE}?text=${zaloMsg}`;
-    }
-
-    // AUTO GEOCODE QUA CLOUDFLARE WORKER
     async function autoGeocodeAddressInput(addressText, isPickup = false) {
       if (!addressText || addressText.length < 2) return null;
 
@@ -425,7 +405,6 @@
         }
       } catch (e) {}
 
-      // Neu khong tim duoc toa do thi danh dau la diem den tu do
       if (!isPickup) {
         dropoffCoords = null;
         if (dropoffMarker) {
@@ -438,7 +417,6 @@
         }
         document.getElementById('displayDistance').innerText = 'Bác tài báo trực tiếp';
         document.getElementById('displayDuration').innerText = '-- phút';
-        updateQuickZaloLink();
       }
       return null;
     }
@@ -464,10 +442,9 @@
 
     document.getElementById('customerName').value = localStorage.getItem('customerName') || '';
     document.getElementById('phoneNumber').value = localStorage.getItem('phoneNumber') || '';
-    updateQuickZaloLink();
 
     // ==========================================================================
-    // XU LY SUBMIT: BAN THANG DON VE ZALO CUA BO BAN KEM LINK MAPS CHI TIET
+    // XỬ LÝ SUBMIT: TỰ ĐỘNG SAO CHÉP ĐƠN ĐẶT XE VÀO BỘ NHỚ + MỞ CHAT ZALO
     // ==========================================================================
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -484,14 +461,12 @@
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerText = 'ĐANG MỞ ZALO BÁC TÀI...';
+      btn.innerText = 'ĐANG XỬ LÝ ĐẶT XE...';
 
-      // Thu dich toa do lan cuoi neu khach go xong an gui ngay
       if (!dropoffCoords && dAddr) {
         await autoGeocodeAddressInput(dAddr, false);
       }
 
-      // 1. Tao link Google Maps Diem Don cho bo
       let pickupMapLink = '';
       if (pickupCoords && pickupCoords.lat && pickupCoords.lon) {
         pickupMapLink = `https://www.google.com/maps?q=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}`;
@@ -499,7 +474,6 @@
         pickupMapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pAddr)}`;
       }
 
-      // 2. Tao link Google Maps Diem Den cho bo
       let dropoffMapLink = '';
       if (dropoffCoords && dropoffCoords.lat && dropoffCoords.lon) {
         dropoffMapLink = `https://www.google.com/maps?q=${dropoffCoords.lat.toFixed(5)},${dropoffCoords.lon.toFixed(5)}`;
@@ -507,7 +481,6 @@
         dropoffMapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dAddr)}`;
       }
 
-      // 3. Tao link Dan Duong toan trinh tren Google Maps neu du 2 diem
       let routeMapLink = '';
       if (pickupCoords && dropoffCoords) {
         routeMapLink = `https://www.google.com/maps/dir/?api=1&origin=${pickupCoords.lat.toFixed(5)},${pickupCoords.lon.toFixed(5)}&destination=${dropoffCoords.lat.toFixed(5)},${dropoffCoords.lon.toFixed(5)}`;
@@ -515,7 +488,7 @@
 
       const distanceInfo = (dropoffCoords && measuredDistanceKm > 0) ? `${measuredDistanceKm} km` : 'Bác tài báo trực tiếp';
 
-      // Soan san noi dung tin nhan Zalo ro rang tung dong
+      // Soạn nội dung đầy đủ
       const messageLines = [
         'DON DAT XE MOI - TAXI TN',
         '-------------------------',
@@ -528,18 +501,33 @@
         `Maps diem den: ${dropoffMapLink}`,
         `Quang duong: ${distanceInfo}`,
         notes ? `Ghi chu: ${notes}` : null,
-        routeMapLink ? `Chi duong toan trinh: ${routeMapLink}` : null
+        routeMapLink ? `Dan duong toan trinh: ${routeMapLink}` : null
       ].filter(Boolean);
 
-      const fullZaloText = messageLines.join('\n');
-      const zaloDirectUrl = `https://zalo.me/${PAPA_ZALO_PHONE}?text=${encodeURIComponent(fullZaloText)}`;
+      const fullBookingText = messageLines.join('\n');
 
-      // Mo Zalo
-      setTimeout(() => {
-        window.location.href = zaloDirectUrl;
-        btn.disabled = false;
-        btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
-      }, 350);
+      // 1. TỰ ĐỘNG SAO CHÉP TOÀN BỘ VÀO CLIPBOARD (BỘ NHỚ TẠM)
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(fullBookingText);
+        } else {
+          const tempArea = document.createElement('textarea');
+          tempArea.value = fullBookingText;
+          tempArea.style.position = 'fixed';
+          tempArea.style.opacity = '0';
+          document.body.appendChild(tempArea);
+          tempArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempArea);
+        }
+      } catch (err) {}
+
+      // 2. THÔNG BÁO VÀ CHUYỂN HƯỚNG SANG ZALO
+      alert('ĐÃ SAO CHÉP ĐƠN ĐẶT XE!\n\nSau khi Zalo mở ra, bạn chỉ cần CHẠM VÀO KHUNG CHAT rồi bấm DÁN (PASTE) để gửi cho Bác tài.');
+
+      window.location.href = `https://zalo.me/${PAPA_ZALO_PHONE}`;
+      btn.disabled = false;
+      btn.innerText = 'GỬI YÊU CẦU ĐẶT XE';
     });
 
     // PING HE THONG
